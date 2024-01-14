@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "crewai-tools"
+version = "0.0.1"
+description = ""
+authors = ["João Moura <joaomdmoura@mgail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
