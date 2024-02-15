@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "crewai-tools"
 version = "0.0.1"
-description = ""
+description = "Set of tools for the crewAI framework"
 authors = ["João Moura <joaomdmoura@mgail.com>"]
 readme = "README.md"
 
@@ -16,6 +16,9 @@ embedchain = "^0.1.78"
 chromadb = "^0.4.22"
 pyright = "^1.1.350"
 
+[tool.poetry.urls]
+Homepage = "https://crewai.com"
+Repository = "https://github.com/joaomdmoura/crewAI-tools"
 
 [build-system]
 requires = ["poetry-core"]
