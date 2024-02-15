@@ -6,7 +6,15 @@ authors = ["João Moura <joaomdmoura@mgail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.9,<3.12"
+pydantic = "^2.6.1"
+langchain = ">=0.1.4,<0.2.0"
+pytest = "^8.0.0"
+lancedb = "^0.5.4"
+openai = "^1.12.0"
+embedchain = "^0.1.78"
+chromadb = "^0.4.22"
+pyright = "^1.1.350"
 
 
 [build-system]
