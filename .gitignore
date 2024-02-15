@@ -3,6 +3,5 @@
 __pycache__
 dist/
 .env
-assets/*
 .idea
 test.py
