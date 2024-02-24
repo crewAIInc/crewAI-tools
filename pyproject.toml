@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "crewai-tools"
-version = "0.0.6"
+version = "0.0.7"
 description = "Set of tools for the crewAI framework"
 authors = ["João Moura <joaomdmoura@mgail.com>"]
 readme = "README.md"
@@ -12,7 +12,7 @@ langchain = ">=0.1.4,<0.2.0"
 pytest = "^8.0.0"
 lancedb = "^0.5.4"
 openai = "^1.12.0"
-embedchain = {extras = ["youtube"], version = "^0.1.81"}
+embedchain = {extras = ["github", "youtube"], version = "^0.1.85"}
 chromadb = "^0.4.22"
 pyright = "^1.1.350"
 pytube = "^15.0.0"
