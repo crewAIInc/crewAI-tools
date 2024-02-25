@@ -29,5 +29,5 @@ class DirectoryReadTool(BaseTool):
 		**kwargs: Any,
 	) -> Any:
 		directory = kwargs.get('directory', self.directory)
-		return [(os.path.join(root, file).replace(directory, "").lstrip(os.path.sep)) for root, dirs, files in os.walk(directory) for file in files]
+		return [os.path.join(root, file) for root, dirs, files in os.walk(directory) for file in files]
 
