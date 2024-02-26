@@ -17,6 +17,7 @@ chromadb = "^0.4.22"
 pyright = "^1.1.350"
 pytube = "^15.0.0"
 requests = "^2.31.0"
+beautifulsoup4 = "^4.12.3"
 
 [tool.poetry.urls]
 Homepage = "https://crewai.com"
