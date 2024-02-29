@@ -5,3 +5,4 @@ dist/
 .env
 .idea
 test.py
+docs_crew/
