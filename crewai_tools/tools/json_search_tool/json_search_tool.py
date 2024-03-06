@@ -26,7 +26,7 @@ class JSONSearchTool(RagTool):
 		super().__init__(**kwargs)
 		if json_path is not None:
 			self.json_path = json_path
-			self.description = f"A tool that can be used to semantic search a query the {json} JSON's content."
+			self.description = f"A tool that can be used to semantic search a query the {json_path} JSON's content."
 			self.args_schema = FixedJSONSearchToolSchema
 			self._generate_description()
 
