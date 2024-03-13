@@ -32,7 +32,6 @@ class RagTool(BaseTool):
     def from_embedchain(self, config_path: str):
         from embedchain import App
         from crewai_tools.adapters.embedchain_adapter import EmbedchainAdapter
-
         app = App.from_config(config_path=config_path)
-        adapter = EmbedchainAdapter(embedchain_app=app)
-        return RagTool(name=self.name, description=self.description, adapter=adapter)
+        self.app = app
+        self.adapter = EmbedchainAdapter(embedchain_app=app)
