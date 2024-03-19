@@ -35,7 +35,35 @@ class CSVSearchTool(RagTool):
 		search_query: str,
 		**kwargs: Any,
 	) -> Any:
+
+
 		csv = kwargs.get('csv', self.csv)
 		self.app = App()
 		self.app.add(csv, data_type=DataType.CSV)
+		return super()._run(query=search_query)
+
+class MultiCSVSearchTool(RagTool):
+	name: str = "Search over a Multi CSV's content"
+	description: str = "A tool that can be used to semantic search a query from a Multi CSV's content."
+	summarize: bool = False
+	args_schema: Type[BaseModel] = CSVSearchToolSchema
+	csv_list: Optional[list] = None
+
+	def __init__(self, csv_list: Optional[list] = None, **kwargs):
+		super().__init__(**kwargs)
+		if csv_list is not None:
+			self.csv_list = csv_list
+			self.description = f"A tool that can be used to semantic search a query the {csv_list} CSV's content."
+			self.args_schema = FixedCSVSearchToolSchema
+			self._generate_description()
+
+	def _run(
+		self,
+		search_query: str,
+		**kwargs: Any,
+	) -> Any:
+		csv_list = kwargs.get('csv_list', self.csv_list)
+		self.app = App()
+		for csv in csv_list:
+			self.app.add(csv, data_type=DataType.CSV)
 		return super()._run(query=search_query)
