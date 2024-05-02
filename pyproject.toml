@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "crewai-tools"
-version = "0.1.7"
+version = "0.2.0"
 description = "Set of tools for the crewAI framework"
 authors = ["João Moura <joaomdmoura@mgail.com>"]
 readme = "README.md"
