@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "crewai-tools"
-version = "0.2.3"
+version = "0.2.4"
 description = "Set of tools for the crewAI framework"
 authors = ["João Moura <joaomdmoura@mgail.com>"]
 readme = "README.md"
@@ -19,6 +19,7 @@ pytube = "^15.0.0"
 requests = "^2.31.0"
 beautifulsoup4 = "^4.12.3"
 selenium = "^4.18.1"
+docx2txt = "^0.8"
 
 [tool.poetry.urls]
 Homepage = "https://crewai.com"

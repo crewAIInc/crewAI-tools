@@ -887,6 +887,16 @@ files = [
 ]
 
 [[package]]
+name = "docx2txt"
+version = "0.8"
+description = "A pure python-based utility to extract text and images from docx files."
+optional = false
+python-versions = "*"
+files = [
+    {file = "docx2txt-0.8.tar.gz", hash = "sha256:2c06d98d7cfe2d3947e5760a57d924e3ff07745b379c8737723922e7009236e5"},
+]
+
+[[package]]
 name = "embedchain"
 version = "0.1.99"
 description = "Simplest open source retrieval (RAG) framework"
@@ -4905,4 +4915,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<=3.13"
-content-hash = "abd659c94fbbfd671268b35e80fd2246479afd3fa422274f1fa57ba8eaed6f06"
+content-hash = "a6f3dd8c4a2c8775b980bf86ecc0cc054dafc3aaa682165e45aaf2fce1c53a08"
