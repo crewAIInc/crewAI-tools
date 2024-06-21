@@ -20,6 +20,7 @@ requests = "^2.31.0"
 beautifulsoup4 = "^4.12.3"
 selenium = "^4.18.1"
 docx2txt = "^0.8"
+docker = "^7.1.0"
 
 [tool.poetry.urls]
 Homepage = "https://crewai.com"
