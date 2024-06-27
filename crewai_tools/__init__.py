@@ -1,5 +1,6 @@
 from .tools.base_tool import BaseTool, Tool, tool
 from .tools import (
+	ApiRequestTool,
 	BrowserbaseLoadTool,
 	CodeDocsSearchTool,
 	CSVSearchTool,
