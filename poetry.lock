@@ -1042,7 +1042,7 @@ youtube = ["youtube-transcript-api (>=0.6.1,<0.7.0)", "yt_dlp (>=2023.11.14,<202
 [package.source]
 type = "git"
 url = "https://github.com/joaomdmoura/embedchain.git"
-reference = "main"
+reference = "v0.1.34"
 resolved_reference = "83782e57a8c54ff03c3ef33a2cf0deb5c8cf8fcf"
 
 [[package]]
@@ -4770,4 +4770,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<=3.13"
-content-hash = "93a62bf5be1e8fef9a1d686e8a8d1514801ae5f9018738cee593f5a63f466680"
+content-hash = "60d8dbc8cd94310f160760868277af06daf716e778ced629ea7f59c6e59a05e9"
