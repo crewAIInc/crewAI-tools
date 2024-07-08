@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "crewai-tools"
-version = "0.3.0"
+version = "0.4.8"
 description = "Set of tools for the crewAI framework"
 authors = ["João Moura <joaomdmoura@mgail.com>"]
 readme = "README.md"
@@ -8,11 +8,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.10,<=3.13"
 pydantic = "^2.6.1"
-langchain = ">=0.1.4,<0.2.0"
+langchain = ">0.2,<=0.3"
 pytest = "^8.0.0"
 lancedb = "^0.5.4"
 openai = "^1.12.0"
-embedchain = {extras = ["github", "youtube"], version = "^0.1.85"}
 chromadb = "^0.4.22"
 pyright = "^1.1.350"
 pytube = "^15.0.0"
@@ -20,6 +19,8 @@ requests = "^2.31.0"
 beautifulsoup4 = "^4.12.3"
 selenium = "^4.18.1"
 docx2txt = "^0.8"
+docker = "^7.1.0"
+embedchain = "^0.1.114"
 
 [tool.poetry.urls]
 Homepage = "https://crewai.com"
