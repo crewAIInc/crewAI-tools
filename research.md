@@ -1,0 +1,7 @@
+- The image is a black and white scene from a corridor.
+- It was captured by a security camera.
+- A person is walking towards the camera in the foreground.
+- The person is holding a large clipboard or binder.
+- The hallway has doors on either side.
+- There is a radiator on the left side of the frame.
+- The camera interface displays recording indicators and camera settings.
