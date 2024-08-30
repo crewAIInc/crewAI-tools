@@ -1,7 +1,7 @@
 # SEC10QTool
 
 ## Description
-This tool is useful to search information from the latest 10-Q form for a given stock. Leveraging a Retrieval-Augmented Generation (RAG) model, it navigates through the information provided on a passed in stock ticker. The input to this tool should be the company stock ticker as a string. For example: SEC10QTool("AMZN")
+This tool is useful to search information from the latest 10-Q form for a given stock. Leveraging a Retrieval-Augmented Generation (RAG) model, it navigates through the information provided and on a passed in stock ticker. The input to this tool should be the company stock ticker as a string. For example: SEC10QTool("AMZN")
 
 ## Installation
 Install the crewai_tools package by executing the following command in your terminal:
