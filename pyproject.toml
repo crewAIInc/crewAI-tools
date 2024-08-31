@@ -24,7 +24,7 @@ embedchain = "^0.1.114"
 
 [tool.poetry.urls]
 Homepage = "https://crewai.com"
-Repository = "https://github.com/joaomdmoura/crewAI-tools"
+Repository = "https://github.com/crewAIInc/crewAI-tools"
 
 [build-system]
 requires = ["poetry-core"]
