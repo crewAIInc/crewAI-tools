@@ -39,6 +39,7 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
-    MySQLSearchTool
+    MySQLSearchTool,
+    CalculatorTool,
 )
 from .tools.base_tool import BaseTool, Tool, tool
