@@ -50,3 +50,5 @@ from .youtube_channel_search_tool.youtube_channel_search_tool import (
 )
 from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSearchTool
 from .mysql_search_tool.mysql_search_tool import MySQLSearchTool
+from .sec10k_search_tool.sec10k_search_tool import SEC10KTool
+from .sec10q_search_tool.sec10q_search_tool import SEC10QTool
