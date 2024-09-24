@@ -20,17 +20,21 @@ Utilize the code interpreter tool to allow your agent to run Python code:
 from crewai import Agent
 from crewai_tools import E2BCodeInterpreterTool
 
+# The cloud sandbox will shut down after 300 seconds, or whatever value is passed to the timeout argument.
 code_interpreter = E2BCodeInterpreterTool()
 
 Agent(
     ...
-    tools=[E2BCodeInterpreterTool()],
+    tools=[code_interpreter],
 )
 
 # ... Use the agent ...
     
+# To shut down the sandbox immediately, use:
 code_interpreter.close()
 ```
+
+If the `close()` method is not used, the sandbox will continue to exist until it times out, consuming additional cloud credits.
 
 Futher examples are provided in the [E2B Cookbook](https://github.com/e2b-dev/e2b-cookbook).
 
