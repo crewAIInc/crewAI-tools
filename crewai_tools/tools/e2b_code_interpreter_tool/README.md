@@ -33,3 +33,14 @@ code_interpreter.close()
 ```
 
 Futher examples are provided in the [E2B Cookbook](https://github.com/e2b-dev/e2b-cookbook).
+
+## Arguments
+
+All of the below arguments are optional:
+
+- `api_key`: E2B [API key](https://e2b.dev/docs/getting-started/api-key) used for authentication. Defaults to `E2B_API_KEY` environment variable.
+- `template`: A pre-defined template to spawn a [custom sandbox](https://e2b.dev/docs/sandbox/custom). Defaults to the standard sandbox.
+- `timeout`: Specifies the timeout in seconds for the sandbox to open or execute. Defaults to 300s.
+- `request_timeout`: Timeout for the creation of the sandbox itself. Defaults to 30s.
+- `metadata`: Optional [metadata](https://e2b.dev/docs/sandbox/api/metadata) to be associated with the sandbox.
+- `envs`: A dictionary containing [environment variables](https://e2b.dev/docs/sandbox/api/envs) to be passed to the sandbox.

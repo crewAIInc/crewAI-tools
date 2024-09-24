@@ -3,7 +3,7 @@ import json
 from crewai_tools import BaseTool
 from e2b_code_interpreter import CodeInterpreter
 
-from typing import Type
+from typing import Type, Optional, Dict
 from pydantic import BaseModel, Field
 
 class E2BCodeInterpreterSchema(BaseModel):
@@ -25,9 +25,17 @@ class E2BCodeInterpreterTool(BaseTool):
     args_schema: Type[BaseModel] = E2BCodeInterpreterSchema
     _code_interpreter_tool: CodeInterpreter | None = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        template: Optional[str] = None,
+        timeout: Optional[int] = None,
+        envs: Optional[Dict[str, str]] = None,
+        api_key: Optional[str] = None,
+        request_timeout: Optional[float] = None,
+        **kwargs,
+    ):
         # Call the superclass's init method
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
         # Ensure that the E2B_API_KEY environment variable is set
         if "E2B_API_KEY" not in os.environ:
@@ -36,7 +44,13 @@ class E2BCodeInterpreterTool(BaseTool):
             )
 
         # Initialize the code interpreter tool
-        self._code_interpreter_tool = CodeInterpreter()
+        self._code_interpreter_tool = CodeInterpreter(
+            template=template,
+            timeout=timeout,
+            envs=envs,
+            api_key=api_key,
+            request_timeout=request_timeout,
+        )
 
     def _run(self, code: str) -> str:
         # Execute the code using the code interpreter
