@@ -37,12 +37,6 @@ class E2BCodeInterpreterTool(BaseTool):
         # Call the superclass's init method
         super().__init__(**kwargs)
 
-        # Ensure that the E2B_API_KEY environment variable is set
-        if "E2B_API_KEY" not in os.environ:
-            raise Exception(
-                "Code Interpreter tool called while E2B_API_KEY environment variable is not set. Please get your E2B API key here https://e2b.dev/docs and set the E2B_API_KEY environment variable."
-            )
-
         # Initialize the code interpreter tool
         self._code_interpreter_tool = CodeInterpreter(
             template=template,
