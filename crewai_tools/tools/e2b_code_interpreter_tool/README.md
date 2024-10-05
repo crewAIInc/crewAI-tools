@@ -9,7 +9,7 @@ This tool is used to give an agent the ability to run arbitrary Python code. The
 - Install the [Code Interpreter Beta SDK](https://e2b.dev/docs/guide/beta-migration) along with the `crewai[tools]` package:
 
 ```
-pip install e2b-code-interpreter>=0.0.11b32 'crewai[tools]'
+pip install e2b-code-interpreter==0.0.11b32 'crewai[tools]'
 ```
 
 ## Example
