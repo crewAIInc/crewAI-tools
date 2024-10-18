@@ -1,6 +1,6 @@
 [project]
 name = "crewai-tools"
-version = "0.13.0"
+version = "0.13.2"
 description = "Set of tools for the crewAI framework"
 authors = [
     { name = "João Moura", email = "joaomdmoura@mgail.com" },
