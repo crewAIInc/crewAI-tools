@@ -21,11 +21,21 @@ In the realm of CrewAI agents, tools are pivotal for enhancing functionality. Th
 
 ## Table of contents
 
+- [Installation](#installation)
 - [Creating Your Tools](#creating-your-tools)
 	- [Subclassing `BaseTool`](#subclassing-basetool)
 	- [Utilizing the `tool` Decorator](#utilizing-the-tool-decorator)
 - [Contribution Guidelines](#contribution-guidelines)
 - [Development Setup](#development-setup)
+
+## Installation
+
+Before using crewAI Tools, ensure you have crewAI installed:
+
+```bash
+pip install crewai[tools]
+```
+
 
 ## Available Tools
 
@@ -51,7 +61,7 @@ There are three ways to create tools for crewAI agents:
 ### Subclassing `BaseTool`
 
 ```python
-from crewai_tools import BaseTool
+from crewai.tools import BaseTool
 
 class MyCustomTool(BaseTool):
     name: str = "Name of my tool"
