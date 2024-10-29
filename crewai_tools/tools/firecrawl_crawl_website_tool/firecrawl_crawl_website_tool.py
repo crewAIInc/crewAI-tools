@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from crewai_tools.tools.base_tool import BaseTool
+from crewai.tools.base_tool import BaseTool
 
 
 class FirecrawlCrawlWebsiteToolSchema(BaseModel):

@@ -6,7 +6,7 @@ from typing import Any, Optional, Type
 import requests
 from pydantic import BaseModel, Field
 
-from crewai_tools.tools.base_tool import BaseTool
+from crewai.tools.base_tool import BaseTool
 
 
 def _save_results_to_file(content: str) -> None:

@@ -3,7 +3,7 @@ from typing import Any, Dict, Literal, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from crewai_tools.tools.base_tool import BaseTool
+from crewai.tools.base_tool import BaseTool
 
 logger = logging.getLogger(__file__)
 

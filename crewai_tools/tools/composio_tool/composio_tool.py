@@ -6,7 +6,7 @@ import typing as t
 
 import typing_extensions as te
 
-from crewai_tools.tools.base_tool import BaseTool
+from crewai.tools.base_tool import BaseTool
 
 
 class ComposioTool(BaseTool):
