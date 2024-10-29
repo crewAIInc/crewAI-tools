@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
 
-from ..base_tool import BaseTool
+from crewai.tools.base_tool import BaseTool
 
 
 class FixedScrapeElementFromWebsiteToolSchema(BaseModel):
