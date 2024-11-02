@@ -2,7 +2,7 @@ from typing import Any, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from ..base_tool import BaseTool
+from crewai.tools.base_tool import BaseTool
 
 
 class FixedFileReadToolSchema(BaseModel):
