@@ -8,7 +8,6 @@ authors = [
 requires-python = ">=3.10,<=3.13"
 dependencies = [
     "pydantic>=2.6.1",
-    "langchain>=0.3.1",
     "pytest>=8.0.0",
     "lancedb>=0.5.4",
     "openai>=1.12.0",
