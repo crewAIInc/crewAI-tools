@@ -50,3 +50,4 @@ from .youtube_channel_search_tool.youtube_channel_search_tool import (
 )
 from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSearchTool
 from .mysql_search_tool.mysql_search_tool import MySQLSearchTool
+from .searxng_search_tool.searxng_search_tool import SearxNGSearchTool
