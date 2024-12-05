@@ -20,6 +20,7 @@ dependencies = [
     "docx2txt>=0.8",
     "docker>=7.1.0",
     "embedchain>=0.1.114",
+    "crewai>=0.86.0",
 ]
 readme = "README.md"
 
