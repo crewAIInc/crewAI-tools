@@ -25,6 +25,12 @@ from .mdx_seach_tool.mdx_search_tool import MDXSearchTool
 from .multion_tool.multion_tool import MultiOnTool
 from .mysql_search_tool.mysql_search_tool import MySQLSearchTool
 from .nl2sql.nl2sql_tool import NL2SQLTool
+from .opengraphio_get_opengraph_tags_tool.opengraphio_get_opengraph_tags_tool import (
+    GetOpengraphTagsTool,
+)
+from .opengraphio_scrape_website_tool.opengraphio_scrape_website_tool import (
+    OpenGraphScrapeWebsiteTool,
+)
 from .pdf_search_tool.pdf_search_tool import PDFSearchTool
 from .pg_seach_tool.pg_search_tool import PGSearchTool
 from .rag.rag_tool import RagTool
