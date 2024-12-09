@@ -32,6 +32,11 @@ Documentation = "https://docs.crewai.com"
 
 [project.scripts]
 
+[project.optional-dependencies]
+weaviate-client = [
+    "weaviate-client>=4.9.6",
+]
+
 [build-system]
 requires = [
     "hatchling",
