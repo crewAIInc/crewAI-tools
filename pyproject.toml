@@ -1,6 +1,6 @@
 [project]
 name = "crewai-tools"
-version = "0.14.0"
+version = "0.17.0"
 description = "Set of tools for the crewAI framework"
 authors = [
     { name = "João Moura", email = "joaomdmoura@mgail.com" },
@@ -20,6 +20,7 @@ dependencies = [
     "docx2txt>=0.8",
     "docker>=7.1.0",
     "embedchain>=0.1.114",
+    "crewai>=0.86.0",
 ]
 readme = "README.md"
 
@@ -30,6 +31,11 @@ Documentation = "https://docs.crewai.com"
 
 
 [project.scripts]
+
+[project.optional-dependencies]
+weaviate-client = [
+    "weaviate-client>=4.9.6",
+]
 
 [build-system]
 requires = [
