@@ -727,6 +727,7 @@ dependencies = [
     { name = "pytube" },
     { name = "requests" },
     { name = "selenium" },
+    { name = "serpapi" },
 ]
 
 [package.optional-dependencies]
@@ -738,6 +739,7 @@ weaviate-client = [
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.12.3" },
     { name = "chromadb", specifier = ">=0.4.22" },
+    { name = "classes", specifier = ">=0.4.1" },
     { name = "crewai", specifier = ">=0.86.0" },
     { name = "docker", specifier = ">=7.1.0" },
     { name = "docx2txt", specifier = ">=0.8" },
@@ -750,6 +752,8 @@ requires-dist = [
     { name = "pytube", specifier = ">=15.0.0" },
     { name = "requests", specifier = ">=2.31.0" },
     { name = "selenium", specifier = ">=4.18.1" },
+    { name = "serpapi", specifier = ">=0.1.5" },
+    { name = "weaviate", specifier = ">=0.1.2" },
     { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.9.6" },
 ]
 
@@ -4300,6 +4304,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0e/5a/d3735b189b91715fd0f5a9b8d55e2605061309849470e96ab830f02cba40/selenium-4.25.0.tar.gz", hash = "sha256:95d08d3b82fb353f3c474895154516604c7f0e6a9a565ae6498ef36c9bac6921", size = 957765 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/aa/85/fa44f23dd5d5066a72f7c4304cce4b5ff9a6e7fd92431a48b2c63fbf63ec/selenium-4.25.0-py3-none-any.whl", hash = "sha256:3798d2d12b4a570bc5790163ba57fef10b2afee958bf1d80f2a3cf07c4141f33", size = 9693127 },
+]
+
+[[package]]
+name = "serpapi"
+version = "0.1.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f0/fa/3fd8809287f3977a3e752bb88610e918d49cb1038b14f4bc51e13e594197/serpapi-0.1.5.tar.gz", hash = "sha256:b9707ed54750fdd2f62dc3a17c6a3fb7fa421dc37902fd65b2263c0ac765a1a5", size = 14191 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/6a/21deade04100d64844e494353a5d65e7971fbdfddf78eb1f248423593ad0/serpapi-0.1.5-py2.py3-none-any.whl", hash = "sha256:6467b6adec1231059f754ccaa952b229efeaa8b9cae6e71f879703ec9e5bb3d1", size = 10966 },
 ]
 
 [[package]]
