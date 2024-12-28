@@ -106,8 +106,17 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
             client_api_key = api_key or os.getenv("FIRECRAWL_API_KEY")    
             if not client_api_key:
                 raise ValueError(
-                    "FIRECRAWL_API_KEY is not set. Please provide it either via the constructor "
-                    "with the `api_key` argument or by setting the FIRECRAWL_API_KEY environment variable."
+                    "FIRECRAWL_API_KEY is not set. To resolve this:\n\n"
+                    "1. Option 1 - Use constructor:\n"
+                    "   tool = FirecrawlCrawlWebsiteTool(api_key='your-api-key')\n\n"
+                    "2. Option 2 - Set environment variable:\n"
+                    "   export FIRECRAWL_API_KEY='your-api-key'\n\n"
+                    "You can obtain an API key by:\n"
+                    "1. Visit https://firecrawl.com\n"
+                    "2. Create an account or log in\n"
+                    "3. Navigate to API Settings\n"
+                    "4. Generate a new API key\n\n"
+                    "For more information, see the Firecrawl documentation."
                 )
             self.firecrawl_app = FirecrawlApp(api_key=client_api_key)
 
