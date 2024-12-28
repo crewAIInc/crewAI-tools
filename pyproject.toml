@@ -22,6 +22,7 @@ dependencies = [
     "embedchain>=0.1.114",
     "crewai>=0.86.0",
     "scrapegraph-py>=1.8.0",
+    "serpapi>=0.1.5",
 ]
 readme = "README.md"
 
