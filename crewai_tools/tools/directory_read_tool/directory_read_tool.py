@@ -9,8 +9,6 @@ from ..base_tool import BaseTool
 class FixedDirectoryReadToolSchema(BaseModel):
     """Input for DirectoryReadTool."""
 
-    pass
-
 
 class DirectoryReadToolSchema(FixedDirectoryReadToolSchema):
     """Input for DirectoryReadTool."""

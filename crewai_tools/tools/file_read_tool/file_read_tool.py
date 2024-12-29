@@ -8,8 +8,6 @@ from ..base_tool import BaseTool
 class FixedFileReadToolSchema(BaseModel):
     """Input for FileReadTool."""
 
-    pass
-
 
 class FileReadToolSchema(FixedFileReadToolSchema):
     """Input for FileReadTool."""

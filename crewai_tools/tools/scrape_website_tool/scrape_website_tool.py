@@ -11,8 +11,6 @@ from ..base_tool import BaseTool
 class FixedScrapeWebsiteToolSchema(BaseModel):
     """Input for ScrapeWebsiteTool."""
 
-    pass
-
 
 class ScrapeWebsiteToolSchema(FixedScrapeWebsiteToolSchema):
     """Input for ScrapeWebsiteTool."""

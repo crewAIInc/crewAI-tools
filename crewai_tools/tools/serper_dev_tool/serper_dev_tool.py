@@ -42,7 +42,6 @@ class SerperDevTool(BaseTool):
         self,
         **kwargs: Any,
     ) -> Any:
-
         search_query = kwargs.get("search_query") or kwargs.get("query")
         save_file = kwargs.get("save_file", self.save_file)
         n_results = kwargs.get("n_results", self.n_results)

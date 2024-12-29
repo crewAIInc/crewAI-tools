@@ -1,7 +1,6 @@
 import time
 from typing import Any, Optional, Type
 
-from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -12,8 +11,6 @@ from ..base_tool import BaseTool
 
 class FixedSeleniumScrapingToolSchema(BaseModel):
     """Input for SeleniumScrapingTool."""
-
-    pass
 
 
 class SeleniumScrapingToolSchema(FixedSeleniumScrapingToolSchema):

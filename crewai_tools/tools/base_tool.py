@@ -2,8 +2,9 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional, Type
 
 from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, ConfigDict, Field, validator
+from pydantic import BaseModel
 from pydantic import BaseModel as PydanticBaseModel
+from pydantic import ConfigDict, Field, validator
 
 
 class BaseTool(BaseModel, ABC):

@@ -11,9 +11,7 @@ class BrowserbaseLoadToolSchema(BaseModel):
 
 class BrowserbaseLoadTool(BaseTool):
     name: str = "Browserbase web load tool"
-    description: str = (
-        "Load webpages url in a headless browser using Browserbase and return the contents"
-    )
+    description: str = "Load webpages url in a headless browser using Browserbase and return the contents"
     args_schema: Type[BaseModel] = BrowserbaseLoadToolSchema
     api_key: Optional[str] = None
     project_id: Optional[str] = None
