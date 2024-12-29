@@ -1,3 +1,4 @@
+from .brave_search_tool.brave_search_tool import BraveSearchTool
 from .browserbase_load_tool.browserbase_load_tool import BrowserbaseLoadTool
 from .code_docs_search_tool.code_docs_search_tool import CodeDocsSearchTool
 from .code_interpreter_tool.code_interpreter_tool import CodeInterpreterTool
@@ -20,6 +21,7 @@ from .firecrawl_scrape_website_tool.firecrawl_scrape_website_tool import (
 from .firecrawl_search_tool.firecrawl_search_tool import FirecrawlSearchTool
 from .github_search_tool.github_search_tool import GithubSearchTool
 from .json_search_tool.json_search_tool import JSONSearchTool
+from .linkup_search_tool.linkup_search_tool import LinkupSearchTool
 from .llamaindex_tool.llamaindex_tool import LlamaIndexTool
 from .mdx_seach_tool.mdx_search_tool import MDXSearchTool
 from .multion_tool.multion_tool import MultiOnTool
@@ -32,10 +34,16 @@ from .scrape_element_from_website.scrape_element_from_website import (
     ScrapeElementFromWebsiteTool,
 )
 from .scrape_website_tool.scrape_website_tool import ScrapeWebsiteTool
+from .scrapegraph_scrape_tool.scrapegraph_scrape_tool import (
+    ScrapeGraphScrapeTool,
+    ScrapegraphScrapeToolSchema,
+)
 from .scrapfly_scrape_website_tool.scrapfly_scrape_website_tool import (
     ScrapflyScrapeWebsiteTool,
 )
 from .selenium_scraping_tool.selenium_scraping_tool import SeleniumScrapingTool
+from .serpapi_tool.serpapi_google_search_tool import SerpApiGoogleSearchTool
+from .serpapi_tool.serpapi_google_shopping_tool import SerpApiGoogleShoppingTool
 from .serper_dev_tool.serper_dev_tool import SerperDevTool
 from .serply_api_tool.serply_job_search_tool import SerplyJobSearchTool
 from .serply_api_tool.serply_news_search_tool import SerplyNewsSearchTool
@@ -45,6 +53,7 @@ from .serply_api_tool.serply_webpage_to_markdown_tool import SerplyWebpageToMark
 from .spider_tool.spider_tool import SpiderTool
 from .txt_search_tool.txt_search_tool import TXTSearchTool
 from .vision_tool.vision_tool import VisionTool
+from .weaviate_tool.vector_search import WeaviateVectorSearchTool
 from .website_search.website_search_tool import WebsiteSearchTool
 from .xml_search_tool.xml_search_tool import XMLSearchTool
 from .youtube_channel_search_tool.youtube_channel_search_tool import (
