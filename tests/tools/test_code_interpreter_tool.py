@@ -11,7 +11,7 @@ class TestCodeInterpreterTool(unittest.TestCase):
     def test_run_code_in_docker(self, docker_mock):
         tool = CodeInterpreterTool()
         code = "print('Hello, World!')"
-        libraries_used = "numpy,pandas"
+        libraries_used = ["numpy", "pandas"]
         expected_output = "Hello, World!\n"
 
         docker_mock.from_env().containers.run().exec_run().exit_code = 0
@@ -26,7 +26,7 @@ class TestCodeInterpreterTool(unittest.TestCase):
     def test_run_code_in_docker_with_error(self, docker_mock):
         tool = CodeInterpreterTool()
         code = "print(1/0)"
-        libraries_used = "numpy,pandas"
+        libraries_used = ["numpy", "pandas"]
         expected_output = "Something went wrong while running the code: \nZeroDivisionError: division by zero\n"
 
         docker_mock.from_env().containers.run().exec_run().exit_code = 1
