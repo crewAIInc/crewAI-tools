@@ -31,3 +31,8 @@ Repository = "https://github.com/crewAIInc/crewAI-tools"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[project.optional-dependencies]
+e2b = [
+    "e2b_code_interpreter>=0.1.0",
+]
