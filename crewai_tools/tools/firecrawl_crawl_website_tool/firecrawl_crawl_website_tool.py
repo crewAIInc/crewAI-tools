@@ -1,9 +1,8 @@
 import os
 from typing import TYPE_CHECKING, Any, Dict, Optional, Type
 
-from pydantic import BaseModel, ConfigDict, Field
-
 from crewai.tools import BaseTool
+from pydantic import BaseModel, ConfigDict, Field
 
 # Type checking import
 if TYPE_CHECKING:
@@ -12,6 +11,7 @@ if TYPE_CHECKING:
 
 class FirecrawlCrawlWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
+
 
 class FirecrawlCrawlWebsiteTool(BaseTool):
     model_config = ConfigDict(
@@ -50,7 +50,7 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
         # Allows passing a previously created FirecrawlApp instance
         # or builds a new one with the provided API key
         if not self.firecrawl_app:
-            client_api_key = api_key or os.getenv("FIRECRAWL_API_KEY")    
+            client_api_key = api_key or os.getenv("FIRECRAWL_API_KEY")
             if not client_api_key:
                 raise ValueError(
                     "FIRECRAWL_API_KEY is not set. Please provide it either via the constructor "
@@ -64,10 +64,10 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
         base_url = self.url or url
 
         return self.firecrawl_app.crawl_url(
-            base_url, 
-            params=self.params, 
-            poll_interval=self.poll_interval, 
-            idempotency_key=self.idempotency_key
+            base_url,
+            params=self.params,
+            poll_interval=self.poll_interval,
+            idempotency_key=self.idempotency_key,
         )
 
 
@@ -80,4 +80,3 @@ except ImportError:
     """
     When this tool is not used, then exception can be ignored.
     """
-    pass

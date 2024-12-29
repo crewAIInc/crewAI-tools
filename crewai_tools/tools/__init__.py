@@ -8,6 +8,7 @@ from .dalle_tool.dalle_tool import DallETool
 from .directory_read_tool.directory_read_tool import DirectoryReadTool
 from .directory_search_tool.directory_search_tool import DirectorySearchTool
 from .docx_search_tool.docx_search_tool import DOCXSearchTool
+from .e2b_code_interpreter_tool.code_interpreter_tool import E2BCodeInterpreterTool
 from .exa_tools.exa_search_tool import EXASearchTool
 from .file_read_tool.file_read_tool import FileReadTool
 from .file_writer_tool.file_writer_tool import FileWriterTool
@@ -32,12 +33,17 @@ from .rag.rag_tool import RagTool
 from .scrape_element_from_website.scrape_element_from_website import (
     ScrapeElementFromWebsiteTool,
 )
-from .scrapegraph_scrape_tool.scrapegraph_scrape_tool import ScrapeGraphScrapeTool, ScrapegraphScrapeToolSchema
 from .scrape_website_tool.scrape_website_tool import ScrapeWebsiteTool
+from .scrapegraph_scrape_tool.scrapegraph_scrape_tool import (
+    ScrapeGraphScrapeTool,
+    ScrapegraphScrapeToolSchema,
+)
 from .scrapfly_scrape_website_tool.scrapfly_scrape_website_tool import (
     ScrapflyScrapeWebsiteTool,
 )
 from .selenium_scraping_tool.selenium_scraping_tool import SeleniumScrapingTool
+from .serpapi_tool.serpapi_google_search_tool import SerpApiGoogleSearchTool
+from .serpapi_tool.serpapi_google_shopping_tool import SerpApiGoogleShoppingTool
 from .serper_dev_tool.serper_dev_tool import SerperDevTool
 from .serply_api_tool.serply_job_search_tool import SerplyJobSearchTool
 from .serply_api_tool.serply_news_search_tool import SerplyNewsSearchTool
@@ -47,12 +53,10 @@ from .serply_api_tool.serply_webpage_to_markdown_tool import SerplyWebpageToMark
 from .spider_tool.spider_tool import SpiderTool
 from .txt_search_tool.txt_search_tool import TXTSearchTool
 from .vision_tool.vision_tool import VisionTool
+from .weaviate_tool.vector_search import WeaviateVectorSearchTool
 from .website_search.website_search_tool import WebsiteSearchTool
 from .xml_search_tool.xml_search_tool import XMLSearchTool
 from .youtube_channel_search_tool.youtube_channel_search_tool import (
     YoutubeChannelSearchTool,
 )
 from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSearchTool
-from .weaviate_tool.vector_search import WeaviateVectorSearchTool
-from .serpapi_tool.serpapi_google_search_tool import SerpApiGoogleSearchTool
-from .serpapi_tool.serpapi_google_shopping_tool import SerpApiGoogleShoppingTool

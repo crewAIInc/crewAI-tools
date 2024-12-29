@@ -1,10 +1,10 @@
-import os
 import json
-import weaviate
-from pydantic import BaseModel, Field
-from typing import Type, Optional
-from crewai.tools import BaseTool
+import os
+from typing import Optional, Type
 
+import weaviate
+from crewai.tools import BaseTool
+from pydantic import BaseModel, Field
 from weaviate.classes.config import Configure, Vectorizers
 from weaviate.classes.init import Auth
 

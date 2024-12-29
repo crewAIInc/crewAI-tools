@@ -5,6 +5,7 @@ description = "Set of tools for the crewAI framework"
 authors = [
     { name = "João Moura", email = "joaomdmoura@mgail.com" },
 ]
+readme = "README.md"
 requires-python = ">=3.10,<=3.13"
 dependencies = [
     "pydantic>=2.6.1",
@@ -24,7 +25,6 @@ dependencies = [
     "scrapegraph-py>=1.8.0",
     "serpapi>=0.1.5",
 ]
-readme = "README.md"
 
 [project.urls]
 Homepage = "https://crewai.com"
@@ -37,6 +37,9 @@ Documentation = "https://docs.crewai.com"
 [project.optional-dependencies]
 weaviate-client = [
     "weaviate-client>=4.9.6",
+]
+e2b = [
+    "e2b_code_interpreter>=0.1.0",
 ]
 
 [build-system]

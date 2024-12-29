@@ -1,0 +1,69 @@
+import json
+from typing import Optional, Type
+
+from crewai.tools import BaseTool
+from e2b_code_interpreter import Sandbox
+from pydantic import BaseModel, Field
+
+
+class E2BCodeInterpreterSchema(BaseModel):
+    """Input schema for the CodeInterpreterTool, used by the agent."""
+
+    code: str = Field(
+        ...,
+        description="Python3 code used to run in the Jupyter notebook cell. Non-standard packages are installed by appending !pip install [packagenames] and the Python code in one single code block.",
+    )
+
+
+class E2BCodeInterpreterTool(BaseTool):
+    """
+    This is a tool that runs arbitrary code in a Python Jupyter notebook.
+    It uses E2B to run the notebook in a secure cloud sandbox.
+    It requires an E2B_API_KEY to create a sandbox.
+    """
+
+    name: str = "code_interpreter"
+    description: str = "Execute Python code in a Jupyter notebook cell and return any rich data (eg charts), stdout, stderr, and errors."
+    args_schema: Type[BaseModel] = E2BCodeInterpreterSchema
+    _sandbox: Sandbox | None = None
+
+    def __init__(
+        self,
+        template: Optional[str] = None,
+        timeout: Optional[int] = None,
+        api_key: Optional[str] = None,
+        request_timeout: Optional[float] = None,
+        **kwargs,
+    ):
+        # Call the superclass's init method
+        super().__init__(**kwargs)
+
+        # Initialize the sandbox
+        self._sandbox = Sandbox(
+            template=template,
+            timeout=timeout,
+            api_key=api_key,
+            request_timeout=request_timeout,
+        )
+
+    def _run(self, code: str) -> str:
+        # Execute the code using the sandbox
+        execution = self._sandbox.run_code(code)
+
+        # Extract relevant execution details
+        result = {
+            "results": [str(execution.text)],
+            "stdout": execution.stdout or "",
+            "stderr": execution.stderr or "",
+            "error": str(execution.error or ""),
+        }
+
+        # Convert the result dictionary to a JSON string since CrewAI expects a string output
+        content = json.dumps(result, indent=2)
+
+        return content
+
+    def close(self):
+        # Close the sandbox when done
+        if self._sandbox:
+            self._sandbox.close()

@@ -2,10 +2,10 @@ import importlib.util
 import os
 from typing import List, Optional, Type
 
-from docker import from_env as docker_from_env
-from docker.models.containers import Container
-from docker.errors import ImageNotFound, NotFound
 from crewai.tools import BaseTool
+from docker import from_env as docker_from_env
+from docker.errors import ImageNotFound, NotFound
+from docker.models.containers import Container
 from pydantic import BaseModel, Field
 
 
@@ -30,12 +30,14 @@ class CodeInterpreterTool(BaseTool):
     default_image_tag: str = "code-interpreter:latest"
     code: Optional[str] = None
     user_dockerfile_path: Optional[str] = None
-    user_docker_base_url: Optional[str] = None 
+    user_docker_base_url: Optional[str] = None
     unsafe_mode: bool = False
 
     @staticmethod
-    def _get_installed_package_path():
+    def _get_installed_package_path() -> str:
         spec = importlib.util.find_spec("crewai_tools")
+        if spec is None or spec.origin is None:
+            raise ImportError("Could not find crewai_tools package")
         return os.path.dirname(spec.origin)
 
     def _verify_docker_image(self) -> None:
@@ -43,7 +45,13 @@ class CodeInterpreterTool(BaseTool):
         Verify if the Docker image is available. Optionally use a user-provided Dockerfile.
         """
 
-        client = docker_from_env() if self.user_docker_base_url == None else docker.DockerClient(base_url=self.user_docker_base_url)
+        from docker import DockerClient
+
+        client = (
+            docker_from_env()
+            if self.user_docker_base_url == None
+            else DockerClient(base_url=self.user_docker_base_url)
+        )
 
         try:
             client.images.get(self.default_image_tag)
@@ -76,9 +84,7 @@ class CodeInterpreterTool(BaseTool):
         else:
             return self.run_code_in_docker(code, libraries_used)
 
-    def _install_libraries(
-        self, container: Container, libraries: List[str]
-    ) -> None:
+    def _install_libraries(self, container: Container, libraries: List[str]) -> None:
         """
         Install missing libraries in the Docker container
         """
