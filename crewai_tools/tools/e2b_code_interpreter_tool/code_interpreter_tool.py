@@ -1,7 +1,7 @@
 import json
 from typing import Optional, Type
 
-from e2b_code_interpreter import CodeInterpreter
+from e2b_code_interpreter import Sandbox
 from pydantic import BaseModel, Field
 
 from crewai_tools import BaseTool
@@ -26,7 +26,7 @@ class E2BCodeInterpreterTool(BaseTool):
     name: str = "code_interpreter"
     description: str = "Execute Python code in a Jupyter notebook cell and return any rich data (eg charts), stdout, stderr, and errors."
     args_schema: Type[BaseModel] = E2BCodeInterpreterSchema
-    _code_interpreter_tool: CodeInterpreter | None = None
+    _sandbox: Sandbox | None = None
 
     def __init__(
         self,
@@ -39,8 +39,8 @@ class E2BCodeInterpreterTool(BaseTool):
         # Call the superclass's init method
         super().__init__(**kwargs)
 
-        # Initialize the code interpreter tool
-        self._code_interpreter_tool = CodeInterpreter(
+        # Initialize the sandbox
+        self._sandbox = Sandbox(
             template=template,
             timeout=timeout,
             api_key=api_key,
@@ -48,15 +48,15 @@ class E2BCodeInterpreterTool(BaseTool):
         )
 
     def _run(self, code: str) -> str:
-        # Execute the code using the code interpreter
-        execution = self._code_interpreter_tool.notebook.exec_cell(code)
+        # Execute the code using the sandbox
+        execution = self._sandbox.run_code(code)
 
         # Extract relevant execution details
         result = {
-            "results": [str(item) for item in execution.results],
-            "stdout": execution.logs.stdout,
-            "stderr": execution.logs.stderr,
-            "error": str(execution.error),
+            "results": [str(execution.text)],
+            "stdout": execution.stdout or "",
+            "stderr": execution.stderr or "",
+            "error": str(execution.error or ""),
         }
 
         # Convert the result dictionary to a JSON string since CrewAI expects a string output
@@ -65,5 +65,6 @@ class E2BCodeInterpreterTool(BaseTool):
         return content
 
     def close(self):
-        # Close the interpreter tool when done
-        self._code_interpreter_tool.kill()
+        # Close the sandbox when done
+        if self._sandbox:
+            self._sandbox.close()
