@@ -29,7 +29,6 @@ class E2BCodeInterpreterTool(BaseTool):
         self,
         template: Optional[str] = None,
         timeout: Optional[int] = None,
-        envs: Optional[Dict[str, str]] = None,
         api_key: Optional[str] = None,
         request_timeout: Optional[float] = None,
         **kwargs,
@@ -41,7 +40,6 @@ class E2BCodeInterpreterTool(BaseTool):
         self._code_interpreter_tool = CodeInterpreter(
             template=template,
             timeout=timeout,
-            envs=envs,
             api_key=api_key,
             request_timeout=request_timeout,
         )
