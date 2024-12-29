@@ -4,7 +4,7 @@ from typing import Optional, Type
 from e2b_code_interpreter import Sandbox
 from pydantic import BaseModel, Field
 
-from crewai_tools import BaseTool
+from ..base_tool import BaseTool
 
 
 class E2BCodeInterpreterSchema(BaseModel):
