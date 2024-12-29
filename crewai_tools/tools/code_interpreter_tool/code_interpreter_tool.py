@@ -3,6 +3,8 @@ import os
 from typing import List, Optional, Type
 
 import docker
+from docker.errors import ImageNotFound, NotFound
+from docker.models.containers import Container
 from pydantic import BaseModel, Field
 
 from crewai_tools.tools.base_tool import BaseTool
@@ -31,8 +33,10 @@ class CodeInterpreterTool(BaseTool):
     user_dockerfile_path: Optional[str] = None
 
     @staticmethod
-    def _get_installed_package_path():
+    def _get_installed_package_path() -> str:
         spec = importlib.util.find_spec("crewai_tools")
+        if spec is None or spec.origin is None:
+            raise ImportError("Could not find crewai_tools package")
         return os.path.dirname(spec.origin)
 
     def _verify_docker_image(self) -> None:
@@ -44,7 +48,7 @@ class CodeInterpreterTool(BaseTool):
         try:
             client.images.get(self.default_image_tag)
 
-        except docker.errors.ImageNotFound:
+        except ImageNotFound:
             if self.user_dockerfile_path and os.path.exists(self.user_dockerfile_path):
                 dockerfile_path = self.user_dockerfile_path
             else:
@@ -68,16 +72,14 @@ class CodeInterpreterTool(BaseTool):
         libraries_used = kwargs.get("libraries_used", [])
         return self.run_code_in_docker(code, libraries_used)
 
-    def _install_libraries(
-        self, container: docker.models.containers.Container, libraries: List[str]
-    ) -> None:
+    def _install_libraries(self, container: Container, libraries: List[str]) -> None:
         """
         Install missing libraries in the Docker container
         """
         for library in libraries:
             container.exec_run(f"pip install {library}")
 
-    def _init_docker_container(self) -> docker.models.containers.Container:
+    def _init_docker_container(self) -> Container:
         container_name = "code-interpreter"
         client = docker.from_env()
         current_path = os.getcwd()
@@ -87,7 +89,7 @@ class CodeInterpreterTool(BaseTool):
             existing_container = client.containers.get(container_name)
             existing_container.stop()
             existing_container.remove()
-        except docker.errors.NotFound:
+        except NotFound:
             pass  # Container does not exist, no need to remove
 
         return client.containers.run(
