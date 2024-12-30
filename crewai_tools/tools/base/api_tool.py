@@ -5,6 +5,8 @@ from typing import Optional
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field, SecretStr
 
+from crewai_tools.tools.base.config.env_config import env_config
+
 
 class APIKeyConfig(BaseModel):
     """Configuration for API keys with secure handling."""
@@ -32,23 +34,18 @@ class APIBasedTool(BaseTool):
     def _validate_and_set_api_key(self) -> None:
         """Securely validate and set API key."""
         api_key = os.getenv(self.api_key_config.env_var)
+        error = env_config.validate_var(self.api_key_config.env_var)
 
-        if not api_key:
+        if error:
+            # Use a generic error message for API key validation failures
             raise ValueError(
-                f"Missing API key. Please set the {self.api_key_config.env_var} environment variable."
-            )
-
-        if len(api_key) < self.api_key_config.min_length:
-            raise ValueError(
-                f"API key length below minimum requirement. Please check your {self.api_key_config.env_var} configuration."
+                "API key validation failed. Please check your configuration and ensure the key meets all requirements."
             )
 
         if self.api_key_config.key_prefix and not api_key.startswith(
             self.api_key_config.key_prefix
         ):
-            raise ValueError(
-                f"Invalid API key format. Please check your {self.api_key_config.env_var} configuration."
-            )
+            raise ValueError("Invalid API key format. Please check your configuration.")
 
         self._api_key = SecretStr(api_key)
 
