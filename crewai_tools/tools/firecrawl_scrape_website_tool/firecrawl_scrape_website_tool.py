@@ -10,16 +10,17 @@ if TYPE_CHECKING:
 
 class FirecrawlScrapeWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
-    page_options: Optional[Dict[str, Any]] = Field(
-        default=None, description="Options for page scraping"
-    )
-    extractor_options: Optional[Dict[str, Any]] = Field(
-        default=None, description="Options for data extraction"
-    )
-    timeout: Optional[int] = Field(
-        default=None,
-        description="Timeout in milliseconds for the scraping operation. The default value is 30000.",
-    )
+    # TODO: Add back in after fixing issue with passing in dicts. Currently, we're passing in string representations of dicts.
+    # page_options: Optional[Dict[str, Any]] = Field(
+    #     default=None, description="Options for page scraping"
+    # )
+    # extractor_options: Optional[Dict[str, Any]] = Field(
+    #     default=None, description="Options for data extraction"
+    # )
+    # timeout: Optional[int] = Field(
+    #     default=None,
+    #     description="Timeout in milliseconds for the scraping operation. The default value is 30000.",
+    # )
 
 
 class FirecrawlScrapeWebsiteTool(BaseTool):
@@ -46,23 +47,23 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
     def _run(
         self,
         url: str,
-        page_options: Optional[Dict[str, Any]] = None,
-        extractor_options: Optional[Dict[str, Any]] = None,
-        timeout: Optional[int] = None,
+        # page_options: Optional[Dict[str, Any]] = None,
+        # extractor_options: Optional[Dict[str, Any]] = None,
+        # timeout: Optional[int] = None,
     ):
-        if page_options is None:
-            page_options = {}
-        if extractor_options is None:
-            extractor_options = {}
-        if timeout is None:
-            timeout = 30000
+        # if page_options is None:
+        #     page_options = {}
+        # if extractor_options is None:
+        #     extractor_options = {}
+        # if timeout is None:
+        #     timeout = 30000
 
-        options = {
-            "pageOptions": page_options,
-            "extractorOptions": extractor_options,
-            "timeout": timeout,
-        }
-        return self.firecrawl.scrape_url(url, options)
+        # options = {
+        #     "pageOptions": page_options,
+        #     "extractorOptions": extractor_options,
+        #     "timeout": timeout,
+        # }
+        return self.firecrawl.scrape_url(url)
 
 
 try:
