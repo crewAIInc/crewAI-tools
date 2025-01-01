@@ -109,7 +109,7 @@ source .venv/bin/activate
 **Setting Up Pre-commit Hooks:**
 
 ```bash
-pre-commit install
+uv run pre-commit install
 ```
 
 **Running Tests:**
