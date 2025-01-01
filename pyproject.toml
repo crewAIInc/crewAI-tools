@@ -44,3 +44,8 @@ requires = [
     "hatchling",
 ]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.0.1",
+]
