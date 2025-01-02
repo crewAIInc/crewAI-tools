@@ -1,10 +1,10 @@
-import os
 from typing import Any, Optional, Type
 from urllib.parse import urlencode
 
 import requests
-from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
+
+from crewai_tools.tools.serply_api_tool.serply_base_tool import SerplyBaseTool
 
 
 class SerplyWebSearchToolSchema(BaseModel):
@@ -15,7 +15,7 @@ class SerplyWebSearchToolSchema(BaseModel):
     )
 
 
-class SerplyWebSearchTool(BaseTool):
+class SerplyWebSearchTool(SerplyBaseTool):
     name: str = "Google Search"
     description: str = "A tool to perform Google search with a search_query."
     args_schema: Type[BaseModel] = SerplyWebSearchToolSchema
@@ -23,9 +23,7 @@ class SerplyWebSearchTool(BaseTool):
     hl: Optional[str] = "us"
     limit: Optional[int] = 10
     device_type: Optional[str] = "desktop"
-    proxy_location: Optional[str] = "US"
     query_payload: Optional[dict] = {}
-    headers: Optional[dict] = {}
 
     def __init__(
         self,
@@ -56,12 +54,8 @@ class SerplyWebSearchTool(BaseTool):
             "gl": proxy_location.upper(),
             "hl": hl.lower(),
         }
-        self.headers = {
-            "X-API-KEY": os.environ["SERPLY_API_KEY"],
-            "X-User-Agent": device_type,
-            "User-Agent": "crew-tools",
-            "X-Proxy-Location": proxy_location,
-        }
+        self._headers = self.headers
+        self._headers["X-User-Agent"] = device_type
 
     def _run(
         self,

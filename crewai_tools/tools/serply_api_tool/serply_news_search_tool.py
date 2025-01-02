@@ -1,10 +1,10 @@
-import os
 from typing import Any, Optional, Type
 from urllib.parse import urlencode
 
 import requests
-from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
+
+from crewai_tools.tools.serply_api_tool.serply_base_tool import SerplyBaseTool
 
 
 class SerplyNewsSearchToolSchema(BaseModel):
@@ -15,13 +15,12 @@ class SerplyNewsSearchToolSchema(BaseModel):
     )
 
 
-class SerplyNewsSearchTool(BaseTool):
+class SerplyNewsSearchTool(SerplyBaseTool):
     name: str = "News Search"
     description: str = "A tool to perform News article search with a search_query."
     args_schema: Type[BaseModel] = SerplyNewsSearchToolSchema
     search_url: str = "https://api.serply.io/v1/news/"
-    proxy_location: Optional[str] = "US"
-    headers: Optional[dict] = {}
+    # Headers and proxy_location are handled by SerplyBaseTool
     limit: Optional[int] = 10
 
     def __init__(
@@ -35,11 +34,7 @@ class SerplyNewsSearchTool(BaseTool):
         super().__init__(**kwargs)
         self.limit = limit
         self.proxy_location = proxy_location
-        self.headers = {
-            "X-API-KEY": os.environ["SERPLY_API_KEY"],
-            "User-Agent": "crew-tools",
-            "X-Proxy-Location": proxy_location,
-        }
+        # Headers are handled by SerplyBaseTool
 
     def _run(
         self,

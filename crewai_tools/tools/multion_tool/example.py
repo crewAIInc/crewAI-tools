@@ -1,11 +1,15 @@
-import os
+"""Example usage of MultiOnTool with secure API key handling."""
 
 from crewai import Agent, Crew, Task
 from multion_tool import MultiOnTool
 
-os.environ["OPENAI_API_KEY"] = "Your Key"
+# Make sure to set these environment variables before running:
+# export OPENAI_API_KEY=your_openai_key
+# export MULTION_API_KEY=your_multion_key
 
-multion_browse_tool = MultiOnTool(api_key="Your Key")
+
+# Initialize the tool - it will automatically use MULTION_API_KEY from environment
+multion_browse_tool = MultiOnTool()
 
 # Create a new agent
 Browser = Agent(

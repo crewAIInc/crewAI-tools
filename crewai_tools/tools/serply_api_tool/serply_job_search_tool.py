@@ -1,11 +1,10 @@
-import os
-from typing import Any, Optional, Type
+from typing import Any, Type
 from urllib.parse import urlencode
 
 import requests
 from pydantic import BaseModel, Field
 
-from crewai_tools.tools.rag.rag_tool import RagTool
+from crewai_tools.tools.serply_api_tool.serply_base_tool import SerplyBaseTool
 
 
 class SerplyJobSearchToolSchema(BaseModel):
@@ -17,27 +16,20 @@ class SerplyJobSearchToolSchema(BaseModel):
     )
 
 
-class SerplyJobSearchTool(RagTool):
+class SerplyJobSearchTool(SerplyBaseTool):
     name: str = "Job Search"
     description: str = (
         "A tool to perform to perform a job search in the US with a search_query."
     )
     args_schema: Type[BaseModel] = SerplyJobSearchToolSchema
     request_url: str = "https://api.serply.io/v1/job/search/"
-    proxy_location: Optional[str] = "US"
     """
         proxy_location: (str): Where to get jobs, specifically for a specific country results.
             - Currently only supports US
     """
-    headers: Optional[dict] = {}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.headers = {
-            "X-API-KEY": os.environ["SERPLY_API_KEY"],
-            "User-Agent": "crew-tools",
-            "X-Proxy-Location": self.proxy_location,
-        }
 
     def _run(
         self,

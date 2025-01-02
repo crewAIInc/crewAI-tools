@@ -1,18 +1,16 @@
 import datetime
 import json
-import os
 import logging
 from typing import Any, Type
 
 import requests
-from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 def _save_results_to_file(content: str) -> None:
     """Saves the search results to a file."""
@@ -34,7 +32,10 @@ class SerperDevToolSchema(BaseModel):
     )
 
 
-class SerperDevTool(BaseTool):
+from ..base.api_tool import APIBasedTool, APIKeyConfig
+
+
+class SerperDevTool(APIBasedTool):
     name: str = "Search the internet"
     description: str = (
         "A tool that can be used to search the internet with a search_query. "
@@ -45,6 +46,11 @@ class SerperDevTool(BaseTool):
     n_results: int = 10
     save_file: bool = False
     search_type: str = "search"
+
+    api_key_config: APIKeyConfig = APIKeyConfig(
+        env_var="SERPER_API_KEY",
+        min_length=20,  # Serper API keys are typically longer than this
+    )
 
     def _get_search_url(self, search_type: str) -> str:
         """Get the appropriate endpoint URL based on search type."""
@@ -148,7 +154,7 @@ class SerperDevTool(BaseTool):
         search_url = self._get_search_url(search_type)
         payload = json.dumps({"q": search_query, "num": self.n_results})
         headers = {
-            "X-API-KEY": os.environ["SERPER_API_KEY"],
+            "X-API-KEY": self.get_api_key().get_secret_value(),
             "content-type": "application/json",
         }
 

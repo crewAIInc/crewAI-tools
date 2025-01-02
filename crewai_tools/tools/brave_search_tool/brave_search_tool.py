@@ -1,10 +1,8 @@
 import datetime
-import os
 import time
 from typing import Any, ClassVar, Optional, Type
 
 import requests
-from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
 
@@ -24,7 +22,10 @@ class BraveSearchToolSchema(BaseModel):
     )
 
 
-class BraveSearchTool(BaseTool):
+from ..base.api_tool import APIBasedTool, APIKeyConfig
+
+
+class BraveSearchTool(APIBasedTool):
     """
     BraveSearchTool - A tool for performing web searches using the Brave Search API.
 
@@ -49,12 +50,10 @@ class BraveSearchTool(BaseTool):
     _last_request_time: ClassVar[float] = 0
     _min_request_interval: ClassVar[float] = 1.0  # seconds
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if "BRAVE_API_KEY" not in os.environ:
-            raise ValueError(
-                "BRAVE_API_KEY environment variable is required for BraveSearchTool"
-            )
+    api_key_config: APIKeyConfig = APIKeyConfig(
+        env_var="BRAVE_API_KEY",
+        min_length=32,  # Brave API keys are typically longer than this
+    )
 
     def _run(
         self,
@@ -80,7 +79,7 @@ class BraveSearchTool(BaseTool):
                 payload["country"] = self.country
 
             headers = {
-                "X-Subscription-Token": os.environ["BRAVE_API_KEY"],
+                "X-Subscription-Token": self.get_api_key().get_secret_value(),
                 "Accept": "application/json",
             }
 

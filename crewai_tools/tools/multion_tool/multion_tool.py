@@ -2,10 +2,10 @@
 
 from typing import Any, Optional
 
-from crewai.tools import BaseTool
+from crewai_tools.tools.multion_tool.multion_base_tool import MultiOnBaseTool
 
 
-class MultiOnTool(BaseTool):
+class MultiOnTool(MultiOnBaseTool):
     """Tool to wrap MultiOn Browse Capabilities."""
 
     name: str = "Multion Browse Tool"
@@ -14,16 +14,9 @@ class MultiOnTool(BaseTool):
         """
     multion: Optional[Any] = None
     session_id: Optional[str] = None
-    local: bool = False
-    max_steps: int = 3
 
-    def __init__(
-        self,
-        api_key: Optional[str] = None,
-        local: bool = False,
-        max_steps: int = 3,
-        **kwargs,
-    ):
+    def __init__(self, **kwargs):
+        """Initialize the tool with secure API key handling."""
         super().__init__(**kwargs)
         try:
             from multion.client import MultiOn  # type: ignore
@@ -32,9 +25,9 @@ class MultiOnTool(BaseTool):
                 "`multion` package not found, please run `pip install multion`"
             )
         self.session_id = None
-        self.local = local
-        self.multion = MultiOn(api_key=api_key)
-        self.max_steps = max_steps
+        self.multion = MultiOn(
+            api_key=self.get_api_key().get_secret_value() if not self.local else None
+        )
 
     def _run(
         self,

@@ -1,10 +1,9 @@
-import os
 from typing import Any, Optional, Type
 
 import requests
 from pydantic import BaseModel, Field
 
-from crewai_tools.tools.rag.rag_tool import RagTool
+from crewai_tools.tools.serply_api_tool.serply_base_tool import SerplyBaseTool
 
 
 class SerplyWebpageToMarkdownToolSchema(BaseModel):
@@ -16,15 +15,12 @@ class SerplyWebpageToMarkdownToolSchema(BaseModel):
     )
 
 
-class SerplyWebpageToMarkdownTool(RagTool):
+class SerplyWebpageToMarkdownTool(SerplyBaseTool):
     name: str = "Webpage to Markdown"
-    description: str = (
-        "A tool to perform convert a webpage to markdown to make it easier for LLMs to understand"
-    )
+    description: str = "A tool to perform convert a webpage to markdown to make it easier for LLMs to understand"
     args_schema: Type[BaseModel] = SerplyWebpageToMarkdownToolSchema
     request_url: str = "https://api.serply.io/v1/request"
-    proxy_location: Optional[str] = "US"
-    headers: Optional[dict] = {}
+    # Headers and proxy_location are handled by SerplyBaseTool
 
     def __init__(self, proxy_location: Optional[str] = "US", **kwargs):
         """
@@ -33,11 +29,7 @@ class SerplyWebpageToMarkdownTool(RagTool):
         """
         super().__init__(**kwargs)
         self.proxy_location = proxy_location
-        self.headers = {
-            "X-API-KEY": os.environ["SERPLY_API_KEY"],
-            "User-Agent": "crew-tools",
-            "X-Proxy-Location": proxy_location,
-        }
+        # Headers are handled by SerplyBaseTool
 
     def _run(
         self,
