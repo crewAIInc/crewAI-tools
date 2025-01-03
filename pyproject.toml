@@ -37,6 +37,26 @@ Documentation = "https://docs.crewai.com"
 
 [project.scripts]
 
+[project.optional-dependencies]
+scrapfly-sdk = [
+    "scrapfly-sdk>=0.8.19",
+]
+sqlalchemy = [
+    "sqlalchemy>=2.0.35",
+]
+multion = [
+    "multion>=1.1.0",
+]
+firecrawl-py = [
+    "firecrawl-py>=1.8.0",
+]
+composio-core = [
+    "composio-core>=0.6.11.post1",
+]
+browserbase = [
+    "browserbase>=1.0.5",
+]
+
 
 [build-system]
 requires = [
