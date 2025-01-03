@@ -711,7 +711,7 @@ wheels = [
 
 [[package]]
 name = "crewai-tools"
-version = "0.25.0"
+version = "0.25.1"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -733,14 +733,14 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+linkup = [
+    { name = "linkup-sdk" },
+]
+spider = [
+    { name = "spider-client" },
+]
 weaviate-client = [
     { name = "weaviate-client" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "linkup-sdk" },
-    { name = "spider-client" },
 ]
 
 [package.metadata]
@@ -752,6 +752,7 @@ requires-dist = [
     { name = "docx2txt", specifier = ">=0.8" },
     { name = "embedchain", specifier = ">=0.1.114" },
     { name = "lancedb", specifier = ">=0.5.4" },
+    { name = "linkup-sdk", marker = "extra == 'linkup'", specifier = ">=0.2.1" },
     { name = "openai", specifier = ">=1.12.0" },
     { name = "pydantic", specifier = ">=2.6.1" },
     { name = "pyright", specifier = ">=1.1.350" },
@@ -761,13 +762,8 @@ requires-dist = [
     { name = "scrapegraph-py", specifier = ">=1.8.0" },
     { name = "selenium", specifier = ">=4.18.1" },
     { name = "serpapi", specifier = ">=0.1.5" },
+    { name = "spider-client", marker = "extra == 'spider'", specifier = ">=0.1.25" },
     { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.9.6" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "linkup-sdk", specifier = ">=0.2.1" },
-    { name = "spider-client", specifier = ">=0.1.25" },
 ]
 
 [[package]]
