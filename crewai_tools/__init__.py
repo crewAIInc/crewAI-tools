@@ -29,6 +29,7 @@ from .tools import (
     ScrapeGraphScrapeTool, 
     ScrapegraphScrapeToolSchema
     ScrapeWebsiteTool,
+    ScrapegraphScrapeTool,
     ScrapflyScrapeWebsiteTool,
     SeleniumScrapingTool,
     SerperDevTool,
