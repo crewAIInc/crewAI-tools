@@ -290,11 +290,11 @@ wheels = [
 
 [[package]]
 name = "blinker"
-version = "1.8.2"
+version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/1e/57/a6a1721eff09598fb01f3c7cda070c1b6a0f12d63c83236edf79a440abcc/blinker-1.8.2.tar.gz", hash = "sha256:8f77b09d3bf7c795e969e9486f39c2c5e9c39d4ee07424be2bc594ece9642d83", size = 23161 }
+sdist = { url = "https://files.pythonhosted.org/packages/21/28/9b3f50ce0e048515135495f198351908d99540d69bfdc8c1d15b73dc55ce/blinker-1.9.0.tar.gz", hash = "sha256:b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf", size = 22460 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bb/2a/10164ed1f31196a2f7f3799368a821765c62851ead0e630ab52b8e14b4d0/blinker-1.8.2-py3-none-any.whl", hash = "sha256:1779309f71bf239144b9399d06ae925637cf6634cf6bd131104184531bf67c01", size = 9456 },
+    { url = "https://files.pythonhosted.org/packages/10/cb/f2ad4230dc2eb1a74edf38f1a38b9b52277f75bef262d8908e60d957e13c/blinker-1.9.0-py3-none-any.whl", hash = "sha256:ba0efaa9080b619ff2f3459d1d500c57bddea4a6b424b60a91141db6fd2f08bc", size = 8458 },
 ]
 
 [[package]]
@@ -722,14 +722,14 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.86.0"
+version = "0.95.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
     { name = "auth0-python" },
+    { name = "blinker" },
     { name = "chromadb" },
     { name = "click" },
-    { name = "crewai-tools" },
     { name = "instructor" },
     { name = "json-repair" },
     { name = "jsonref" },
@@ -748,14 +748,14 @@ dependencies = [
     { name = "tomli-w" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/da/23/69b3a6f9b8282e2c576ea9aaa6696d9cae0ac6c4e756aad47d2e4d66018a/crewai-0.86.0.tar.gz", hash = "sha256:30c8a1f185ea47c552e3aa4b4ef128c0cd5ca5e93c4b1454830b517c7bde55ed", size = 7730878 }
+sdist = { url = "https://files.pythonhosted.org/packages/62/4e/325fd0032b065dfbdeb2a366ac6d1e35b2e5b4530eb4f3f15f84f7aad406/crewai-0.95.0.tar.gz", hash = "sha256:31c7c6405e7658f177fac82c47b208d2a9c4bc82ddcc622ba2dc8c6e9963eb17", size = 7753264 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c8/04/3808fe66acabebc5b5dcf00e4f290ae67a817d18ad96b043dd9769f51da8/crewai-0.86.0-py3-none-any.whl", hash = "sha256:ef1ff4b3df85a72eda2d64ea6fcd7f53461271e13822ff4937d0fa41055ef025", size = 192034 },
+    { url = "https://files.pythonhosted.org/packages/cb/fc/286f4af720bccd0337bcb6af61fb68018d45187a0f985419dd7e42af86c4/crewai-0.95.0-py3-none-any.whl", hash = "sha256:e8d65d74a5ca43e1a353d32cca1fe56a06846bf08419bf2bf270e5007379f787", size = 211939 },
 ]
 
 [[package]]
 name = "crewai-tools"
-version = "0.25.8"
+version = "0.25.9"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -804,8 +804,12 @@ requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.12.3" },
     { name = "browserbase", marker = "extra == 'browserbase'", specifier = ">=1.0.5" },
     { name = "chromadb", specifier = ">=0.4.22" },
+<<<<<<< HEAD
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "crewai", specifier = ">=0.86.0" },
+=======
+    { name = "crewai", specifier = ">=0.95.0" },
+>>>>>>> 6531355 (preparing new version)
     { name = "docker", specifier = ">=7.1.0" },
     { name = "docx2txt", specifier = ">=0.8" },
     { name = "embedchain", specifier = ">=0.1.114" },
