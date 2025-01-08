@@ -26,7 +26,8 @@ dependencies = [
     "serpapi>=0.1.5",
     "weaviate-client>=4.9.6",
     "linkup-sdk>=0.2.1",
-    "spider-client>=0.1.25"
+    "spider-client>=0.1.25",
+    "patronus>=0.0.16",
 ]
 
 [project.urls]
