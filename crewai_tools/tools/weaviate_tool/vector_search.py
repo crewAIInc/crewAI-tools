@@ -1,12 +1,23 @@
-import os
 import json
-import weaviate
-from pydantic import BaseModel, Field
-from typing import Type, Optional
-from crewai.tools import BaseTool
+import os
+from typing import Any, Optional, Type
 
-from weaviate.classes.config import Configure, Vectorizers
-from weaviate.classes.init import Auth
+try:
+    import weaviate
+    from weaviate.classes.config import Configure, Vectorizers
+    from weaviate.classes.init import Auth
+
+    WEAVIATE_AVAILABLE = True
+except ImportError:
+    WEAVIATE_AVAILABLE = False
+    weaviate = Any  # type placeholder
+    Configure = Any
+    Vectorizers = Any
+    Auth = Any
+
+from pydantic import BaseModel, Field
+
+from crewai.tools import BaseTool
 
 
 class WeaviateToolSchema(BaseModel):
@@ -25,22 +36,11 @@ class WeaviateVectorSearchTool(BaseTool):
     description: str = "A tool to search the Weaviate database for relevant information on internal documents."
     args_schema: Type[BaseModel] = WeaviateToolSchema
     query: Optional[str] = None
-
-    vectorizer: Optional[Vectorizers] = Field(
-        default=Configure.Vectorizer.text2vec_openai(
-            model="nomic-embed-text",
-        )
-    )
-    generative_model: Optional[str] = Field(
-        default=Configure.Generative.openai(
-            model="gpt-4o",
-        ),
-    )
+    vectorizer: Optional[Vectorizers] = None
+    generative_model: Optional[str] = None
     collection_name: Optional[str] = None
     limit: Optional[int] = Field(default=3)
-    headers: Optional[dict] = Field(
-        default={"X-OpenAI-Api-Key": os.environ["OPENAI_API_KEY"]}
-    )
+    headers: Optional[dict] = None
     weaviate_cluster_url: str = Field(
         ...,
         description="The URL of the Weaviate cluster",
@@ -50,15 +50,31 @@ class WeaviateVectorSearchTool(BaseTool):
         description="The API key for the Weaviate cluster",
     )
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if WEAVIATE_AVAILABLE:
+            openai_api_key = os.environ.get("OPENAI_API_KEY")
+            if not openai_api_key:
+                raise ValueError(
+                    "OPENAI_API_KEY environment variable is required for WeaviateVectorSearchTool and it is mandatory to use the tool."
+                )
+            self.headers = {"X-OpenAI-Api-Key": openai_api_key}
+            self.vectorizer = self.vectorizer or Configure.Vectorizer.text2vec_openai(
+                model="nomic-embed-text",
+            )
+            self.generative_model = (
+                self.generative_model
+                or Configure.Generative.openai(
+                    model="gpt-4o",
+                )
+            )
+
     def _run(self, query: str) -> str:
-        """Search the Weaviate database
-
-        Args:
-            query (str): The query to search retrieve relevant information from the Weaviate database. Pass only the query as a string, not the question.
-
-        Returns:
-            str: The result of the search query
-        """
+        if not WEAVIATE_AVAILABLE:
+            raise ImportError(
+                "The 'weaviate-client' package is required to use the WeaviateVectorSearchTool. "
+                "Please install it with: uv add weaviate-client"
+            )
 
         if not self.weaviate_cluster_url or not self.weaviate_api_key:
             raise ValueError("WEAVIATE_URL or WEAVIATE_API_KEY is not set")

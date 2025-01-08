@@ -8,7 +8,7 @@ try:
 except ImportError:
     LINKUP_AVAILABLE = False
     LinkupClient = Any
-
+    
 class LinkupSearchToolSchema(BaseModel):
     query: str = Field(..., description="The query to search for.")
     depth: str = Field(default="standard", description="Search depth (default is 'standard').")
