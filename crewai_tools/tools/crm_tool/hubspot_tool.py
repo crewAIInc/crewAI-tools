@@ -1,4 +1,4 @@
-from crm_tool import CrmBaseTool, CrmDataType
+from .crm_tool import CrmBaseTool, CrmDataType
 
 
 class HubSpotTool(CrmBaseTool):

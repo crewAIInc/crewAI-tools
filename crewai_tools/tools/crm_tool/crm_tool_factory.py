@@ -1,8 +1,8 @@
 import os
 
-from crm_tool import CrmBaseTool, CrmType
-from hubspot_tool import HubSpotTool
-from salesforce_tool import SalesforceTool
+from .crm_tool import CrmBaseTool, CrmType
+from .hubspot_tool import HubSpotTool
+from .salesforce_tool import SalesforceTool
 
 
 class CrmToolFactory:

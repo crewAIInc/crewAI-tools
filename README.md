@@ -114,6 +114,12 @@ pre-commit install
 
 **Running Tests:**
 
+Create a `.env` file with below content
+```
+BRAVE_API_KEY="YOUR_BRAVE_API_KEY"
+OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
 ```bash
 uv run pytest
 ```
