@@ -22,7 +22,7 @@ class LinkupSearchTool(BaseTool):
     description: str = "A tool to search and retrieve trends or insights using the Linkup API."
     args_schema: Type[BaseModel] = LinkupSearchToolSchema
 
-    def __init__(self, api_key: str, depth: str = "standard", output_type: str = "searchResults", structured_output_source:str = None, **kwargs):
+    def __init__(self, api_key: str, depth: str = "standard", output_type: str = "searchResults", structured_output_schema:str = None, **kwargs):
         super().__init__(**kwargs)
         if not LINKUP_AVAILABLE:
             raise ImportError(
@@ -32,14 +32,14 @@ class LinkupSearchTool(BaseTool):
         self._client = LinkupClient(api_key=api_key)
         self._default_depth = depth
         self._default_output_type = output_type
-        self._default_structured_output_source = structured_output_source
+        self._default_structured_schema = structured_output_schema
 
-    def _run(self, query: str, depth: str = None, output_type: str = None, structured_output_source: str = None, **kwargs) -> Dict[str, Any]:
+    def _run(self, query: str, depth: str = None, output_type: str = None, structured_output_schema: str = None, **kwargs) -> Dict[str, Any]:
         if not isinstance(query, str):
             raise ValueError(f"Query must be a string, but got {type(query)}: {query}")
         depth= self._default_depth
         output_type= self._default_output_type
-        structured_output_source = structured_output_source or self._default_structured_output_source
+        structured_output_schema = structured_output_schema or self._default_structured_schema
 
         """
         Executes a search using the Linkup API.
@@ -59,9 +59,9 @@ class LinkupSearchTool(BaseTool):
         }
 
         if output_type == "structured":
-            if not structured_output_source:
-                raise ValueError("structured_output_source must be provided when output_type is 'structured'.")
-            api_params["structured_output_schema"] = structured_output_source
+            if not structured_output_schema:
+                raise ValueError("structured_output_schema must be provided when output_type is 'structured'.")
+            api_params["structured_output_schema"] = structured_output_schema
         try:
             response = self._client.search(**api_params)
             if output_type == "searchResults":
