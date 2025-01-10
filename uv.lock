@@ -647,6 +647,7 @@ dependencies = [
     { name = "pytest" },
     { name = "pytube" },
     { name = "requests" },
+    { name = "serpapi" },
 ]
 
 [package.optional-dependencies]
@@ -717,6 +718,7 @@ requires-dist = [
     { name = "scrapegraph-py", marker = "extra == 'scrapegraph-py'", specifier = ">=1.9.0" },
     { name = "scrapfly-sdk", marker = "extra == 'scrapfly-sdk'", specifier = ">=0.8.19" },
     { name = "selenium", marker = "extra == 'selenium'", specifier = ">=4.27.1" },
+    { name = "serpapi", specifier = ">=0.1.5" },
     { name = "serpapi", marker = "extra == 'serpapi'", specifier = ">=0.1.5" },
     { name = "spider-client", marker = "extra == 'spider-client'", specifier = ">=0.1.25" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=2.0.35" },
