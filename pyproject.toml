@@ -20,6 +20,7 @@ dependencies = [
     "crewai>=0.95.0",
     "click>=8.1.8",
     "lancedb>=0.5.4",
+    "serpapi>=0.1.5",
 ]
 
 [project.urls]
