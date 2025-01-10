@@ -635,29 +635,24 @@ name = "crewai-tools"
 version = "0.25.9"
 source = { editable = "." }
 dependencies = [
-    { name = "beautifulsoup4" },
     { name = "chromadb" },
+    { name = "click" },
     { name = "crewai" },
     { name = "docker" },
-    { name = "docx2txt" },
     { name = "embedchain" },
     { name = "lancedb" },
-    { name = "linkup-sdk" },
     { name = "openai" },
-    { name = "patronus" },
     { name = "pydantic" },
     { name = "pyright" },
     { name = "pytest" },
     { name = "pytube" },
     { name = "requests" },
-    { name = "scrapegraph-py" },
-    { name = "selenium" },
-    { name = "serpapi" },
-    { name = "spider-client" },
-    { name = "weaviate-client" },
 ]
 
 [package.optional-dependencies]
+beautifulsoup4 = [
+    { name = "beautifulsoup4" },
+]
 browserbase = [
     { name = "browserbase" },
 ]
@@ -667,44 +662,65 @@ composio-core = [
 firecrawl-py = [
     { name = "firecrawl-py" },
 ]
+linkup-sdk = [
+    { name = "linkup-sdk" },
+]
 multion = [
     { name = "multion" },
+]
+patronus = [
+    { name = "patronus" },
+]
+scrapegraph-py = [
+    { name = "scrapegraph-py" },
 ]
 scrapfly-sdk = [
     { name = "scrapfly-sdk" },
 ]
+selenium = [
+    { name = "selenium" },
+]
+serpapi = [
+    { name = "serpapi" },
+]
+spider-client = [
+    { name = "spider-client" },
+]
 sqlalchemy = [
     { name = "sqlalchemy" },
+]
+weaviate-client = [
+    { name = "weaviate-client" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "beautifulsoup4", specifier = ">=4.12.3" },
+    { name = "beautifulsoup4", marker = "extra == 'beautifulsoup4'", specifier = ">=4.12.3" },
     { name = "browserbase", marker = "extra == 'browserbase'", specifier = ">=1.0.5" },
     { name = "chromadb", specifier = ">=0.4.22" },
+    { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "crewai", specifier = ">=0.95.0" },
     { name = "docker", specifier = ">=7.1.0" },
-    { name = "docx2txt", specifier = ">=0.8" },
     { name = "embedchain", specifier = ">=0.1.114" },
     { name = "firecrawl-py", marker = "extra == 'firecrawl-py'", specifier = ">=1.8.0" },
     { name = "lancedb", specifier = ">=0.5.4" },
-    { name = "linkup-sdk", specifier = ">=0.2.1" },
+    { name = "linkup-sdk", marker = "extra == 'linkup-sdk'", specifier = ">=0.2.2" },
     { name = "multion", marker = "extra == 'multion'", specifier = ">=1.1.0" },
     { name = "openai", specifier = ">=1.12.0" },
-    { name = "patronus", specifier = ">=0.0.16" },
+    { name = "patronus", marker = "extra == 'patronus'", specifier = ">=0.0.16" },
     { name = "pydantic", specifier = ">=2.6.1" },
     { name = "pyright", specifier = ">=1.1.350" },
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytube", specifier = ">=15.0.0" },
     { name = "requests", specifier = ">=2.31.0" },
-    { name = "scrapegraph-py", specifier = ">=1.8.0" },
+    { name = "scrapegraph-py", marker = "extra == 'scrapegraph-py'", specifier = ">=1.9.0" },
     { name = "scrapfly-sdk", marker = "extra == 'scrapfly-sdk'", specifier = ">=0.8.19" },
-    { name = "selenium", specifier = ">=4.18.1" },
-    { name = "serpapi", specifier = ">=0.1.5" },
-    { name = "spider-client", specifier = ">=0.1.25" },
+    { name = "selenium", marker = "extra == 'selenium'", specifier = ">=4.27.1" },
+    { name = "serpapi", marker = "extra == 'serpapi'", specifier = ">=0.1.5" },
+    { name = "spider-client", marker = "extra == 'spider-client'", specifier = ">=0.1.25" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=2.0.35" },
-    { name = "weaviate-client", specifier = ">=4.9.6" },
+    { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.10.2" },
 ]
 
 [[package]]
@@ -817,12 +833,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/08/12/9c22a58c0b1e29271
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d5/7c/e9fcff7623954d86bdc17782036cbf715ecab1bec4847c008557affe1ca8/docstring_parser-0.16-py3-none-any.whl", hash = "sha256:bf0a1387354d3691d102edef7ec124f219ef639982d096e26e3b60aeffa90637", size = 36533 },
 ]
-
-[[package]]
-name = "docx2txt"
-version = "0.8"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7d/7d/60ee3f2b16d9bfdfa72e8599470a2c1a5b759cb113c6fe1006be28359327/docx2txt-0.8.tar.gz", hash = "sha256:2c06d98d7cfe2d3947e5760a57d924e3ff07745b379c8737723922e7009236e5", size = 2814 }
 
 [[package]]
 name = "durationpy"
@@ -2051,15 +2061,15 @@ wheels = [
 
 [[package]]
 name = "linkup-sdk"
-version = "0.2.1"
+version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2e/ba/b06e8f2ca2f0ce255a40ee4505637536acfe83ec997cd8b61bd5cd031513/linkup_sdk-0.2.1.tar.gz", hash = "sha256:b00ba7cb0117358e975d50196501ac49b247509fd236121e40abe40e6a2a3e9a", size = 8918 }
+sdist = { url = "https://files.pythonhosted.org/packages/e3/d1/c7dc8134b7bde694edee036d75fac2ac2c58d0973ab42f64c0d3575dfe46/linkup_sdk-0.2.2.tar.gz", hash = "sha256:00d9ff7e6d41a291314e8876affd66eeeaa3e623fcc9be1b3127ff8b744aa33d", size = 9107 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4f/90/2903b9e2eba501ceb6c6b4fc57bbeddde7e8964921a05d424f5a6125cbd0/linkup_sdk-0.2.1-py3-none-any.whl", hash = "sha256:bf50c88e659c6d9291cbd5e3e99b6a20a14c9b1eb2dc7acca763a3ae6f84b26e", size = 7961 },
+    { url = "https://files.pythonhosted.org/packages/7a/39/d8fea5d03d8137a8f46ecc05d9e9602ebaf3917d2f1ae114c5f7d24700ab/linkup_sdk-0.2.2-py3-none-any.whl", hash = "sha256:23b15e950e2c2023a5cf3c5c7c0188ed3f38889dd7b2e61e08494a953e30c31f", size = 8039 },
 ]
 
 [[package]]
@@ -3011,7 +3021,7 @@ name = "portalocker"
 version = "2.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pywin32", marker = "platform_system == 'Windows'" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ed/d3/c6c64067759e87af98cc668c1cc75171347d0f1577fab7ca3749134e3cd4/portalocker-2.10.1.tar.gz", hash = "sha256:ef1bf844e878ab08aee7e40184156e1151f228f103aa5c6bd0724cc330960f8f", size = 40891 }
 wheels = [
@@ -3916,7 +3926,7 @@ wheels = [
 
 [[package]]
 name = "scrapegraph-py"
-version = "1.8.0"
+version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -3925,9 +3935,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/33/90/2388754061394a6c95fd5ad48cf4550208ce081c99cbc883672d52ccc360/scrapegraph_py-1.8.0.tar.gz", hash = "sha256:e075f6e6012a14a038537d0664609229069d9d2c2956bcbf9362f0c5c48de786", size = 108112 }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/58/90176999dd08572d8b6dd783f4537d222006217877d4e6cb0a01b2d031b1/scrapegraph_py-1.9.0.tar.gz", hash = "sha256:2d5fd0c457037541d646a2a4aaa46d2d8d20b6fba39c0c32f678618e6aac3899", size = 110214 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f7/80/14aeb7ba092cfc6928844a6726855f0c33489107f344e71dd8071f6433ed/scrapegraph_py-1.8.0-py3-none-any.whl", hash = "sha256:279176c972a770bac37a284e0bc25e34793797f30ff24dfba8fbcbfda79c8c88", size = 14460 },
+    { url = "https://files.pythonhosted.org/packages/42/d3/67ac27ae8af5ca0f4e0bb10068a27e074dfc216cf0f5d145cb041469b168/scrapegraph_py-1.9.0-py3-none-any.whl", hash = "sha256:33fd727db8c1a83736b1e790fb416c508f4fd192034b5f22f80c50fdf99a9c4f", size = 14520 },
 ]
 
 [[package]]
@@ -4352,7 +4362,7 @@ name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [
