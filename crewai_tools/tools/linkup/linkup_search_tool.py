@@ -8,6 +8,7 @@ try:
 except ImportError:
     LINKUP_AVAILABLE = False
     LinkupClient = Any
+
 class LinkupSearchToolSchema(BaseModel):
     query: str = Field(..., description="The query to search for.")
 
@@ -22,7 +23,7 @@ class LinkupSearchTool(BaseTool):
     description: str = "A tool to search and retrieve trends or insights using the Linkup API."
     args_schema: Type[BaseModel] = LinkupSearchToolSchema
 
-    def __init__(self, api_key: str, depth: str = "standard", output_type: str = "searchResults", structured_output_schema:str = None, **kwargs):
+    def __init__(self, api_key: str, depth: str, output_type: str, structured_output_schema:str = None, **kwargs):
         super().__init__(**kwargs)
         if not LINKUP_AVAILABLE:
             raise ImportError(
