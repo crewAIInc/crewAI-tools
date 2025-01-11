@@ -1,6 +1,7 @@
 from typing import Callable
 
 import pytest
+from dotenv import load_dotenv
 
 
 class Helpers:
@@ -19,3 +20,9 @@ class Helpers:
 @pytest.fixture
 def helpers():
     return Helpers
+
+
+# Automatically load environment variables from .env
+@pytest.fixture(scope="session", autouse=True)
+def load_env_variables():
+    load_dotenv()
