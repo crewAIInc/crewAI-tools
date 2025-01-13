@@ -65,15 +65,9 @@ class LinkupSearchTool(BaseTool):
             api_params["structured_output_schema"] = structured_output_schema
         try:
             response = self._client.search(**api_params)
-            if output_type == "searchResults":
-                results = [
-                    {"name": result.name, "url": result.url, "content": result.content}
-                    for result in response.results
-                ]
-                return {"success": True, "results": results}
-            elif output_type == "sourcedAnswer":
-                return {"success": True, "answer": response.answer, "sources": response.sources}
+            if output_type == "structured" :
+                return response
             else:
-                return {"success": True, "structuredOutput": response}
+                return {"success": True, **vars(response)}
         except Exception as e:
             return {"success": False, "error": str(e)}
