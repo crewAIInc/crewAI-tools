@@ -57,6 +57,9 @@ composio-core = [
 browserbase = [
     "browserbase>=1.0.5",
 ]
+hyperbrowser = [
+    "hyperbrowser>=0.18.0",
+]
 
 
 [build-system]
