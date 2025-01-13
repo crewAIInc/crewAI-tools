@@ -1,30 +1,30 @@
-from typing import Any, Dict, Optional, Type
+from typing import TYPE_CHECKING, Optional, Type
 
-from pydantic import BaseModel, Field
+from crewai.tools import BaseTool
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
-from crewai_tools.tools.base_tool import BaseTool
+# Type checking import
+if TYPE_CHECKING:
+    from firecrawl import FirecrawlApp
 
 
 class FirecrawlScrapeWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
-    page_options: Optional[Dict[str, Any]] = Field(
-        default=None, description="Options for page scraping"
-    )
-    extractor_options: Optional[Dict[str, Any]] = Field(
-        default=None, description="Options for data extraction"
-    )
     timeout: Optional[int] = Field(
-        default=None,
+        default=30000,
         description="Timeout in milliseconds for the scraping operation. The default value is 30000.",
     )
 
 
 class FirecrawlScrapeWebsiteTool(BaseTool):
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True, validate_assignment=True, frozen=False
+    )
     name: str = "Firecrawl web scrape tool"
-    description: str = "Scrape webpages url using Firecrawl and return the contents"
+    description: str = "Scrape webpages using Firecrawl and return the contents"
     args_schema: Type[BaseModel] = FirecrawlScrapeWebsiteToolSchema
     api_key: Optional[str] = None
-    firecrawl: Optional[Any] = None
+    _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
@@ -35,25 +35,32 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
                 "`firecrawl` package not found, please run `pip install firecrawl-py`"
             )
 
-        self.firecrawl = FirecrawlApp(api_key=api_key)
+        self._firecrawl = FirecrawlApp(api_key=api_key)
 
     def _run(
         self,
         url: str,
-        page_options: Optional[Dict[str, Any]] = None,
-        extractor_options: Optional[Dict[str, Any]] = None,
-        timeout: Optional[int] = None,
+        timeout: Optional[int] = 30000,
     ):
-        if page_options is None:
-            page_options = {}
-        if extractor_options is None:
-            extractor_options = {}
-        if timeout is None:
-            timeout = 30000
-
         options = {
-            "pageOptions": page_options,
-            "extractorOptions": extractor_options,
+            "formats": ["markdown"],
+            "onlyMainContent": True,
+            "includeTags": [],
+            "excludeTags": [],
+            "headers": {},
+            "waitFor": 0,
             "timeout": timeout,
         }
-        return self.firecrawl.scrape_url(url, options)
+        return self._firecrawl.scrape_url(url, options)
+
+
+try:
+    from firecrawl import FirecrawlApp
+
+    # Must rebuild model after class is defined
+    FirecrawlScrapeWebsiteTool.model_rebuild()
+except ImportError:
+    """
+    When this tool is not used, then exception can be ignored.
+    """
+    pass

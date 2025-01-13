@@ -2,10 +2,11 @@ import importlib.util
 import os
 from typing import List, Optional, Type
 
-import docker
+from docker import from_env as docker_from_env
+from docker.models.containers import Container
+from docker.errors import ImageNotFound, NotFound
+from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-
-from crewai_tools.tools.base_tool import BaseTool
 
 
 class CodeInterpreterSchema(BaseModel):
@@ -29,6 +30,8 @@ class CodeInterpreterTool(BaseTool):
     default_image_tag: str = "code-interpreter:latest"
     code: Optional[str] = None
     user_dockerfile_path: Optional[str] = None
+    user_docker_base_url: Optional[str] = None 
+    unsafe_mode: bool = False
 
     @staticmethod
     def _get_installed_package_path():
@@ -39,12 +42,13 @@ class CodeInterpreterTool(BaseTool):
         """
         Verify if the Docker image is available. Optionally use a user-provided Dockerfile.
         """
-        client = docker.from_env()
+
+        client = docker_from_env() if self.user_docker_base_url == None else docker.DockerClient(base_url=self.user_docker_base_url)
 
         try:
             client.images.get(self.default_image_tag)
 
-        except docker.errors.ImageNotFound:
+        except ImageNotFound:
             if self.user_dockerfile_path and os.path.exists(self.user_dockerfile_path):
                 dockerfile_path = self.user_dockerfile_path
             else:
@@ -66,20 +70,24 @@ class CodeInterpreterTool(BaseTool):
     def _run(self, **kwargs) -> str:
         code = kwargs.get("code", self.code)
         libraries_used = kwargs.get("libraries_used", [])
-        return self.run_code_in_docker(code, libraries_used)
+
+        if self.unsafe_mode:
+            return self.run_code_unsafe(code, libraries_used)
+        else:
+            return self.run_code_in_docker(code, libraries_used)
 
     def _install_libraries(
-        self, container: docker.models.containers.Container, libraries: List[str]
+        self, container: Container, libraries: List[str]
     ) -> None:
         """
         Install missing libraries in the Docker container
         """
         for library in libraries:
-            container.exec_run(f"pip install {library}")
+            container.exec_run(["pip", "install", library])
 
-    def _init_docker_container(self) -> docker.models.containers.Container:
+    def _init_docker_container(self) -> Container:
         container_name = "code-interpreter"
-        client = docker.from_env()
+        client = docker_from_env()
         current_path = os.getcwd()
 
         # Check if the container is already running
@@ -87,7 +95,7 @@ class CodeInterpreterTool(BaseTool):
             existing_container = client.containers.get(container_name)
             existing_container.stop()
             existing_container.remove()
-        except docker.errors.NotFound:
+        except NotFound:
             pass  # Container does not exist, no need to remove
 
         return client.containers.run(
@@ -104,8 +112,7 @@ class CodeInterpreterTool(BaseTool):
         container = self._init_docker_container()
         self._install_libraries(container, libraries_used)
 
-        cmd_to_run = f'python3 -c "{code}"'
-        exec_result = container.exec_run(cmd_to_run)
+        exec_result = container.exec_run(["python3", "-c", code])
 
         container.stop()
         container.remove()
@@ -113,3 +120,19 @@ class CodeInterpreterTool(BaseTool):
         if exec_result.exit_code != 0:
             return f"Something went wrong while running the code: \n{exec_result.output.decode('utf-8')}"
         return exec_result.output.decode("utf-8")
+
+    def run_code_unsafe(self, code: str, libraries_used: List[str]) -> str:
+        """
+        Run the code directly on the host machine (unsafe mode).
+        """
+        # Install libraries on the host machine
+        for library in libraries_used:
+            os.system(f"pip install {library}")
+
+        # Execute the code
+        try:
+            exec_locals = {}
+            exec(code, {}, exec_locals)
+            return exec_locals.get("result", "No result variable found.")
+        except Exception as e:
+            return f"An error occurred: {str(e)}"
