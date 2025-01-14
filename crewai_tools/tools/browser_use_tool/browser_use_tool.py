@@ -104,7 +104,7 @@ class BaseBrowserUseTool(BaseTool):
             return "⚠️"
         return "🤷"
 
-    # This method is based on browser_use:0.1.16 prints
+    # This method is based on browser_use:0.1.16 prints, later versions may have different prints
     def _parse_history(self, agent_history_list: AgentHistoryList, max_steps: int) -> str:
         if not agent_history_list or not agent_history_list.history:
             return "Browser did nothing."
