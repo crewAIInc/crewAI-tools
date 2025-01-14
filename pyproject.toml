@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "João Moura", email = "joaomdmoura@gmail.com" },
 ]
-requires-python = ">=3.10,<=3.13"
+requires-python = ">=3.11,<3.13"
 dependencies = [
     "pydantic>=2.6.1",
     "pytest>=8.0.0",
@@ -28,6 +28,7 @@ dependencies = [
     "linkup-sdk>=0.2.1",
     "spider-client>=0.1.25",
     "patronus>=0.0.16",
+    "browser-use (==0.1.16)",
 ]
 
 [project.urls]
