@@ -15,7 +15,7 @@ def main():
     browser_context = BrowserContext(browser=browser)
 
     browser_use_tool = BrowserUseTool(
-        llm=ChatOpenAI(model="gpt-4o-mini"),
+        llm=ChatOpenAI(model="gpt-4o"),
         browser=browser,
         browser_context=browser_context,
     )
@@ -30,7 +30,7 @@ def main():
         tools=[browser_use_tool],
         verbose=True,
         # llm="gemini/gemini-2.0-flash-exp",
-        llm="gpt-4o-mini",
+        llm="gpt-4o",
     )
 
     task = Task(
