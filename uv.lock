@@ -194,6 +194,15 @@ wheels = [
 ]
 
 [[package]]
+name = "atpublic"
+version = "5.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5d/18/b1d247792440378abeeb0853f9daa2a127284b68776af6815990be7fcdb0/atpublic-5.0.tar.gz", hash = "sha256:d5cb6cbabf00ec1d34e282e8ce7cbc9b74ba4cb732e766c24e2d78d1ad7f723f", size = 14646 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6b/03/2cb0e5326e19b7d877bc9c3a7ef436a30a06835b638580d1f5e21a0409ed/atpublic-5.0-py3-none-any.whl", hash = "sha256:b651dcd886666b1042d1e38158a22a4f2c267748f4e97fde94bc492a4a28a3f3", size = 5207 },
+]
+
+[[package]]
 name = "attrs"
 version = "24.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -661,6 +670,7 @@ dependencies = [
     { name = "scrapegraph-py" },
     { name = "selenium" },
     { name = "serpapi" },
+    { name = "snowflake" },
     { name = "spider-client" },
     { name = "weaviate-client" },
 ]
@@ -719,6 +729,7 @@ requires-dist = [
     { name = "scrapfly-sdk", marker = "extra == 'scrapfly-sdk'", specifier = ">=0.8.19" },
     { name = "selenium", specifier = ">=4.18.1" },
     { name = "serpapi", specifier = ">=0.1.5" },
+    { name = "snowflake", specifier = ">=1.0.2" },
     { name = "snowflake-connector-python", marker = "extra == 'snowflake'", specifier = ">=3.12.4" },
     { name = "snowflake-sqlalchemy", marker = "extra == 'snowflake'", specifier = ">=1.7.3" },
     { name = "spider-client", specifier = ">=0.1.25" },
@@ -4088,6 +4099,19 @@ wheels = [
 ]
 
 [[package]]
+name = "snowflake"
+version = "1.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "snowflake-core" },
+    { name = "snowflake-legacy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/80/d1/830929fb7b54586f4ee601f409e80343e16f32b9b579246cd6fa9984bcff/snowflake-1.0.2.tar.gz", hash = "sha256:4009e59af24e444de4a9e9d340fff0979cca8a02a4feee4665da97eb9c76d958", size = 6033 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b6/25/4cbba4da3f9b333d132680a66221d1a101309cce330fa8be38b674ceafd0/snowflake-1.0.2-py3-none-any.whl", hash = "sha256:6bb0fc70aa10234769202861ccb4b091f5e9fb1bbc61a1e708db93baa3f221f4", size = 5623 },
+]
+
+[[package]]
 name = "snowflake-connector-python"
 version = "3.12.4"
 source = { registry = "https://pypi.org/simple" }
@@ -4126,6 +4150,33 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/79/1b/8f5ab15d224d7bf76533c55cfd8ce73b185ce94d84241f0e900739ce3f37/snowflake_connector_python-3.12.4-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:300f0562aeea55e40ee03b45205dbef7b78f5ba2f1787a278c7b807e7d8db22c", size = 2533969 },
     { url = "https://files.pythonhosted.org/packages/6e/d9/2e2fd72e0251691b5c54a219256c455141a2d3c104e411b82de598c62553/snowflake_connector_python-3.12.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a6762a00948f003be55d7dc5de9de690315d01951a94371ec3db069d9303daba", size = 2558052 },
     { url = "https://files.pythonhosted.org/packages/e8/cb/e0ab230ad5adc9932e595bdbec693b2499d446666daf6cb9cae306a41dd2/snowflake_connector_python-3.12.4-cp312-cp312-win_amd64.whl", hash = "sha256:83ca896790a7463b6c8cd42e1a29b8ea197cc920839ae6ee96a467475eab4ec2", size = 916627 },
+]
+
+[[package]]
+name = "snowflake-core"
+version = "1.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "atpublic" },
+    { name = "pydantic" },
+    { name = "python-dateutil" },
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "snowflake-connector-python" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1d/cf/6f91e5b2daaf3df9ae666a65f5ba3938f11a40784e4ada5218ecf154b29a/snowflake_core-1.0.2.tar.gz", hash = "sha256:8bf267ff1efcd17f157432c6e24f6d2eb6c2aeed66f43ab34b215aa76d8edf02", size = 1092618 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/75/3c/ec228b7325b32781081c72254dd0ef793943e853d82616e862e231909c6c/snowflake_core-1.0.2-py3-none-any.whl", hash = "sha256:55c37cf526a0d78dd3359ad96b9ecd7130bbbbc2f5a2fec77bb3da0dac2dc688", size = 1555690 },
+]
+
+[[package]]
+name = "snowflake-legacy"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/94/41/a6211bd2109913eee1506d37865ab13cf9a8cc2faa41833da3d1ffec654b/snowflake_legacy-1.0.0.tar.gz", hash = "sha256:2044661c79ba01841ab279c5e74b994532244c9d103224eba16eb159c8ed6033", size = 4043 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/8c/64f9b5ee0c3f376a733584c480b31addbf2baff7bb41f655e5e3f3719d3b/snowflake_legacy-1.0.0-py3-none-any.whl", hash = "sha256:25f9678f180d7d5f5b60d17f8112f0ee8a7a77b82c67fd599ed6e27bd502be5a", size = 3059 },
 ]
 
 [[package]]
