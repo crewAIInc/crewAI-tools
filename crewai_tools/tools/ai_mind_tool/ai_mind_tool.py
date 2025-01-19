@@ -9,7 +9,6 @@ from pydantic import BaseModel
 
 class AIMindToolConstants:
     MINDS_API_BASE_URL = "https://mdb.ai/"
-    DATASOURCE_NAME_PREFIX = "crwai_ds_"
 
 
 class AIMindToolInputSchema(BaseModel):
@@ -74,7 +73,7 @@ class AIMindTool(BaseTool):
         datasources = []
         for datasource in self.datasources:
             config = DatabaseConfig(
-                name=f"{AIMindToolConstants.DATASOURCE_NAME_PREFIX}_{secrets.token_hex(5)}",
+                name=datasource["name"],
                 engine=datasource["engine"],
                 description=datasource["description"],
                 connection_data=datasource["connection_data"],
