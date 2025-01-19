@@ -9,7 +9,6 @@ from pydantic import BaseModel
 
 class AIMindToolConstants:
     MINDS_API_BASE_URL = "https://mdb.ai/"
-    MIND_NAME_PREFIX = "crwai_mind_"
     DATASOURCE_NAME_PREFIX = "crwai_ds_"
 
 
@@ -33,21 +32,43 @@ class AIMindTool(BaseTool):
     datasources: Optional[List[Dict[str, Any]]] = None
     mind_name: Optional[Text] = None
 
-    def __init__(self, api_key: Optional[Text] = None, **kwargs):
+    def __init__(self, name: Text, api_key: Optional[Text] = None, **kwargs):
         super().__init__(**kwargs)
+        if name is None:
+            raise ValueError("Name of the Mind must be provided.")
+        else:
+            self.mind_name = name
+
         self.api_key = api_key or os.getenv("MINDS_API_KEY")
         if not self.api_key:
-            raise ValueError("API key must be provided either through constructor or MINDS_API_KEY environment variable")
+            raise ValueError("API key must be provided either through constructor or MINDS_API_KEY environment variable.")
 
         try:
             from minds.client import Client  # type: ignore
             from minds.datasources import DatabaseConfig  # type: ignore
+            from minds.exceptions import ObjectNotFound  # type: ignore
         except ImportError:
             raise ImportError(
                 "`minds_sdk` package not found, please run `pip install minds-sdk`"
             )
 
         minds_client = Client(api_key=self.api_key)
+
+        # Check if the Mind already exists.
+        try:
+            # If the Mind already exists, only the name is required.
+            if minds_client.minds.get(self.mind_name) and self.datasources:
+                raise ValueError(
+                    f"The Mind with the name '{self.name}' already exists."
+                    "Only the name is required to initialize an existing Mind."
+                )
+            return
+        except ObjectNotFound:
+            # If the data sources are not provided, raise an error.
+            if not self.datasources:
+                raise ValueError(
+                    "At least one data source should be configured to create a Mind."
+                )
 
         # Convert the datasources to DatabaseConfig objects.
         datasources = []
@@ -60,9 +81,6 @@ class AIMindTool(BaseTool):
                 tables=datasource["tables"],
             )
             datasources.append(config)
-
-        # Generate a random name for the Mind.
-        name = f"{AIMindToolConstants.MIND_NAME_PREFIX}_{secrets.token_hex(5)}"
 
         mind = minds_client.minds.create(
             name=name, datasources=datasources, replace=True
