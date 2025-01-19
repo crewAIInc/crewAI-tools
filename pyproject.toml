@@ -1,6 +1,6 @@
 [project]
 name = "crewai-tools"
-version = "0.25.9"
+version = "0.25.10"
 description = "Set of tools for the crewAI framework"
 readme = "README.md"
 authors = [
@@ -9,7 +9,6 @@ authors = [
 requires-python = ">=3.10,<=3.13"
 dependencies = [
     "pydantic>=2.6.1",
-    "pytest>=8.0.0",
     "lancedb>=0.5.4",
     "openai>=1.12.0",
     "chromadb>=0.4.22",
@@ -26,7 +25,8 @@ dependencies = [
     "serpapi>=0.1.5",
     "weaviate-client>=4.9.6",
     "linkup-sdk>=0.2.1",
-    "spider-client>=0.1.25"
+    "spider-client>=0.1.25",
+    "patronus>=0.0.16",
 ]
 
 [project.urls]
@@ -56,6 +56,14 @@ composio-core = [
 browserbase = [
     "browserbase>=1.0.5",
 ]
+hyperbrowser = [
+    "hyperbrowser>=0.18.0",
+]
+snowflake = [
+    "cryptography>=43.0.3",
+    "snowflake-connector-python>=3.12.4",
+    "snowflake-sqlalchemy>=1.7.3",
+]
 
 
 [build-system]
@@ -63,3 +71,9 @@ requires = [
     "hatchling",
 ]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest-asyncio>=0.25.2",
+    "pytest>=8.0.0",
+]
