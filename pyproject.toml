@@ -56,6 +56,9 @@ composio-core = [
 browserbase = [
     "browserbase>=1.0.5",
 ]
+hyperbrowser = [
+    "hyperbrowser>=0.18.0",
+]
 snowflake = [
     "cryptography>=43.0.3",
     "snowflake-connector-python>=3.12.4",

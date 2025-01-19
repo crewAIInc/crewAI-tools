@@ -675,6 +675,9 @@ composio-core = [
 firecrawl-py = [
     { name = "firecrawl-py" },
 ]
+hyperbrowser = [
+    { name = "hyperbrowser" },
+]
 multion = [
     { name = "multion" },
 ]
@@ -708,6 +711,7 @@ requires-dist = [
     { name = "docx2txt", specifier = ">=0.8" },
     { name = "embedchain", specifier = ">=0.1.114" },
     { name = "firecrawl-py", marker = "extra == 'firecrawl-py'", specifier = ">=1.8.0" },
+    { name = "hyperbrowser", marker = "extra == 'hyperbrowser'", specifier = ">=0.18.0" },
     { name = "lancedb", specifier = ">=0.5.4" },
     { name = "linkup-sdk", specifier = ">=0.2.1" },
     { name = "multion", marker = "extra == 'multion'", specifier = ">=1.1.0" },
@@ -1591,6 +1595,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/cc/3f/2c29224acb2e2df4d2046e4c73ee2662023c58ff5b113c4c1adac0886c43/humanfriendly-10.0.tar.gz", hash = "sha256:6b0b831ce8f15f7300721aa49829fc4e83921a9a301cc7f606be6686a2288ddc", size = 360702 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f0/0f/310fb31e39e2d734ccaa2c0fb981ee41f7bd5056ce9bc29b2248bd569169/humanfriendly-10.0-py2.py3-none-any.whl", hash = "sha256:1697e1a8a8f550fd43c2865cd84542fc175a61dcb779b6fee18cf6b6ccba1477", size = 86794 },
+]
+
+[[package]]
+name = "hyperbrowser"
+version = "0.18.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/57/a2/85e701ff43e314f3d3e549df55a35ca76f0cab669e21cf613985fb346bb3/hyperbrowser-0.18.0.tar.gz", hash = "sha256:eca58d247da3123dc0a95ee68ec2c35d7b10067e85322f91347fea44caa101c9", size = 13168 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a6/3d/431a584503ea88442f18eb4354062ee9ab05c2642f5841846cc87d3b86d0/hyperbrowser-0.18.0-py3-none-any.whl", hash = "sha256:01ea0cf39a3bb96b100e34a3e19b37da4f364d675848bb712bad514979f20aaf", size = 24838 },
 ]
 
 [[package]]
