@@ -8,3 +8,4 @@ test.py
 docs_crew/
 chroma.sqlite3
 venv
+.venv/
