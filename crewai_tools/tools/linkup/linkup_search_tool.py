@@ -6,11 +6,11 @@ import os
 import json
 try:
     from linkup import LinkupClient
-
     LINKUP_AVAILABLE = True
 except ImportError:
     LINKUP_AVAILABLE = False
     LinkupClient = Any
+
 
 class LinkupSearchToolSchema(BaseModel):
     """Input for LinkupBaseTool."""
@@ -18,6 +18,7 @@ class LinkupSearchToolSchema(BaseModel):
     query: str = Field(
         ..., description="The query to search for."
     )
+
 
 class LinkupSearchTool(BaseTool):
     name: str = "Linkup Search Tool"
@@ -40,7 +41,6 @@ class LinkupSearchTool(BaseTool):
         self._default_structured_schema = structured_output_schema
 
     def _run(self, query: str ) :
-
 
         """
         Executes a search using the Linkup API.
