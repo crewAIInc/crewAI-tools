@@ -56,4 +56,4 @@ class LinkupSearchTool(BaseTool):
             if not self.structured_output_schema:
                 raise ValueError("structured_output_schema must be provided when output_type is 'structured'.")
             api_params["structured_output_schema"] = self._default_structured_schema
-            return self._client.search(**api_params)
+        return self._client.search(**api_params)
