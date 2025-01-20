@@ -67,6 +67,14 @@ aimind_tool = AIMindTool(
 aimind_tool.run("How many 3 bedroom houses were sold in 2008?")
 ```
 
+Given below is a list of parameters that can be provided to the `AIMindDataSource` class:
+
+- `name`: The name of the datasource. To re-use an existing datasource, provide the name of the datasource without any other parameters.
+- `description`: A description of the data contained in the datasource.
+- `engine`: The engine (or type) of the datasource. Find a list of supported engines in the link below.
+- `connection_data`: A dictionary containing the connection parameters for the datasource. Find a list of connection parameters for each engine in the link below.
+- `tables`: A list of tables that the data source will use. This is optional and can be omitted if all tables in the data source are to be used.
+
 A list of supported data sources and their connection parameters can be found [here](https://docs.mdb.ai/docs/data_sources).
 
 ```python
