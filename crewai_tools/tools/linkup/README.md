@@ -8,9 +8,7 @@ The `LinkupSearchTool` is a tool designed for integration with the CrewAI framew
 
 ## Features
 
-- Perform API queries to the Linkup platform using customizable parameters (`query`, `depth`, `output_type`).
-- Gracefully handles API errors and provides structured feedback.
-- Returns well-structured results for seamless integration into CrewAI processes.
+- Perform API queries to the Linkup platform using customizable parameters (`query`, `depth`, `output_type`, `structured_output_schema`).
 
 ---
 
