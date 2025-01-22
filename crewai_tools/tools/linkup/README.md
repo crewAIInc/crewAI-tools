@@ -26,11 +26,6 @@ The `LinkupSearchTool` is a tool designed for integration with the CrewAI framew
   pip install 'crewai[tools]'
   ```
 
-2. Create a `.env` file in your project root and add your Linkup API Key:
-   ```plaintext
-   LINKUP_API_KEY=your_linkup_api_key
-   ```
-
 ---
 
 ## Usage
@@ -43,56 +38,58 @@ Here is how to use the `LinkupSearchTool` in a CrewAI project:
    ```python
    from tools.linkup_tools import LinkupSearchTool
    import os
-   from dotenv import load_dotenv
+   import json
 
-   load_dotenv()
+    os.environ["LINKUP_API_KEY"] = "your_linkup_api_key"
+    os.environ["OPENAI_API_KEY"] = "your_openai_api_key"
+    depth = "standard"  # or deep
+    output_type = "sourcedAnswer"  # or searchResults or structured
 
-   linkup_tool = LinkupSearchTool(api_key=os.getenv("LINKUP_API_KEY"))
+    # If output_type = structured, define a structured schema
+    structured_output_schema = {your schema}
+
+    structured_output_schema_json = json.dumps(structured_output_schema)
+
+    # Initialize the Linkup search tool
+
+    linkup_tool = LinkupSearchTool(
+        api_key=os.getenv("LINKUP_API_KEY"),
+        depth=depth,
+        output_type=output_type,
+        structured_output_schema=structured_output_schema_json  # ONLY if output_type = structured
+    )
+
    ```
 
 2. **Set Up an Agent and Task**:
    ```python
-   from crewai import Agent, Task, Crew
+    from crewai import Agent, Task, Crew
 
-   # Define the agent
-   research_agent = Agent(
-       role="Information Researcher",
-       goal="Fetch relevant results from Linkup.",
-       backstory="An expert in online information retrieval...",
-       tools=[linkup_tool],
-       verbose=True
-   )
+    # Create an agent
+    researcher = Agent(
+        role="Market Research Analyst",
+        goal="Provide deep insights using Linkup for AI industry trends.",
+        backstory="An experienced analyst skilled in using advanced tools for market insights.",
+        tools=[linkup_tool],
+        verbose=True, # change to False if you don't want to see execution logs
+    )
 
-   # Define the task
-   search_task = Task(
-       expected_output="A detailed list of Nobel Prize-winning women in physics with their achievements.",
-       description="Search for women who have won the Nobel Prize in Physics.",
-       agent=research_agent
-   )
+    # Define a task
+    research = Task(
+        description="Research the latest trends in the AI industry using the Linkup tool and provide insights.",
+        expected_output="A summary of the top 3 trends with context and relevance to the industry.",
+        agent=researcher,
+    )
 
-   # Create and run the crew
-   crew = Crew(
-       agents=[research_agent],
-       tasks=[search_task]
-   )
 
-   result = crew.kickoff()
-   print(result)
+
+    # Set up and execute the Crew
+    crew = Crew(
+        agents=[researcher],
+        tasks=[research],
+        verbose=True,
+        planning=True, # or False if you don't want to see planning logs
+    )
+    crew.kickoff()
+
    ```
-
-### Advanced Configuration
-
-You can customize the parameters for the `LinkupSearchTool`:
-
-- `query`: The search term or phrase.
-- `depth`: The search depth (`"standard"` by default).
-- `output_type`: The type of output (`"searchResults"` by default).
-
-Example:
-```python
-response = linkup_tool._run(
-    query="Women Nobel Prize Physics",
-    depth="standard",
-    output_type="searchResults"
-)
-```

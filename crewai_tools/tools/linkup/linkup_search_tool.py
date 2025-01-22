@@ -1,9 +1,6 @@
 from typing import Any, Dict, Type
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from crewai.tools import BaseTool
-from crewai import Agent, Task, Crew
-import os
-import json
 try:
     from linkup import LinkupClient
     LINKUP_AVAILABLE = True
