@@ -194,15 +194,6 @@ wheels = [
 ]
 
 [[package]]
-name = "atpublic"
-version = "5.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/5d/18/b1d247792440378abeeb0853f9daa2a127284b68776af6815990be7fcdb0/atpublic-5.0.tar.gz", hash = "sha256:d5cb6cbabf00ec1d34e282e8ce7cbc9b74ba4cb732e766c24e2d78d1ad7f723f", size = 14646 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/6b/03/2cb0e5326e19b7d877bc9c3a7ef436a30a06835b638580d1f5e21a0409ed/atpublic-5.0-py3-none-any.whl", hash = "sha256:b651dcd886666b1042d1e38158a22a4f2c267748f4e97fde94bc492a4a28a3f3", size = 5207 },
-]
-
-[[package]]
 name = "attrs"
 version = "24.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -539,7 +530,7 @@ name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
 wheels = [
@@ -650,32 +641,26 @@ wheels = [
 
 [[package]]
 name = "crewai-tools"
-version = "0.32.0"
+version = "0.32.1"
 source = { editable = "." }
 dependencies = [
-    { name = "beautifulsoup4" },
     { name = "chromadb" },
+    { name = "click" },
     { name = "crewai" },
     { name = "docker" },
-    { name = "docx2txt" },
     { name = "embedchain" },
     { name = "lancedb" },
-    { name = "linkup-sdk" },
     { name = "openai" },
-    { name = "patronus" },
     { name = "pydantic" },
     { name = "pyright" },
     { name = "pytube" },
     { name = "requests" },
-    { name = "scrapegraph-py" },
-    { name = "selenium" },
-    { name = "serpapi" },
-    { name = "snowflake" },
-    { name = "spider-client" },
-    { name = "weaviate-client" },
 ]
 
 [package.optional-dependencies]
+beautifulsoup4 = [
+    { name = "beautifulsoup4" },
+]
 browserbase = [
     { name = "browserbase" },
 ]
@@ -688,53 +673,85 @@ firecrawl-py = [
 hyperbrowser = [
     { name = "hyperbrowser" },
 ]
+linkup-sdk = [
+    { name = "linkup-sdk" },
+]
 multion = [
     { name = "multion" },
 ]
+patronus = [
+    { name = "patronus" },
+]
+scrapegraph-py = [
+    { name = "scrapegraph-py" },
+]
 scrapfly-sdk = [
     { name = "scrapfly-sdk" },
+]
+selenium = [
+    { name = "selenium" },
+]
+serpapi = [
+    { name = "serpapi" },
 ]
 snowflake = [
     { name = "cryptography" },
     { name = "snowflake-connector-python" },
     { name = "snowflake-sqlalchemy" },
 ]
+spider-client = [
+    { name = "spider-client" },
+]
 sqlalchemy = [
     { name = "sqlalchemy" },
+]
+weaviate-client = [
+    { name = "weaviate-client" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "beautifulsoup4", specifier = ">=4.12.3" },
+    { name = "beautifulsoup4", marker = "extra == 'beautifulsoup4'", specifier = ">=4.12.3" },
     { name = "browserbase", marker = "extra == 'browserbase'", specifier = ">=1.0.5" },
     { name = "chromadb", specifier = ">=0.4.22" },
+    { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "crewai", specifier = ">=0.95.0" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "docker", specifier = ">=7.1.0" },
-    { name = "docx2txt", specifier = ">=0.8" },
     { name = "embedchain", specifier = ">=0.1.114" },
     { name = "firecrawl-py", marker = "extra == 'firecrawl-py'", specifier = ">=1.8.0" },
     { name = "hyperbrowser", marker = "extra == 'hyperbrowser'", specifier = ">=0.18.0" },
     { name = "lancedb", specifier = ">=0.5.4" },
-    { name = "linkup-sdk", specifier = ">=0.2.1" },
+    { name = "linkup-sdk", marker = "extra == 'linkup-sdk'", specifier = ">=0.2.2" },
     { name = "multion", marker = "extra == 'multion'", specifier = ">=1.1.0" },
     { name = "openai", specifier = ">=1.12.0" },
-    { name = "patronus", specifier = ">=0.0.16" },
+    { name = "patronus", marker = "extra == 'patronus'", specifier = ">=0.0.16" },
     { name = "pydantic", specifier = ">=2.6.1" },
     { name = "pyright", specifier = ">=1.1.350" },
     { name = "pytube", specifier = ">=15.0.0" },
     { name = "requests", specifier = ">=2.31.0" },
-    { name = "scrapegraph-py", specifier = ">=1.8.0" },
+    { name = "scrapegraph-py", marker = "extra == 'scrapegraph-py'", specifier = ">=1.9.0" },
     { name = "scrapfly-sdk", marker = "extra == 'scrapfly-sdk'", specifier = ">=0.8.19" },
-    { name = "selenium", specifier = ">=4.18.1" },
-    { name = "serpapi", specifier = ">=0.1.5" },
-    { name = "snowflake", specifier = ">=1.0.2" },
+    { name = "selenium", marker = "extra == 'selenium'", specifier = ">=4.27.1" },
+    { name = "serpapi", marker = "extra == 'serpapi'", specifier = ">=0.1.5" },
     { name = "snowflake-connector-python", marker = "extra == 'snowflake'", specifier = ">=3.12.4" },
     { name = "snowflake-sqlalchemy", marker = "extra == 'snowflake'", specifier = ">=1.7.3" },
-    { name = "spider-client", specifier = ">=0.1.25" },
+    { name = "spider-client", marker = "extra == 'spider-client'", specifier = ">=0.1.25" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=2.0.35" },
-    { name = "weaviate-client", specifier = ">=4.9.6" },
+    { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.10.2" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=8.0.0" },
+    { name = "pytest-asyncio", specifier = ">=0.25.2" },
 ]
 
 [[package]]
@@ -847,12 +864,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/08/12/9c22a58c0b1e29271
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d5/7c/e9fcff7623954d86bdc17782036cbf715ecab1bec4847c008557affe1ca8/docstring_parser-0.16-py3-none-any.whl", hash = "sha256:bf0a1387354d3691d102edef7ec124f219ef639982d096e26e3b60aeffa90637", size = 36533 },
 ]
-
-[[package]]
-name = "docx2txt"
-version = "0.8"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7d/7d/60ee3f2b16d9bfdfa72e8599470a2c1a5b759cb113c6fe1006be28359327/docx2txt-0.8.tar.gz", hash = "sha256:2c06d98d7cfe2d3947e5760a57d924e3ff07745b379c8737723922e7009236e5", size = 2814 }
 
 [[package]]
 name = "durationpy"
@@ -1704,6 +1715,15 @@ wheels = [
 ]
 
 [[package]]
+name = "iniconfig"
+version = "2.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/4b/cbd8e699e64a6f16ca3a8220661b5f83792b3017d0f79807cb8708d33913/iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3", size = 4646 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/a6/62565a6e1cf69e10f5727360368e451d4b7f58beeac6173dc9db836a5b46/iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374", size = 5892 },
+]
+
+[[package]]
 name = "instructor"
 version = "1.7.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2085,15 +2105,15 @@ wheels = [
 
 [[package]]
 name = "linkup-sdk"
-version = "0.2.1"
+version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2e/ba/b06e8f2ca2f0ce255a40ee4505637536acfe83ec997cd8b61bd5cd031513/linkup_sdk-0.2.1.tar.gz", hash = "sha256:b00ba7cb0117358e975d50196501ac49b247509fd236121e40abe40e6a2a3e9a", size = 8918 }
+sdist = { url = "https://files.pythonhosted.org/packages/e3/d1/c7dc8134b7bde694edee036d75fac2ac2c58d0973ab42f64c0d3575dfe46/linkup_sdk-0.2.2.tar.gz", hash = "sha256:00d9ff7e6d41a291314e8876affd66eeeaa3e623fcc9be1b3127ff8b744aa33d", size = 9107 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4f/90/2903b9e2eba501ceb6c6b4fc57bbeddde7e8964921a05d424f5a6125cbd0/linkup_sdk-0.2.1-py3-none-any.whl", hash = "sha256:bf50c88e659c6d9291cbd5e3e99b6a20a14c9b1eb2dc7acca763a3ae6f84b26e", size = 7961 },
+    { url = "https://files.pythonhosted.org/packages/7a/39/d8fea5d03d8137a8f46ecc05d9e9602ebaf3917d2f1ae114c5f7d24700ab/linkup_sdk-0.2.2-py3-none-any.whl", hash = "sha256:23b15e950e2c2023a5cf3c5c7c0188ed3f38889dd7b2e61e08494a953e30c31f", size = 8039 },
 ]
 
 [[package]]
@@ -3041,11 +3061,20 @@ wheels = [
 ]
 
 [[package]]
+name = "pluggy"
+version = "1.5.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/96/2d/02d4312c973c6050a18b314a5ad0b3210edb65a906f868e31c111dede4a6/pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1", size = 67955 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/88/5f/e351af9a41f866ac3f1fac4ca0613908d9a41741cfcf2228f4ad853b697d/pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669", size = 20556 },
+]
+
+[[package]]
 name = "portalocker"
 version = "2.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pywin32", marker = "platform_system == 'Windows'" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ed/d3/c6c64067759e87af98cc668c1cc75171347d0f1577fab7ca3749134e3cd4/portalocker-2.10.1.tar.gz", hash = "sha256:ef1bf844e878ab08aee7e40184156e1151f228f103aa5c6bd0724cc330960f8f", size = 40891 }
 wheels = [
@@ -3541,6 +3570,35 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest"
+version = "8.3.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "exceptiongroup", marker = "python_full_version < '3.11'" },
+    { name = "iniconfig" },
+    { name = "packaging" },
+    { name = "pluggy" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/05/35/30e0d83068951d90a01852cb1cef56e5d8a09d20c7f511634cc2f7e0372a/pytest-8.3.4.tar.gz", hash = "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761", size = 1445919 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/11/92/76a1c94d3afee238333bc0a42b82935dd8f9cf8ce9e336ff87ee14d9e1cf/pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6", size = 343083 },
+]
+
+[[package]]
+name = "pytest-asyncio"
+version = "0.25.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/72/df/adcc0d60f1053d74717d21d58c0048479e9cab51464ce0d2965b086bd0e2/pytest_asyncio-0.25.2.tar.gz", hash = "sha256:3f8ef9a98f45948ea91a0ed3dc4268b5326c0e7bce73892acc654df4262ad45f", size = 53950 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/61/d8/defa05ae50dcd6019a95527200d3b3980043df5aa445d40cb0ef9f7f98ab/pytest_asyncio-0.25.2-py3-none-any.whl", hash = "sha256:0d0bb693f7b99da304a0634afc0a4b19e49d5e0de2d670f38dc4bfa5727c5075", size = 19400 },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -3945,7 +4003,7 @@ wheels = [
 
 [[package]]
 name = "scrapegraph-py"
-version = "1.8.0"
+version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -3954,9 +4012,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/33/90/2388754061394a6c95fd5ad48cf4550208ce081c99cbc883672d52ccc360/scrapegraph_py-1.8.0.tar.gz", hash = "sha256:e075f6e6012a14a038537d0664609229069d9d2c2956bcbf9362f0c5c48de786", size = 108112 }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/58/90176999dd08572d8b6dd783f4537d222006217877d4e6cb0a01b2d031b1/scrapegraph_py-1.9.0.tar.gz", hash = "sha256:2d5fd0c457037541d646a2a4aaa46d2d8d20b6fba39c0c32f678618e6aac3899", size = 110214 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f7/80/14aeb7ba092cfc6928844a6726855f0c33489107f344e71dd8071f6433ed/scrapegraph_py-1.8.0-py3-none-any.whl", hash = "sha256:279176c972a770bac37a284e0bc25e34793797f30ff24dfba8fbcbfda79c8c88", size = 14460 },
+    { url = "https://files.pythonhosted.org/packages/42/d3/67ac27ae8af5ca0f4e0bb10068a27e074dfc216cf0f5d145cb041469b168/scrapegraph_py-1.9.0-py3-none-any.whl", hash = "sha256:33fd727db8c1a83736b1e790fb416c508f4fd192034b5f22f80c50fdf99a9c4f", size = 14520 },
 ]
 
 [[package]]
@@ -4099,19 +4157,6 @@ wheels = [
 ]
 
 [[package]]
-name = "snowflake"
-version = "1.0.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "snowflake-core" },
-    { name = "snowflake-legacy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/80/d1/830929fb7b54586f4ee601f409e80343e16f32b9b579246cd6fa9984bcff/snowflake-1.0.2.tar.gz", hash = "sha256:4009e59af24e444de4a9e9d340fff0979cca8a02a4feee4665da97eb9c76d958", size = 6033 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b6/25/4cbba4da3f9b333d132680a66221d1a101309cce330fa8be38b674ceafd0/snowflake-1.0.2-py3-none-any.whl", hash = "sha256:6bb0fc70aa10234769202861ccb4b091f5e9fb1bbc61a1e708db93baa3f221f4", size = 5623 },
-]
-
-[[package]]
 name = "snowflake-connector-python"
 version = "3.12.4"
 source = { registry = "https://pypi.org/simple" }
@@ -4150,33 +4195,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/79/1b/8f5ab15d224d7bf76533c55cfd8ce73b185ce94d84241f0e900739ce3f37/snowflake_connector_python-3.12.4-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:300f0562aeea55e40ee03b45205dbef7b78f5ba2f1787a278c7b807e7d8db22c", size = 2533969 },
     { url = "https://files.pythonhosted.org/packages/6e/d9/2e2fd72e0251691b5c54a219256c455141a2d3c104e411b82de598c62553/snowflake_connector_python-3.12.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a6762a00948f003be55d7dc5de9de690315d01951a94371ec3db069d9303daba", size = 2558052 },
     { url = "https://files.pythonhosted.org/packages/e8/cb/e0ab230ad5adc9932e595bdbec693b2499d446666daf6cb9cae306a41dd2/snowflake_connector_python-3.12.4-cp312-cp312-win_amd64.whl", hash = "sha256:83ca896790a7463b6c8cd42e1a29b8ea197cc920839ae6ee96a467475eab4ec2", size = 916627 },
-]
-
-[[package]]
-name = "snowflake-core"
-version = "1.0.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "atpublic" },
-    { name = "pydantic" },
-    { name = "python-dateutil" },
-    { name = "pyyaml" },
-    { name = "requests" },
-    { name = "snowflake-connector-python" },
-    { name = "urllib3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/1d/cf/6f91e5b2daaf3df9ae666a65f5ba3938f11a40784e4ada5218ecf154b29a/snowflake_core-1.0.2.tar.gz", hash = "sha256:8bf267ff1efcd17f157432c6e24f6d2eb6c2aeed66f43ab34b215aa76d8edf02", size = 1092618 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/75/3c/ec228b7325b32781081c72254dd0ef793943e853d82616e862e231909c6c/snowflake_core-1.0.2-py3-none-any.whl", hash = "sha256:55c37cf526a0d78dd3359ad96b9ecd7130bbbbc2f5a2fec77bb3da0dac2dc688", size = 1555690 },
-]
-
-[[package]]
-name = "snowflake-legacy"
-version = "1.0.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/94/41/a6211bd2109913eee1506d37865ab13cf9a8cc2faa41833da3d1ffec654b/snowflake_legacy-1.0.0.tar.gz", hash = "sha256:2044661c79ba01841ab279c5e74b994532244c9d103224eba16eb159c8ed6033", size = 4043 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/aa/8c/64f9b5ee0c3f376a733584c480b31addbf2baff7bb41f655e5e3f3719d3b/snowflake_legacy-1.0.0-py3-none-any.whl", hash = "sha256:25f9678f180d7d5f5b60d17f8112f0ee8a7a77b82c67fd599ed6e27bd502be5a", size = 3059 },
 ]
 
 [[package]]
@@ -4484,7 +4502,7 @@ name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [

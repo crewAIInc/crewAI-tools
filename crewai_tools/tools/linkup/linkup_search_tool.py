@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type
+from typing import Any, Type
 from pydantic import BaseModel, Field
 from crewai.tools import BaseTool
 try:
@@ -32,6 +32,7 @@ class LinkupSearchTool(BaseTool):
                 "The 'linkup' package is required to use the LinkupSearchTool. "
                 "Please install it with: pip install linkup"
             )
+
         self._client = LinkupClient(api_key=api_key)
         self._default_depth = depth
         self._default_output_type = output_type
