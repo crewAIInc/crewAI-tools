@@ -1,11 +1,6 @@
 import asyncio
-from typing import Optional, Type
+from typing import Any, Optional, Type
 
-from browser_use import Agent as BrowserUseAgent
-from browser_use import Controller
-from browser_use.agent.views import AgentHistoryList
-from browser_use.browser.browser import Browser
-from browser_use.browser.context import BrowserContext
 from crewai.tools import BaseTool
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel, Field, field_validator
@@ -38,16 +33,16 @@ class BaseBrowserUseTool(BaseTool):
         ...,
         description="Language model to by browser_use agent when interacting with the browser",
     )
-    browser: Optional[Browser] = Field(
-        None,
+    browser: Optional[Any] = Field(
+        None, # Type is Browser
         description="Browser to use, if None this creates a new browser",
     )
-    browser_context: Optional[BrowserContext] = Field(
-        None,
+    browser_context: Optional[Any] = Field(
+        None, # Type is BrowserContext
         description="Browser context to use",
     )
-    controller: Controller = Field(
-        Controller(),
+    controller: Any = Field(
+        None, # Type is Controller
         description="The controller to use for the browser use tools.",
     )
     validate_output: bool = Field(
@@ -82,6 +77,7 @@ class BaseBrowserUseTool(BaseTool):
 
     args_schema: Type[BaseModel] = BaseBrowserUseToolSchema
 
+    __browser_use_agent: Type[Any] = None
 
     @field_validator("llm")
     @classmethod
@@ -97,6 +93,41 @@ class BaseBrowserUseTool(BaseTool):
             raise ValueError("Value must be greater than 0.")
         return value
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        try:
+            from browser_use import Agent as BrowserUseAgent
+            from browser_use import Browser, Controller
+            from browser_use.browser.context import BrowserContext
+
+        except ImportError:
+            import click
+
+            if click.confirm(
+                "You are missing the 'browser-use==0.1.16' package. Would you like to install it?"
+            ):
+                import subprocess
+
+                subprocess.run(["uv", "add", "browser-use==0.1.16"], check=True)
+                from browser_use import Agent as BrowserUseAgent
+                from browser_use import Browser, Controller
+                from browser_use.browser.context import BrowserContext
+            else:
+                raise ImportError(
+                    "`browser-use==0.1.16` package not found, please run `uv add browser-use==0.1.16`"
+                )
+        if self.browser and not isinstance(self.browser, Browser):
+            raise ValueError("browser must be an instance of Browser.")
+        if self.browser_context and not isinstance(self.browser_context, BrowserContext):
+            raise ValueError("browser_context must be an instance of BrowserContext.")
+        if self.controller and not isinstance(self.controller, Controller):
+            raise ValueError("controller must be an instance of Controller.")
+
+        if not self.controller:
+            self.controller = Controller()
+
+        self.__browser_use_agent = BrowserUseAgent
+
     def _get_emoji(self, valuation_previous_goal: str) -> str:
         if "Success" in valuation_previous_goal:
             return "👍"
@@ -105,7 +136,11 @@ class BaseBrowserUseTool(BaseTool):
         return "🤷"
 
     # This method is based on browser_use:0.1.16 prints, later versions may have different prints
-    def _parse_history(self, agent_history_list: AgentHistoryList, max_steps: int) -> str:
+    def _parse_history(
+            self,
+            agent_history_list: Any, # Type is AgentHistoryList
+            max_steps: int,
+        ) -> str:
         if not agent_history_list or not agent_history_list.history:
             return "Browser did nothing."
 
@@ -153,10 +188,9 @@ class BaseBrowserUseTool(BaseTool):
         print(
             f"Running BrowserUseTool with instruction: {args.instruction} and max_steps: {args.max_steps}"
         )
-        agent_history_list: (
-            AgentHistoryList
-        ) = self.event_loop.run_until_complete(
-            BrowserUseAgent(
+        # Type is AgentHistoryList
+        agent_history_list = self.event_loop.run_until_complete(
+            self.__browser_use_agent(
                 task=args.instruction,
                 llm=self.llm,
                 browser=self.browser,

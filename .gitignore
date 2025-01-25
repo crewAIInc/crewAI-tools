@@ -11,3 +11,4 @@ venv
 .venv/
 agent_history.gif
 poetry.lock
+uv.lock

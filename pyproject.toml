@@ -27,7 +27,6 @@ dependencies = [
     "linkup-sdk>=0.2.1",
     "spider-client>=0.1.25",
     "patronus>=0.0.16",
-    "browser-use (==0.1.16)",
 ]
 
 [project.urls]
@@ -64,6 +63,9 @@ snowflake = [
     "cryptography>=43.0.3",
     "snowflake-connector-python>=3.12.4",
     "snowflake-sqlalchemy>=1.7.3",
+]
+browser-use = [
+    "browser-use==0.1.16",
 ]
 
 
