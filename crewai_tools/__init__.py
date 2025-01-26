@@ -7,6 +7,8 @@ from .tools import (
     ComposioTool,
     CSVSearchTool,
     DallETool,
+    DappierAIRecommendationsTool,
+    DappierRealTimeSearchTool,
     DirectoryReadTool,
     DirectorySearchTool,
     DOCXSearchTool,
