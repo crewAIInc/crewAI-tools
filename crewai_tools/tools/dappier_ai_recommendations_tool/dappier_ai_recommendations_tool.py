@@ -94,20 +94,8 @@ class DappierAIRecommendationsTool(BaseTool):
             if response is None or response.status != "success":
                 return {"error": "An unknown error occurred."}
 
-            # Collect only relevant information from the response.
-            results = [
-                {
-                    "author": result.author,
-                    "image_url": result.image_url,
-                    "pubdate": result.pubdate,
-                    "source_url": result.source_url,
-                    "summary": result.summary,
-                    "title": result.title,
-                }
-                for result in (getattr(response.response, "results", None) or [])
-            ]
-
-            return results
+            results = getattr(response.response, "results", []) or []
+            return [self._process_result(result) for result in results]
 
         except ConnectionError as e:
             return {"error": f"Failed to connect to Dappier API: {e}"}
@@ -115,3 +103,14 @@ class DappierAIRecommendationsTool(BaseTool):
             return {"error": f"Invalid input parameters: {e}"}
         except Exception as e:
             return {"error": f"An unexpected error occurred: {str(e)}"}
+
+    def _process_result(self, result) -> dict:
+        fields = ["author", "image_url", "pubdate", "source_url", "summary", "title"]
+        return {field: getattr(result, field, None) for field in fields}
+
+    def _process_response(self, response) -> list:
+        if not response or not hasattr(response, "response"):
+            return []
+
+        results = getattr(response.response, "results", []) or []
+        return [self._process_result(result) for result in results]

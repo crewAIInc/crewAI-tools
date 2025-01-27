@@ -55,6 +55,10 @@ class DappierRealTimeSearchTool(BaseTool):
     def _run(self, query: str, ai_model_id: str = DEFAULT_AI_MODEL_ID):
         try:
             response = self.dappier_client.search_real_time_data(query=query, ai_model_id=ai_model_id)  # type: ignore
+
+            if response is None:
+                return "An unknown error occurred"
+
             return response.message
         except ConnectionError as e:
             return f"Failed to connect to Dappier API: {e}"
