@@ -1,5 +1,7 @@
 # DappierRealTimeSearchTool
 
+The `DappierRealTimeSearchTool` is desinged to search real time data, including web search results, financial information, news, weather, and more, with AI-powered insights and updates.
+
 ## Description
 
 [Dappier](https://dappier.com) connects any LLM or your Agentic AI to real-time, rights-cleared, proprietary data from trusted sources, making your AI an expert in anything. Our specialized models include Real-Time Web Search, News, Sports, Financial Stock Market Data, Crypto Data, and exclusive content from premium publishers. Explore a wide range of data models in our marketplace at [marketplace.dappier.com](https://marketplace.dappier.com).
