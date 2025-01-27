@@ -36,7 +36,7 @@ class DappierRealTimeSearchTool(BaseTool):
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
-        self.api_key = api_key or os.environ["DAPPIER_API_KEY"]
+        self.api_key = self.get_api_key(api_key)
 
         try:
             from dappier import Dappier
@@ -51,6 +51,18 @@ class DappierRealTimeSearchTool(BaseTool):
             )
 
         self.dappier_client = Dappier(api_key=self.api_key)
+
+    @staticmethod
+    def get_api_key(api_key: Optional[str] = None) -> str:
+        if api_key:
+            return api_key
+
+        env_key = os.getenv("DAPPIER_API_KEY")
+        if not env_key:
+            raise ValueError(
+                "DAPPIER_API_KEY not found. Please provide via constructor or set DAPPIER_API_KEY environment variable."
+            )
+        return env_key
 
     def _run(self, query: str, ai_model_id: str = DEFAULT_AI_MODEL_ID):
         try:
