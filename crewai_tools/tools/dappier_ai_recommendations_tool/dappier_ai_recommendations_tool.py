@@ -4,13 +4,15 @@ from typing import Any, Literal, Optional, Type
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
+DEFAULT_DATA_MODEL_ID = "dm_01j0pb465keqmatq9k83dthx34"
+
 
 class DappierAIRecommendationsToolSchema(BaseModel):
     query: str = Field(
         description="The user-provided input string for AI recommendations across Sports, Lifestyle News, and niche favorites like I Heart Dogs, I Heart Cats, WishTV, and many more."
     )
     data_model_id: str = Field(
-        default="dm_01j0pb465keqmatq9k83dthx34",
+        default=DEFAULT_DATA_MODEL_ID,
         description="The data model ID to use for recommendations. Data model IDs always start with the prefix 'dm_'. Defaults to 'dm_01j0pb465keqmatq9k83dthx34'. Multiple AI models are available, which can be found at: https://marketplace.dappier.com/marketplace",
     )
     similarity_top_k: int = Field(
@@ -71,7 +73,7 @@ class DappierAIRecommendationsTool(BaseTool):
     def _run(
         self,
         query: str,
-        data_model_id: str = "dm_01j0pb465keqmatq9k83dthx34",
+        data_model_id: str = DEFAULT_DATA_MODEL_ID,
         similarity_top_k: int = 9,
         ref: Optional[str] = None,
         num_articles_ref: int = 0,
