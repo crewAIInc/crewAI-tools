@@ -107,5 +107,9 @@ class DappierAIRecommendationsTool(BaseTool):
 
             return results
 
+        except ConnectionError as e:
+            return {"error": f"Failed to connect to Dappier API: {e}"}
+        except ValueError as e:
+            return {"error": f"Invalid input parameters: {e}"}
         except Exception as e:
-            return {"error": f"An unexpected error occurred: {e!s}"}
+            return {"error": f"An unexpected error occurred: {str(e)}"}

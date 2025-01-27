@@ -52,13 +52,11 @@ class DappierRealTimeSearchTool(BaseTool):
 
     def _run(self, query: str, ai_model_id: str = "am_01j06ytn18ejftedz6dyhz2b15"):
         try:
-            response = self.dappier_client.search_real_time_data(  # type: ignore
-                query=query, ai_model_id=ai_model_id
-            )
-
-            if response is None:
-                return "An unknown error occurred"
-
+            response = self.dappier_client.search_real_time_data(query=query, ai_model_id=ai_model_id)  # type: ignore
             return response.message
+        except ConnectionError as e:
+            return f"Failed to connect to Dappier API: {e}"
+        except ValueError as e:
+            return f"Invalid input parameters: {e}"
         except Exception as e:
-            return f"An unexpected error occurred: {e}"
+            return f"An unexpected error occurred: {str(e)}"
