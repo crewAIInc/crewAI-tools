@@ -1,6 +1,6 @@
 [project]
 name = "crewai-tools"
-version = "0.32.1"
+version = "0.33.0"
 description = "Set of tools for the crewAI framework"
 readme = "README.md"
 authors = [
@@ -83,6 +83,13 @@ snowflake = [
     "snowflake-sqlalchemy>=1.7.3",
 ]
 
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.4",
+]
 
 [build-system]
 requires = [
