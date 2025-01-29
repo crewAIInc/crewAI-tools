@@ -46,5 +46,3 @@ All of the below arguments are optional:
 - `template`: A pre-defined template to spawn a [custom sandbox](https://e2b.dev/docs/sandbox/custom). Defaults to the standard sandbox.
 - `timeout`: Specifies the timeout in seconds for the sandbox to open or execute. Defaults to 300s.
 - `request_timeout`: Timeout for the creation of the sandbox itself. Defaults to 30s.
-- `metadata`: Optional [metadata](https://e2b.dev/docs/sandbox/api/metadata) to be associated with the sandbox.
-- `envs`: A dictionary containing [environment variables](https://e2b.dev/docs/sandbox/api/envs) to be passed to the sandbox.
