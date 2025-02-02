@@ -55,4 +55,5 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
+    CurlCommandoTool,
 )
