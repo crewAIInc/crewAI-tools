@@ -99,3 +99,29 @@ class TestFileWriterTool(unittest.TestCase):
         self.assertEqual(progress_calls[0][0], custom_chunk_size)
         self.assertEqual(progress_calls[1][0], custom_chunk_size * 2)
         self.assertEqual(progress_calls[2][0], len(content))
+
+    def test_config_validation(self):
+        invalid_configs = [
+            {"default_max_size": -1},
+            {"chunk_size": 0},
+            {"default_encoding": "invalid"}
+        ]
+        for config in invalid_configs:
+            with self.assertRaises(ValueError):
+                FileWriterConfig(**config)
+
+    def test_config_defaults(self):
+        config = FileWriterConfig()
+        self.assertEqual(config.default_max_size, 10_000_000)
+        self.assertEqual(config.default_encoding, "utf-8")
+        self.assertTrue(config.chunk_size > 0)
+
+    def test_config_custom_values(self):
+        config = FileWriterConfig(
+            default_max_size=5_000_000,
+            default_encoding="ascii",
+            chunk_size=4096
+        )
+        self.assertEqual(config.default_max_size, 5_000_000)
+        self.assertEqual(config.default_encoding, "ascii")
+        self.assertEqual(config.chunk_size, 4096)
