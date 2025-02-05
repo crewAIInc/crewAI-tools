@@ -46,12 +46,26 @@ class ElasticsearchAdapter(Adapter):
             index=self.index_name,
             body={
                 "query": {
-                    "script_score": {
-                        "query": {"match_all": {}},
-                        "script": {
-                            "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
-                            "params": {"query_vector": query_vector}
-                        }
+                    "bool": {
+                        "should": [
+                            {
+                                "script_score": {
+                                    "query": {"match_all": {}},
+                                    "script": {
+                                        "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
+                                        "params": {"query_vector": query_vector}
+                                    }
+                                }
+                            },
+                            {
+                                "match": {
+                                    "text": {
+                                        "query": question,
+                                        "boost": 0.3
+                                    }
+                                }
+                            }
+                        ]
                     }
                 },
                 "size": self.top_k
