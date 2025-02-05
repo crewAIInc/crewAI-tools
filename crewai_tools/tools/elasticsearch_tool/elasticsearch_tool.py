@@ -6,7 +6,15 @@ from crewai_tools.adapters.elasticsearch_adapter import ElasticsearchAdapter
 class ElasticsearchTool(RagTool):
     name: str = "Elasticsearch Knowledge Base"
     description: str = """Search and retrieve information from Elasticsearch using both semantic and keyword search.
-    Supports vector search for semantic understanding and traditional text search for precise matching."""
+    Features:
+    - Vector search for semantic understanding
+    - Traditional text search for precise matching
+    - Configurable result count
+    - Support for metadata filtering
+    - Bulk document operations
+    - Multiple authentication methods (API key, username/password, cloud ID)
+    - Hybrid search combining vector and text similarity
+    - Automatic index validation and creation"""
     adapter: ElasticsearchAdapter
     
     def _run(

@@ -8,6 +8,27 @@ A tool for searching and retrieving information from Elasticsearch using vector 
 pip install 'crewai[tools]'
 ```
 
+## Index Configuration
+
+Before using the tool, ensure your index has the correct mapping:
+
+```yaml
+PUT /documents
+{
+  "mappings": {
+    "properties": {
+      "text": { "type": "text" },
+      "embedding": { 
+        "type": "dense_vector",
+        "dims": 1536,
+        "index": true,
+        "similarity": "cosine"
+      }
+    }
+  }
+}
+```
+
 ## Usage
 
 ```python
@@ -80,3 +101,13 @@ adapter = ElasticsearchAdapter(
 - Support for both Elasticsearch and OpenSearch
 - Secure authentication methods
 - Bulk document operations
+
+## Error Handling
+
+The tool handles common errors:
+- Connection failures: When the Elasticsearch server is unreachable
+- Authentication issues: Invalid API keys or credentials
+- Index not found: When the specified index doesn't exist
+- Bulk indexing errors: Detailed error messages for failed document operations
+
+See error messages in logs for detailed troubleshooting information.
