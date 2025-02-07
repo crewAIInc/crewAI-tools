@@ -88,7 +88,8 @@ exa-py = [
 qdrant-client = [
     "qdrant-client>=1.12.1",
 ]
-fastembed = []
+
+
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
