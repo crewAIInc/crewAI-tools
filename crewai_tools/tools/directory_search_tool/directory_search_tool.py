@@ -32,7 +32,7 @@ class DirectorySearchTool(RagTool):
         super().__init__(**kwargs)
         if directory is not None:
             kwargs["loader"] = DirectoryLoader(config=dict(recursive=True))
-            self.add(directory)
+            self.add(directory, loader=kwargs["loader"])
             self.description = f"A tool that can be used to semantic search a query the {directory} directory's content."
             self.args_schema = FixedDirectorySearchToolSchema
             self._generate_description()

@@ -39,7 +39,7 @@ class GithubSearchTool(RagTool):
             kwargs["data_type"] = "github"
             kwargs["loader"] = GithubLoader(config={"token": self.gh_token})
 
-            self.add(repo=github_repo)
+            self.add(repo=github_repo, loader=kwargs["loader"], data_type=kwargs["data_type"])
             self.description = f"A tool that can be used to semantic search a query the {github_repo} github repo's content. This is not the GitHub API, but instead a tool that can provide semantic search capabilities."
             self.args_schema = FixedGithubSearchToolSchema
             self._generate_description()

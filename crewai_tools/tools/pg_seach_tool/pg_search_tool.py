@@ -25,7 +25,7 @@ class PGSearchTool(RagTool):
         super().__init__(**kwargs)
         kwargs["data_type"] = "postgres"
         kwargs["loader"] = PostgresLoader(config=dict(url=self.db_uri))
-        self.add(table_name)
+        self.add(table_name, loader=kwargs["loader"], data_type=kwargs["data_type"])
         self.description = f"A tool that can be used to semantic search a query the {table_name} database table's content."
         self._generate_description()
 
