@@ -76,7 +76,7 @@ print(result)
 response = valyu_tool._run(
     query="quantum computing breakthroughs 2024",
     search_type="both",
-    num_query=5,
+    num_query=10,
     num_results=10,
     max_price=100
 )
