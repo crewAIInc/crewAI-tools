@@ -1,6 +1,6 @@
 [project]
 name = "crewai-tools"
-version = "0.32.0"
+version = "0.33.0"
 description = "Set of tools for the crewAI framework"
 readme = "README.md"
 authors = [
@@ -15,18 +15,11 @@ dependencies = [
     "pyright>=1.1.350",
     "pytube>=15.0.0",
     "requests>=2.31.0",
-    "beautifulsoup4>=4.12.3",
-    "selenium>=4.18.1",
-    "docx2txt>=0.8",
     "docker>=7.1.0",
     "embedchain>=0.1.114",
     "crewai>=0.95.0",
-    "scrapegraph-py>=1.8.0",
-    "serpapi>=0.1.5",
-    "weaviate-client>=4.9.6",
-    "linkup-sdk>=0.2.1",
-    "spider-client>=0.1.25",
-    "patronus>=0.0.16",
+    "click>=8.1.8",
+    "lancedb>=0.5.4",
 ]
 
 [project.urls]
@@ -56,6 +49,31 @@ composio-core = [
 browserbase = [
     "browserbase>=1.0.5",
 ]
+weaviate-client = [
+    "weaviate-client>=4.10.2",
+]
+patronus = [
+    "patronus>=0.0.16",
+]
+serpapi = [
+    "serpapi>=0.1.5",
+]
+beautifulsoup4 = [
+    "beautifulsoup4>=4.12.3",
+]
+selenium = [
+    "selenium>=4.27.1",
+]
+spider-client = [
+    "spider-client>=0.1.25",
+]
+scrapegraph-py = [
+    "scrapegraph-py>=1.9.0",
+]
+linkup-sdk = [
+    "linkup-sdk>=0.2.2",
+]
+
 hyperbrowser = [
     "hyperbrowser>=0.18.0",
 ]
@@ -67,7 +85,21 @@ snowflake = [
 browser-use = [
     "browser-use==0.1.16",
 ]
+exa-py = [
+    "exa-py>=1.8.7",
+]
+qdrant-client = [
+    "qdrant-client>=1.12.1",
+]
 
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.4",
+]
 
 [build-system]
 requires = [

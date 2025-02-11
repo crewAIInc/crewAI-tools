@@ -1,8 +1,17 @@
-from typing import Any, Type
+from typing import TYPE_CHECKING, Any, Type
 
 from crewai.tools import BaseTool
-from patronus import Client
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from patronus import Client, EvaluationResult
+
+try:
+    import patronus
+
+    PYPATRONUS_AVAILABLE = True
+except ImportError:
+    PYPATRONUS_AVAILABLE = False
 
 
 class FixedLocalEvaluatorToolSchema(BaseModel):
@@ -23,32 +32,60 @@ class FixedLocalEvaluatorToolSchema(BaseModel):
 
 class PatronusLocalEvaluatorTool(BaseTool):
     name: str = "Patronus Local Evaluator Tool"
-    evaluator: str = "The registered local evaluator"
-    evaluated_model_gold_answer: str = "The agent's gold answer"
-    description: str = "This tool is used to evaluate the model input and output using custom function evaluators."
-    client: Any = None
+    description: str = (
+        "This tool is used to evaluate the model input and output using custom function evaluators."
+    )
     args_schema: Type[BaseModel] = FixedLocalEvaluatorToolSchema
+    client: "Client" = None
+    evaluator: str
+    evaluated_model_gold_answer: str
 
     class Config:
         arbitrary_types_allowed = True
 
     def __init__(
         self,
-        patronus_client: Client,
-        evaluator: str,
-        evaluated_model_gold_answer: str,
+        patronus_client: "Client" = None,
+        evaluator: str = "",
+        evaluated_model_gold_answer: str = "",
         **kwargs: Any,
     ):
         super().__init__(**kwargs)
-        self.client = patronus_client
-        if evaluator:
-            self.evaluator = evaluator
-            self.evaluated_model_gold_answer = evaluated_model_gold_answer
-            self.description = f"This tool calls the Patronus Evaluation API that takes an additional argument in addition to the following new argument:\n evaluators={evaluator}, evaluated_model_gold_answer={evaluated_model_gold_answer}"
-            self._generate_description()
-            print(
-                f"Updating judge evaluator, gold_answer to: {self.evaluator}, {self.evaluated_model_gold_answer}"
-            )
+        self.evaluator = evaluator
+        self.evaluated_model_gold_answer = evaluated_model_gold_answer
+        self._initialize_patronus(patronus_client)
+
+    def _initialize_patronus(self, patronus_client: "Client") -> None:
+        try:
+            if PYPATRONUS_AVAILABLE:
+                self.client = patronus_client
+                self._generate_description()
+                print(
+                    f"Updating evaluator and gold_answer to: {self.evaluator}, {self.evaluated_model_gold_answer}"
+                )
+            else:
+                raise ImportError
+        except ImportError:
+            import click
+
+            if click.confirm(
+                "You are missing the 'patronus' package. Would you like to install it?"
+            ):
+                import subprocess
+
+                try:
+                    subprocess.run(["uv", "add", "patronus"], check=True)
+                    self.client = patronus_client
+                    self._generate_description()
+                    print(
+                        f"Updating evaluator and gold_answer to: {self.evaluator}, {self.evaluated_model_gold_answer}"
+                    )
+                except subprocess.CalledProcessError:
+                    raise ImportError("Failed to install 'patronus' package")
+            else:
+                raise ImportError(
+                    "`patronus` package not found, please run `uv add patronus`"
+                )
 
     def _run(
         self,
@@ -62,29 +99,22 @@ class PatronusLocalEvaluatorTool(BaseTool):
         evaluated_model_gold_answer = self.evaluated_model_gold_answer
         evaluator = self.evaluator
 
-        result = self.client.evaluate(
+        result: "EvaluationResult" = self.client.evaluate(
             evaluator=evaluator,
-            evaluated_model_input=(
-                evaluated_model_input
-                if isinstance(evaluated_model_input, str)
-                else evaluated_model_input.get("description")
-            ),
-            evaluated_model_output=(
-                evaluated_model_output
-                if isinstance(evaluated_model_output, str)
-                else evaluated_model_output.get("description")
-            ),
-            evaluated_model_retrieved_context=(
-                evaluated_model_retrieved_context
-                if isinstance(evaluated_model_retrieved_context, str)
-                else evaluated_model_retrieved_context.get("description")
-            ),
-            evaluated_model_gold_answer=(
-                evaluated_model_gold_answer
-                if isinstance(evaluated_model_gold_answer, str)
-                else evaluated_model_gold_answer.get("description")
-            ),
-            tags={},  # Optional metadata, supports arbitrary kv pairs
+            evaluated_model_input=evaluated_model_input,
+            evaluated_model_output=evaluated_model_output,
+            evaluated_model_retrieved_context=evaluated_model_retrieved_context,
+            evaluated_model_gold_answer=evaluated_model_gold_answer,
+            tags={},  # Optional metadata, supports arbitrary key-value pairs
         )
         output = f"Evaluation result: {result.pass_}, Explanation: {result.explanation}"
         return output
+
+
+try:
+    # Only rebuild if the class hasn't been initialized yet
+    if not hasattr(PatronusLocalEvaluatorTool, "_model_rebuilt"):
+        PatronusLocalEvaluatorTool.model_rebuild()
+        PatronusLocalEvaluatorTool._model_rebuilt = True
+except Exception:
+    pass
