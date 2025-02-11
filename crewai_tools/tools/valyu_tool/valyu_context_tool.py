@@ -17,7 +17,7 @@ class ValyuContextTool(BaseTool):
         "Search programmatically licensed proprietary data and the web. "
         "Parameters:\n"
         "- search_type: 'both' searches all sources, 'proprietary' for proprietary data not found on the web only, 'web' for web data only\n"
-        "- max_price: Maximum price threshold (a number between 10 and 100 recommended)\n"
+        "- max_price: Maximum price threshold. The number of dollars per 1000 results (PCM). (a number between 10 and 100 recommended)\n"
         "- num_query: Number of search queries to generate (a value of 5 is recommended)\n"
         "- num_results: Number of results to return (must be ≤ num_query)\n"
         "- data_sources: List of specific data sources to search from (only include valid sources)\n"
