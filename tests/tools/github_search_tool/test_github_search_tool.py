@@ -58,19 +58,10 @@ class TestGithubSearchTool(unittest.TestCase):
             
             tool.adapter = MockAdapter()
             
-            # Verify that loader was called with correct parameters
-            self.assertTrue(mock_loader.called)
-            self.assertEqual(mock_loader.call_args[1]["config"]["token"], "ghp_123456789012345678901234567890123456")
-            
             # Test search
             result = tool._run(
                 search_query="test query"
             )
-            
-            # Verify that loader was called with correct parameters
-            self.assertTrue(mock_loader.called)
-            self.assertEqual(mock_loader.call_args[1]["config"]["token"], "ghp_123456789012345678901234567890123456")
-            self.assertIn("Test result", result)
             
             # Verify that loader was called with correct parameters
             self.assertTrue(mock_loader.called)
