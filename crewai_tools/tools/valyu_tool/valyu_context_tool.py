@@ -75,6 +75,28 @@ class ValyuContextTool(BaseTool):
         num_results: Optional[int] = Field(default=None),
         max_price: Optional[int] = Field(default=None),
     ) -> Any:
+        """Execute a search query using the Valyu API.
+
+        Args:
+            query (str): The search query to execute.
+            search_type (Optional[Literal["both", "proprietary", "web"]]): Type of search to perform.
+                'both' searches all sources, 'proprietary' for proprietary data only, 'web' for web data only.
+            data_sources (Optional[List[str]]): List of specific data sources to search from.
+            num_query (Optional[int]): Number of search queries to generate.
+            num_results (Optional[int]): Number of results to return (must be ≤ num_query).
+            max_price (Optional[int]): Maximum price threshold per 1000 results (PCM).
+
+        Returns:
+            dict: A dictionary containing:
+                - success (bool): Whether the query was successful
+                - results (List[dict]): List of search results if successful, each containing:
+                    - title (str): Title of the result
+                    - url (str): URL of the result
+                    - content (str): Content of the result
+                    - source (str): Source of the result
+                    - price (float): Price of the result
+                - error (str): Error message if unsuccessful
+        """
         # Validate num_query and num_results
         final_num_query = self.num_query or num_query
         final_num_results = self.num_results or num_results
