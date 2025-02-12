@@ -52,7 +52,7 @@ class ValyuContextTool(BaseTool):
                     "The 'valyu' package is required to use the ValyuContextTool. "
                     "Please install it with: uv add valyu"
                 )
-        self._client = Valyu(api_key=api_key) if api_key else Valyu(api_key=None)
+        self._client = Valyu(api_key=api_key) if api_key else Valyu()
         if "max_price" in kwargs:
             self.max_price = kwargs["max_price"]
         if "search_type" in kwargs:

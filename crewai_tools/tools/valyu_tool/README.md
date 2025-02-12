@@ -12,15 +12,15 @@ Install the required packages using:
 uv add crewai[tools] valyu
 ```
 
-## Example
+## Example Usage
 
-Here's how to initialize and use the ValyuContextTool:
+### Basic Usage with CrewAI
 
 ```python
 from crewai_tools import ValyuContextTool
 
 # Initialize the tool
-tool = ValyuContextTool(api_key="your_api_key")
+tool = ValyuContextTool(api_key="your_api_key") # or use the environment variable VALYU_API_KEY
 ```
 
 ## Steps to Get Started
@@ -40,12 +40,16 @@ You can customize the parameters for the `ValyuContextTool`:
 - `data_sources`: Specific indexes to query from
 - `num_query`: Number of query variations (default: 10)
 - `num_results`: Maximum results to return (default: 10)
-- `max_price`: Maximum price per content in PCM
+- `max_price`: Maximum price per query in PCM
 
 Example:
 
 ```python
 from crewai import Agent, Task, Crew
+from crewai_tools import ValyuContextTool
+
+# Initialize the tool
+valyu_tool = ValyuContextTool(api_key="your_api_key")
 
 # Define the agent
 research_agent = Agent(
