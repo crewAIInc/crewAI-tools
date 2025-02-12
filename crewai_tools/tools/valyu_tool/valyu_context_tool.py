@@ -30,7 +30,7 @@ class ValyuContextTool(BaseTool):
     num_results: Optional[int] = Field(default=None)
     data_sources: Optional[List[str]] = Field(default=None)
 
-    def __init__(self, api_key: str, **kwargs):
+    def __init__(self, api_key: Optional[str] = None, **kwargs):
         """
         Initialize the tool with an API key.
         """
@@ -52,7 +52,7 @@ class ValyuContextTool(BaseTool):
                     "The 'valyu' package is required to use the ValyuContextTool. "
                     "Please install it with: uv add valyu"
                 )
-        self._client = Valyu(api_key=api_key)
+        self._client = Valyu(api_key=api_key) if api_key else Valyu(api_key=None)
         if "max_price" in kwargs:
             self.max_price = kwargs["max_price"]
         if "search_type" in kwargs:
