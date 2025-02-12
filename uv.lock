@@ -713,6 +713,9 @@ spider-client = [
 sqlalchemy = [
     { name = "sqlalchemy" },
 ]
+valyu = [
+    { name = "valyu" },
+]
 weaviate-client = [
     { name = "weaviate-client" },
 ]
@@ -755,6 +758,7 @@ requires-dist = [
     { name = "snowflake-sqlalchemy", marker = "extra == 'snowflake'", specifier = ">=1.7.3" },
     { name = "spider-client", marker = "extra == 'spider-client'", specifier = ">=0.1.25" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=2.0.35" },
+    { name = "valyu", marker = "extra == 'valyu'", specifier = ">=1.0.3" },
     { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.10.2" },
 ]
 
@@ -4786,6 +4790,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/64/07/91582d69320f6f6daaf2d8072608a4ad8884683d4840e7e4f3a9dbdcc639/validators-0.34.0.tar.gz", hash = "sha256:647fe407b45af9a74d245b943b18e6a816acf4926974278f6dd617778e1e781f", size = 70955 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6e/78/36828a4d857b25896f9774c875714ba4e9b3bc8a92d2debe3f4df3a83d4f/validators-0.34.0-py3-none-any.whl", hash = "sha256:c804b476e3e6d3786fa07a30073a4ef694e617805eb1946ceee3fe5a9b8b1321", size = 43536 },
+]
+
+[[package]]
+name = "valyu"
+version = "1.0.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1e/ed/36aaf0c0af2b553e792458c1b78ed2b2e466b5cac0ad198c84b7cdd69905/valyu-1.0.3.tar.gz", hash = "sha256:fa0ded72c087c22df37bb3126a3ff4caf8792d997c289d54f5d3fab09a7e95f4", size = 7243 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ca/09/6faf2c904115db2f22278b467513034bc42be0dd0d0c41bbaae797d68be5/valyu-1.0.3-py3-none-any.whl", hash = "sha256:2c831b179f4595bb4030e8555d800391ce0b13726864318a53f0848f69f7bf47", size = 7008 },
 ]
 
 [[package]]
