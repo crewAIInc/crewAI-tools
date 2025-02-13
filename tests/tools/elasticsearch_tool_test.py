@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -6,26 +7,34 @@ from pydantic import SecretStr
 
 from crewai_tools import ElasticsearchConfig, ElasticsearchSearchTool
 
+
+@dataclass
+class ResponseMock:
+    raw: dict
+
+
 # Mock Response Data
-MOCK_SEARCH_RESPONSE = {
-    "hits": {
-        "total": {"value": 2, "relation": "eq"},
-        "hits": [
-            {
-                "_index": "test_index",
-                "_id": "1",
-                "_score": 1.0,
-                "_source": {"field1": "value1", "field2": 1},
-            },
-            {
-                "_index": "test_index",
-                "_id": "2",
-                "_score": 0.8,
-                "_source": {"field1": "value2", "field2": 2},
-            },
-        ],
+MOCK_SEARCH_RESPONSE = ResponseMock(
+    raw={
+        "hits": {
+            "total": {"value": 2, "relation": "eq"},
+            "hits": [
+                {
+                    "_index": "test_index",
+                    "_id": "1",
+                    "_score": 1.0,
+                    "_source": {"field1": "value1", "field2": 1},
+                },
+                {
+                    "_index": "test_index",
+                    "_id": "2",
+                    "_score": 0.8,
+                    "_source": {"field1": "value2", "field2": 2},
+                },
+            ],
+        }
     }
-}
+)
 
 
 # Unit Test Fixtures
@@ -70,14 +79,14 @@ async def test_successful_query_execution(elasticsearch_tool):
         query='{"query": {"match": {"field1": "test"}}}', index="test_index", size=10
     )
 
-    assert results == MOCK_SEARCH_RESPONSE
+    assert results == MOCK_SEARCH_RESPONSE.raw
 
 
 @pytest.mark.asyncio
 async def test_query_string_fallback(elasticsearch_tool):
     results = await elasticsearch_tool._run(query="field1:test", index="test_index")
 
-    assert results == MOCK_SEARCH_RESPONSE
+    assert results == MOCK_SEARCH_RESPONSE.raw
 
 
 @pytest.mark.asyncio
@@ -86,7 +95,7 @@ async def test_search_with_routing(elasticsearch_tool):
         query="test query", index="test_index", routing="user123"
     )
 
-    assert results == MOCK_SEARCH_RESPONSE
+    assert results == MOCK_SEARCH_RESPONSE.raw
 
 
 @pytest.mark.asyncio
