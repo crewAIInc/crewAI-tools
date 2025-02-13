@@ -1,3 +1,5 @@
+from pydantic import SecretStr
+
 # Elasticsearch Tool
 
 A tool for executing queries on Elastic database with built-in connection pooling, retry logic, and async execution support.
@@ -5,46 +7,60 @@ A tool for executing queries on Elastic database with built-in connection poolin
 ## Installation
 
 ```bash
-uv sync --extra snowflake
+uv sync --extra elasticsearch
 
 OR 
-uv pip install snowflake-connector-python>=3.5.0 snowflake-sqlalchemy>=1.5.0 cryptography>=41.0.0
+uv pip install elasticsearch>=8.17.0 aiohttp~=3.11
 
 OR 
-pip install snowflake-connector-python>=3.5.0 snowflake-sqlalchemy>=1.5.0 cryptography>=41.0.0
+pip install elasticsearch>=8.17.0 aiohttp~=3.11
 ```
 
 ## Quick Start
 
 ```python
 import asyncio
-from crewai_tools import SnowflakeSearchTool, SnowflakeConfig
+from pydantic import SecretStr
+from crewai_tools import ElasticsearchSearchTool, ElasticsearchConfig
 
 # Create configuration
-config = SnowflakeConfig(
-    account="your_account",
-    user="your_username", 
-    password="your_password",
-    warehouse="COMPUTE_WH",
-    database="your_database",
-    snowflake_schema="your_schema"  # Note: Uses snowflake_schema instead of schema
+config = ElasticsearchConfig(
+    hosts=["http://<your_host>:9200"],
+    username="<your_username>",
+    password=SecretStr("<your_password>"),
+    
+    # In case you're using elastic cloud
+    api_key=SecretStr("<your_api_key>"),
+    cloud_id="<your_cloud_id>"
 )
 
 # Initialize tool
-tool = SnowflakeSearchTool(
+tool = ElasticsearchSearchTool(
     config=config,
     pool_size=5,
     max_retries=3,
     enable_caching=True
 )
 
+
 # Execute query
 async def main():
-    results = await tool._run(
-        query="SELECT * FROM your_table LIMIT 10",
-        timeout=300
-    )
-    print(f"Retrieved {len(results)} rows")
+    search_result = await tool._run("""
+    {
+      "query": {
+        "range": {
+          "timestamp": {
+            "gte": "now-30d/d",
+            "lte": "now/d"
+          }
+        }
+      }
+    }
+    """,
+    index="iam-logs")
+    
+    print(search_result)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -57,99 +73,95 @@ if __name__ == "__main__":
 - 🔄 Automatic retries for transient failures
 - 💾 Query result caching (optional)
 - 🔒 Support for both password and key-pair authentication
-- 📝 Comprehensive error handling and logging
 
 ## Configuration Options
+# Elasticsearch Search Tool
 
-### SnowflakeConfig Parameters
+A powerful tool for executing searches on Elasticsearch with support for both self-hosted and Elastic Cloud deployments.
+
+## Configuration
+
+### ElasticsearchConfig Parameters
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| account | Yes | Snowflake account identifier |
-| user | Yes | Snowflake username |
-| password | Yes* | Snowflake password |
-| private_key_path | No* | Path to private key file (alternative to password) |
-| warehouse | Yes | Snowflake warehouse name |
-| database | Yes | Default database |
-| snowflake_schema | Yes | Default schema |
-| role | No | Snowflake role |
-| session_parameters | No | Custom session parameters dict |
+| hosts | Yes* | List of Elasticsearch hosts |
+| username | No | Elasticsearch username |
+| password | No | Elasticsearch password |
+| api_key | No | Elasticsearch API key |
+| cloud_id | Yes* | Elasticsearch Cloud ID |
+| verify_certs | No | Verify SSL certificates (default: True) |
+| default_index | No | Default index to search |
 
-\* Either password or private_key_path must be provided
+\* Either hosts or cloud_id must be provided
 
 ### Tool Parameters
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| pool_size | 5 | Number of connections in the pool |
-| max_retries | 3 | Maximum retry attempts for failed queries |
+| pool_size | 5 | Size of connection pool |
+| max_retries | 3 | Maximum retry attempts for failed searches |
 | retry_delay | 1.0 | Delay between retries in seconds |
-| enable_caching | True | Enable/disable query result caching |
+| enable_caching | True | Enable/disable search result caching |
 
 ## Advanced Usage
 
-### Using Key-Pair Authentication
+### Self-hosted Elasticsearch
 
 ```python
-config = SnowflakeConfig(
-    account="your_account",
-    user="your_username",
-    private_key_path="/path/to/private_key.p8",
-    warehouse="your_warehouse",
-    database="your_database",
-    snowflake_schema="your_schema"
+config = ElasticsearchConfig(
+    hosts=["http://es1:9200", "http://es2:9200"],
+    username="your_username",
+    password="your_password",
+    default_index="your_index"
 )
 ```
 
-### Custom Session Parameters
+### Elastic Cloud Deployment
 
 ```python
-config = SnowflakeConfig(
-    # ... other config parameters ...
-    session_parameters={
-        "QUERY_TAG": "my_app",
-        "TIMEZONE": "America/Los_Angeles"
+config = ElasticsearchConfig(
+    cloud_id="deployment:xxxx",
+    api_key="your_api_key",
+    default_index="your_index"
+)
+```
+
+## Search Examples
+
+### Query String Search
+
+```python
+result = await tool._run(
+    query="status:active AND user.name:john*",
+    index="users",
+    size=10
+)
+```
+
+### Query DSL Search
+
+```python
+result = await tool._run(
+    query="""
+    {
+      "query": {
+        "range": {
+          "@timestamp": {
+            "gte": "now-30d/d",
+            "lte": "now/d"
+          }
+        }
+      },
+      "sort": [
+        {
+          "@timestamp": {
+            "order": "desc"
+          }
+        }
+      ]
     }
+    """,
+    index="logs"
 )
 ```
-
-## Best Practices
-
-1. **Error Handling**: Always wrap query execution in try-except blocks
-2. **Logging**: Enable logging to track query execution and errors
-3. **Connection Management**: Use appropriate pool sizes for your workload
-4. **Timeouts**: Set reasonable query timeouts to prevent hanging
-5. **Security**: Use key-pair auth in production and never hardcode credentials
-
-## Example with Logging
-
-```python
-import logging
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-async def main():
-    try:
-        # ... tool initialization ...
-        results = await tool._run(query="SELECT * FROM table LIMIT 10")
-        logger.info(f"Query completed successfully. Retrieved {len(results)} rows")
-    except Exception as e:
-        logger.error(f"Query failed: {str(e)}")
-        raise
-```
-
-## Error Handling
-
-The tool automatically handles common Snowflake errors:
-- DatabaseError
-- OperationalError
-- ProgrammingError
-- Network timeouts
-- Connection issues
-
-Errors are logged and retried based on your retry configuration. 
