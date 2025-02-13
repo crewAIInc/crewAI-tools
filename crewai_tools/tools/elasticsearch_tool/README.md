@@ -97,10 +97,10 @@ A powerful tool for executing searches on Elasticsearch with support for both se
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| pool_size | 5 | Size of connection pool |
-| max_retries | 3 | Maximum retry attempts for failed searches |
-| retry_delay | 1.0 | Delay between retries in seconds |
-| enable_caching | True | Enable/disable search result caching |
+| pool_size | 5       | Size of connection pool |
+| max_retries | 3       | Maximum retry attempts for failed searches |
+| retry_delay | 1.0     | Delay between retries in seconds |
+| enable_caching | False   | Enable/disable search result caching |
 
 ## Advanced Usage
 

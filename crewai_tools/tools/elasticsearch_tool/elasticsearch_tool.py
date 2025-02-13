@@ -78,7 +78,7 @@ class ElasticsearchSearchTool(BaseTool):
         default=1.0, description="Delay between retries in seconds"
     )
     enable_caching: bool = Field(
-        default=True, description="Enable search result caching"
+        default=False, description="Enable search result caching"
     )
 
     model_config = ConfigDict(
