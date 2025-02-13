@@ -1,5 +1,3 @@
-from pydantic import SecretStr
-
 # Elasticsearch Tool
 
 A tool for executing queries on Elastic database with built-in connection pooling, retry logic, and async execution support.
