@@ -6,7 +6,7 @@ from crewai.tools import BaseTool
 from docker import from_env as docker_from_env
 from docker import DockerClient
 from docker.models.containers import Container
-from docker.errors import ImageNotFound, NotFound
+from docker.errors import ImageNotFound, NotFound, DockerException
 from docker.models.containers import Container
 from pydantic import BaseModel, Field
 
@@ -44,15 +44,17 @@ class CodeInterpreterTool(BaseTool):
         """
         Verify if the Docker image is available. Optionally use a user-provided Dockerfile.
         """
-
-        client = (
-            docker_from_env()
-            if self.user_docker_base_url == None
-            else DockerClient(base_url=self.user_docker_base_url)
-        )
+        try:
+            docker_client = (
+                docker_from_env()
+                if self.user_docker_base_url is None
+                else DockerClient(base_url=self.user_docker_base_url)
+            )
+        except DockerException as e:
+            raise RuntimeError(f"Failed to initialize Docker client: {str(e)}")
 
         try:
-            client.images.get(self.default_image_tag)
+            docker_client.images.get(self.default_image_tag)
 
         except ImageNotFound:
             if self.user_dockerfile_path and os.path.exists(self.user_dockerfile_path):
@@ -67,7 +69,7 @@ class CodeInterpreterTool(BaseTool):
                         f"Dockerfile not found in {dockerfile_path}"
                     )
 
-            client.images.build(
+            docker_client.images.build(
                 path=dockerfile_path,
                 tag=self.default_image_tag,
                 rm=True,
@@ -91,22 +93,26 @@ class CodeInterpreterTool(BaseTool):
 
     def _init_docker_container(self) -> Container:
         container_name = "code-interpreter"
-        client = (
-            docker_from_env()
-            if self.user_docker_base_url == None
-            else DockerClient(base_url=self.user_docker_base_url)
-        )
+        try:
+            docker_client = (
+                docker_from_env()
+                if self.user_docker_base_url is None
+                else DockerClient(base_url=self.user_docker_base_url)
+            )
+        except DockerException as e:
+            raise RuntimeError(f"Failed to initialize Docker client: {str(e)}")
+
         current_path = os.getcwd()
 
         # Check if the container is already running
         try:
-            existing_container = client.containers.get(container_name)
+            existing_container = docker_client.containers.get(container_name)
             existing_container.stop()
             existing_container.remove()
         except NotFound:
             pass  # Container does not exist, no need to remove
 
-        return client.containers.run(
+        return docker_client.containers.run(
             self.default_image_tag,
             detach=True,
             tty=True,
