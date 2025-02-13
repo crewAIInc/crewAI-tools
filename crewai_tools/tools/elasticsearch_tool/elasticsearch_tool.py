@@ -60,8 +60,6 @@ class ElasticsearchSearchToolInput(BaseModel):
 
 
 class ElasticsearchSearchTool(BaseTool):
-    """Tool for executing searches on Elasticsearch."""
-
     name: str = "Elasticsearch Search"
     description: str = (
         "Execute searches on Elasticsearch using Query DSL or simple query string syntax. "
@@ -126,7 +124,6 @@ class ElasticsearchSearchTool(BaseTool):
                 )
 
     def _create_client(self) -> None:
-        """Create Elasticsearch client with configured settings."""
         client_params = {
             "verify_certs": self.config.verify_certs,
         }
@@ -147,7 +144,6 @@ class ElasticsearchSearchTool(BaseTool):
         self._client = AsyncElasticsearch(**client_params)
 
     def _get_cache_key(self, query: str, index: str, size: int, timeout: str) -> str:
-        """Generate a cache key for the search."""
         return f"{index}:{query}:{size}:{timeout}"
 
     async def _execute_search(
@@ -158,8 +154,6 @@ class ElasticsearchSearchTool(BaseTool):
         timeout: str = "30s",
         routing: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Execute a search with retries and return results."""
-
         search_index = index or self.config.default_index
         if not search_index:
             raise ValueError("No index specified and no default index configured")
@@ -214,8 +208,6 @@ class ElasticsearchSearchTool(BaseTool):
         routing: Optional[str] = None,
         **kwargs: Any,
     ) -> Any:
-        """Execute the search query."""
-
         try:
             results = await self._execute_search(
                 query=query, index=index, size=size, timeout=timeout, routing=routing
@@ -226,18 +218,15 @@ class ElasticsearchSearchTool(BaseTool):
             raise
 
     async def __aenter__(self):
-        """Async context manager entry."""
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Async context manager exit."""
         if self._client:
             await self._client.close()
         if self._thread_pool:
             self._thread_pool.shutdown()
 
     def __del__(self):
-        """Cleanup resources on deletion."""
         try:
             if self._client:
                 asyncio.run(self._client.close())
