@@ -10,6 +10,8 @@ from .tools import (
     DirectoryReadTool,
     DirectorySearchTool,
     DOCXSearchTool,
+    ElasticsearchConfig,
+    ElasticsearchSearchTool,
     EXASearchTool,
     FileReadTool,
     FileWriterTool,
