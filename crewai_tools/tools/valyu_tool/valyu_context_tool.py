@@ -26,8 +26,9 @@ class ValyuContextTool(BaseTool):
     _client: Any = PrivateAttr()
     search_type: Optional[str] = Field(default="both")
     max_price: Optional[int] = Field(default=None)
-    num_query: Optional[int] = Field(default=None)
-    num_results: Optional[int] = Field(default=None)
+    max_num_results: Optional[int] = Field(default=None)
+    query_rewrite: Optional[bool] = Field(default=False)
+    similarity_threshold: Optional[float] = Field(default=0.4)
     data_sources: Optional[List[str]] = Field(default=None)
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
@@ -57,10 +58,13 @@ class ValyuContextTool(BaseTool):
             self.max_price = kwargs["max_price"]
         if "search_type" in kwargs:
             self.search_type = kwargs["search_type"]
-        if "num_query" in kwargs:
-            self.num_query = kwargs["num_query"]
-        if "num_results" in kwargs:
-            self.num_results = kwargs["num_results"]
+
+        if "max_num_results" in kwargs:
+            self.max_num_results = kwargs["max_num_results"]
+        if "query_rewrite" in kwargs:
+            self.query_rewrite = kwargs["query_rewrite"]
+        if "similarity_threshold" in kwargs:
+            self.similarity_threshold = kwargs["similarity_threshold"]
         if "data_sources" in kwargs:
             self.data_sources = kwargs["data_sources"]
 
@@ -71,8 +75,9 @@ class ValyuContextTool(BaseTool):
             default=None
         ),
         data_sources: Optional[List[str]] = Field(default=None),
-        num_query: Optional[int] = Field(default=None),
-        num_results: Optional[int] = Field(default=None),
+        max_num_results: Optional[int] = Field(default=None),
+        query_rewrite: Optional[bool] = Field(default=None),
+        similarity_threshold: Optional[float] = Field(default=None),
         max_price: Optional[int] = Field(default=None),
     ) -> Any:
         """Execute a search query using the Valyu API.
@@ -82,8 +87,9 @@ class ValyuContextTool(BaseTool):
             search_type (Optional[Literal["both", "proprietary", "web"]]): Type of search to perform.
                 'both' searches all sources, 'proprietary' for proprietary data only, 'web' for web data only.
             data_sources (Optional[List[str]]): List of specific data sources to search from.
-            num_query (Optional[int]): Number of search queries to generate.
-            num_results (Optional[int]): Number of results to return (must be ≤ num_query).
+            max_num_results (Optional[int]): Maximum number of results to return.
+            query_rewrite (Optional[bool]): Whether to rewrite the query.
+            similarity_threshold (Optional[float]): Similarity threshold for the query rewrite.
             max_price (Optional[int]): Maximum price threshold per 1000 results (PCM).
 
         Returns:
@@ -97,24 +103,13 @@ class ValyuContextTool(BaseTool):
                     - price (float): Price of the result
                 - error (str): Error message if unsuccessful
         """
-        # Validate num_query and num_results
-        final_num_query = self.num_query or num_query
-        final_num_results = self.num_results or num_results
-        if (
-            final_num_query is not None
-            and final_num_results is not None
-            and final_num_query < final_num_results
-        ):
-            return {
-                "success": False,
-                "error": "num_query must be greater than or equal to num_results",
-            }
 
         params = {
             "query": query,
             "search_type": self.search_type or search_type,
-            "num_query": final_num_query,
-            "num_results": final_num_results,
+            "max_num_results": self.max_num_results or max_num_results,
+            "query_rewrite": self.query_rewrite or query_rewrite,
+            "similarity_threshold": self.similarity_threshold or similarity_threshold,
             "max_price": self.max_price or max_price,
         }
 
