@@ -91,3 +91,12 @@ def test_scrape_with_return_html_false(_mocked_chrome_driver):
     mock_driver.get.assert_called_once_with("https://example.com")
     mock_driver.find_element.assert_called_with("tag name", "body")
     mock_driver.close.assert_called_once()
+
+
+@patch("selenium.webdriver.Chrome")
+def test_webdriver_initialization(_mocked_chrome_driver):
+    """Test that WebDriver is properly initialized in SeleniumScrapingTool."""
+    tool = SeleniumScrapingTool()
+    assert tool.driver is not None
+    assert isinstance(tool.driver, MagicMock)
+    _mocked_chrome_driver.assert_called_once()

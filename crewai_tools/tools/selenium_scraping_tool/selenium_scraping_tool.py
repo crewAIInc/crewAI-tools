@@ -91,8 +91,9 @@ class SeleniumScrapingTool(BaseTool):
                 raise ImportError(
                     "`selenium` and `webdriver-manager` package not found, please run `uv add selenium webdriver-manager`"
                 )
-        self.driver = webdriver.Chrome()
         self._options = Options()
+        self._options.add_argument("--headless")
+        self.driver = webdriver.Chrome(options=self._options)
         self._by = By
         if cookie is not None:
             self.cookie = cookie
@@ -163,17 +164,14 @@ class SeleniumScrapingTool(BaseTool):
         if not re.match(r"^https?://", url):
             raise ValueError("URL must start with http:// or https://")
 
-        options = self._options
-        options.add_argument("--headless")
-        driver = self.driver(options=options)
-        driver.get(url)
+        self.driver.get(url)
         time.sleep(wait_time)
         if cookie:
-            driver.add_cookie(cookie)
+            self.driver.add_cookie(cookie)
             time.sleep(wait_time)
-            driver.get(url)
+            self.driver.get(url)
             time.sleep(wait_time)
-        return driver
+        return self.driver
 
     def close(self):
         self.driver.close()
