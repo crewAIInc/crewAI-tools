@@ -1,4 +1,5 @@
 from .tools import (
+    AgentQLQueryDataTool,
     AIMindTool,
     BraveSearchTool,
     BrowserbaseLoadTool,
