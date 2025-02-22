@@ -83,6 +83,7 @@ snowflake = [
     "snowflake-sqlalchemy>=1.7.3",
 ]
 elasticsearch = [
+    "cachetools>=5.5.1",
     "elasticsearch>=8.17.0",
     "aiohttp~=3.11"
 ]

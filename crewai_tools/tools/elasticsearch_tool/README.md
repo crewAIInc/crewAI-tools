@@ -8,10 +8,10 @@ A tool for executing queries on Elastic database with built-in connection poolin
 uv sync --extra elasticsearch
 
 OR 
-uv pip install elasticsearch>=8.17.0 aiohttp~=3.11
+uv pip install elasticsearch>=8.17.0 aiohttp~=3.11 cachetools>=5.5.1
 
 OR 
-pip install elasticsearch>=8.17.0 aiohttp~=3.11
+pip install elasticsearch>=8.17.0 aiohttp~=3.11 cachetools>=5.5.1
 ```
 
 ## Quick Start
