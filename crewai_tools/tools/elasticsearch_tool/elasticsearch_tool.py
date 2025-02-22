@@ -4,6 +4,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional, Type
 
+from cachetools import LRUCache
 from crewai.tools.base_tool import BaseTool
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
@@ -20,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Cache for search results
-_search_cache = {}
+_search_cache = LRUCache(maxsize=128)
 
 
 class ElasticsearchConfig(BaseModel):
@@ -29,7 +30,7 @@ class ElasticsearchConfig(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
 
     hosts: List[str] = Field(..., description="List of Elasticsearch hosts")
-    username: Optional[str] = Field(None, description="Elasticsearch username")
+    username: Optional[str] = Field(None, despcription="Elasticsearch username")
     password: Optional[SecretStr] = Field(None, description="Elasticsearch password")
     api_key: Optional[SecretStr] = Field(None, description="Elasticsearch API key")
     cloud_id: Optional[str] = Field(None, description="Elasticsearch Cloud ID")
