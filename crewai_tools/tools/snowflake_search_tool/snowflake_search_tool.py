@@ -26,7 +26,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Cache for query results
-_query_cache = LRUCache(maxsize=128)
+CACHE_SIZE = 128
+_query_cache = LRUCache(maxsize=CACHE_SIZE)
 
 
 class SnowflakeConfig(BaseModel):
