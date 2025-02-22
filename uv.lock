@@ -532,7 +532,7 @@ name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
 wheels = [
@@ -609,7 +609,7 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.98.0"
+version = "0.100.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
@@ -619,6 +619,7 @@ dependencies = [
     { name = "click" },
     { name = "instructor" },
     { name = "json-repair" },
+    { name = "json5" },
     { name = "jsonref" },
     { name = "litellm" },
     { name = "openai" },
@@ -635,14 +636,14 @@ dependencies = [
     { name = "tomli-w" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ec/3d/50e385db1fba91830b37fff0eff39613f09111332470eae73fa7c46df3a0/crewai-0.98.0.tar.gz", hash = "sha256:3aaf2c30781d4841d0a521b28d9f53d0ea483660885e9999211636fd774bef33", size = 7751208 }
+sdist = { url = "https://files.pythonhosted.org/packages/fb/5c/f476e790c0c1ec3b68cb1ea4b47e783de66436c24d77764ebc8749ba074e/crewai-0.100.1.tar.gz", hash = "sha256:e0a884d4462f85133fb92922cf29eec30d81256768b51505c9b4cd37e70715f0", size = 7774570 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/9a/6ce2ef62575357b685e877aa77a35774551d0e3da88cd5d7cce51caf488f/crewai-0.98.0-py3-none-any.whl", hash = "sha256:048c5373ca7d85bc254c777a90c8f165d3183520bee0113180d46ce836fdf700", size = 231338 },
+    { url = "https://files.pythonhosted.org/packages/d2/72/5eefd0f1a605a4167b278afb8b1eae731730e2726436890774967b0a6bee/crewai-0.100.1-py3-none-any.whl", hash = "sha256:50663f122ce6b4efa3dcd16b409ae93276ec67bd81c804e9d6794c6948d2b2ca", size = 234999 },
 ]
 
 [[package]]
 name = "crewai-tools"
-version = "0.33.0"
+version = "0.36.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
@@ -724,7 +725,6 @@ weaviate-client = [
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
-    { name = "pytest-asyncio" },
 ]
 
 [package.metadata]
@@ -735,7 +735,7 @@ requires-dist = [
     { name = "chromadb", specifier = ">=0.4.22" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
-    { name = "crewai", specifier = ">=0.95.0" },
+    { name = "crewai", specifier = ">=0.100.0" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "docker", specifier = ">=7.1.0" },
     { name = "elasticsearch", marker = "extra == 'elasticsearch'", specifier = ">=8.17.0" },
@@ -765,11 +765,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "pytest", specifier = ">=8.0.0" },
-    { name = "pytest", specifier = ">=8.3.4" },
-    { name = "pytest-asyncio", specifier = ">=0.25.2" },
-]
+dev = [{ name = "pytest", specifier = ">=8.3.4" }]
 
 [[package]]
 name = "cryptography"
@@ -1918,6 +1914,15 @@ wheels = [
 ]
 
 [[package]]
+name = "json5"
+version = "0.10.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/85/3d/bbe62f3d0c05a689c711cff57b2e3ac3d3e526380adb7c781989f075115c/json5-0.10.0.tar.gz", hash = "sha256:e66941c8f0a02026943c52c2eb34ebeb2a6f819a0be05920a6f5243cd30fd559", size = 48202 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/42/797895b952b682c3dafe23b1834507ee7f02f4d6299b65aaa61425763278/json5-0.10.0-py3-none-any.whl", hash = "sha256:19b23410220a7271e8377f81ba8aacba2fdd56947fbb137ee5977cbe1f5e8dfa", size = 34049 },
+]
+
+[[package]]
 name = "jsonpatch"
 version = "1.33"
 source = { registry = "https://pypi.org/simple" }
@@ -2178,7 +2183,7 @@ wheels = [
 
 [[package]]
 name = "litellm"
-version = "1.57.4"
+version = "1.59.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -2193,9 +2198,9 @@ dependencies = [
     { name = "tiktoken" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1a/9a/115bde058901b087e7fec1bed4be47baf8d5c78aff7dd2ffebcb922003ff/litellm-1.57.4.tar.gz", hash = "sha256:747a870ddee9c71f9560fc68ad02485bc1008fcad7d7a43e87867a59b8ed0669", size = 6304427 }
+sdist = { url = "https://files.pythonhosted.org/packages/86/b0/c8ec06bd1c87a92d6d824008982b3c82b450d7bd3be850a53913f1ac4907/litellm-1.59.8.tar.gz", hash = "sha256:9d645cc4460f6a9813061f07086648c4c3d22febc8e1f21c663f2b7750d90512", size = 6428607 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9f/72/35c8509cb2a37343c213b794420405cbef2e1fdf8626ee981fcbba3d7c5c/litellm-1.57.4-py3-none-any.whl", hash = "sha256:afe48924d8a36db801018970a101622fce33d117fe9c54441c0095c491511abb", size = 6592126 },
+    { url = "https://files.pythonhosted.org/packages/b9/38/889da058f566ef9ea321aafa25e423249492cf2a508dfdc0e5acfcf04526/litellm-1.59.8-py3-none-any.whl", hash = "sha256:2473914bd2343485a185dfe7eedb12ee5fda32da3c9d9a8b73f6966b9b20cf39", size = 6716233 },
 ]
 
 [[package]]
@@ -3178,7 +3183,7 @@ name = "portalocker"
 version = "2.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pywin32", marker = "sys_platform == 'win32'" },
+    { name = "pywin32", marker = "platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ed/d3/c6c64067759e87af98cc668c1cc75171347d0f1577fab7ca3749134e3cd4/portalocker-2.10.1.tar.gz", hash = "sha256:ef1bf844e878ab08aee7e40184156e1151f228f103aa5c6bd0724cc330960f8f", size = 40891 }
 wheels = [
@@ -3689,18 +3694,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/05/35/30e0d83068951d90a01852cb1cef56e5d8a09d20c7f511634cc2f7e0372a/pytest-8.3.4.tar.gz", hash = "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761", size = 1445919 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/11/92/76a1c94d3afee238333bc0a42b82935dd8f9cf8ce9e336ff87ee14d9e1cf/pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6", size = 343083 },
-]
-
-[[package]]
-name = "pytest-asyncio"
-version = "0.25.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f2/a8/ecbc8ede70921dd2f544ab1cadd3ff3bf842af27f87bbdea774c7baa1d38/pytest_asyncio-0.25.3.tar.gz", hash = "sha256:fc1da2cf9f125ada7e710b4ddad05518d4cee187ae9412e9ac9271003497f07a", size = 54239 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/67/17/3493c5624e48fd97156ebaec380dcaafee9506d7e2c46218ceebbb57d7de/pytest_asyncio-0.25.3-py3-none-any.whl", hash = "sha256:9e89518e0f9bd08928f97a3482fdc4e244df17529460bc038291ccaf8f85c7c3", size = 19467 },
 ]
 
 [[package]]
@@ -4609,7 +4602,7 @@ name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [
