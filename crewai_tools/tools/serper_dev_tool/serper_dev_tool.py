@@ -32,6 +32,18 @@ class SerperDevToolSchema(BaseModel):
     search_query: str = Field(
         ..., description="Mandatory search query you want to use to search the internet"
     )
+    country: str = Field(
+        default="us", 
+        description="Optional two-letter country code (e.g., 'us', 'uk', 'fr') for localized results"
+    )
+    language: str = Field(
+        default="en",
+        description="Optional two-letter language code (e.g., 'en', 'es', 'fr') for results in specific language"
+    )
+    location: str = Field(
+        default="",
+        description="Optional location parameter (e.g., 'New York, NY') for location-specific results"
+    )
 
 
 class SerperDevTool(BaseTool):
@@ -120,7 +132,8 @@ class SerperDevTool(BaseTool):
             try:
                 processed_results.append({"query": result["query"]})
             except KeyError:
-                logger.warning(f"Skipping malformed related search result: {result}")
+                logger.warning(
+                    f"Skipping malformed related search result: {result}")
                 continue
         return processed_results
 
@@ -143,10 +156,17 @@ class SerperDevTool(BaseTool):
                 continue
         return processed_results
 
-    def _make_api_request(self, search_query: str, search_type: str) -> dict:
+    def _make_api_request(self, search_query: str, search_type: str, country: str, language: str, location: str = "") -> dict:
         """Make API request to Serper."""
         search_url = self._get_search_url(search_type)
-        payload = json.dumps({"q": search_query, "num": self.n_results})
+        payload = json.dumps({
+            "q": search_query, 
+            "num": self.n_results,
+            "gl": country,
+            "hl": language,
+            "location": location if location else None
+        })
+        
         headers = {
             "X-API-KEY": os.environ["SERPER_API_KEY"],
             "content-type": "application/json",
@@ -206,7 +226,8 @@ class SerperDevTool(BaseTool):
 
         elif search_type == "news":
             if "news" in results:
-                formatted_results["news"] = self._process_news_results(results["news"])
+                formatted_results["news"] = self._process_news_results(
+                    results["news"])
 
         return formatted_results
 
@@ -215,8 +236,11 @@ class SerperDevTool(BaseTool):
         search_query = kwargs.get("search_query") or kwargs.get("query")
         search_type = kwargs.get("search_type", self.search_type)
         save_file = kwargs.get("save_file", self.save_file)
+        country = kwargs.get("country", "us")
+        language = kwargs.get("language", "en")
+        location = kwargs.get("location", "")
 
-        results = self._make_api_request(search_query, search_type)
+        results = self._make_api_request(search_query, search_type, country, language, location)
 
         formatted_results = {
             "searchParameters": {
@@ -226,7 +250,8 @@ class SerperDevTool(BaseTool):
             }
         }
 
-        formatted_results.update(self._process_search_results(results, search_type))
+        formatted_results.update(
+            self._process_search_results(results, search_type))
         formatted_results["credits"] = results.get("credits", 1)
 
         if save_file:
