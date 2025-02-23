@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Type, List
+from typing import TYPE_CHECKING, Any, Optional, Type, List
 
 from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -36,9 +36,6 @@ class FirecrawlSearchTool(BaseTool):
         timeout (int): Timeout in milliseconds. Default: 60000
     """
 
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True, validate_assignment=True, frozen=False
-    )
     model_config = ConfigDict(
         arbitrary_types_allowed=True, validate_assignment=True, frozen=False
     )

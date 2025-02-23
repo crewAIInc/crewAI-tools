@@ -17,7 +17,6 @@ except ImportError:
 class FirecrawlCrawlWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
 
-
 class FirecrawlCrawlWebsiteTool(BaseTool):
     """
     Tool for crawling websites using Firecrawl. To run this tool, you need to have a Firecrawl API key.
@@ -100,7 +99,6 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
             raise RuntimeError("FirecrawlApp not properly initialized")
 
         return self._firecrawl.crawl_url(url, poll_interval=2, params=self.config)
-
 
 try:
     from firecrawl import FirecrawlApp
