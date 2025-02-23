@@ -15,10 +15,13 @@ from .docx_search_tool.docx_search_tool import DOCXSearchTool
 from .exa_tools.exa_search_tool import EXASearchTool
 from .file_read_tool.file_read_tool import FileReadTool
 from .file_writer_tool.file_writer_tool import FileWriterTool
+from .files_compressor_tool.files_compressor_tool import FileCompressorTool
 from .firecrawl_crawl_website_tool.firecrawl_crawl_website_tool import (
     FirecrawlCrawlWebsiteTool,
 )
-from .files_compressor_tool.files_compressor_tool import FileCompressorTool
+from .firecrawl_extract_tool.firecrawl_extract_tool import (
+  FirecrawlExtractTool,
+)
 from .firecrawl_scrape_website_tool.firecrawl_scrape_website_tool import (
     FirecrawlScrapeWebsiteTool,
 )

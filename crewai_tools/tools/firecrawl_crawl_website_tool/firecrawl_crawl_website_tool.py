@@ -1,4 +1,4 @@
-from typing import Any, Optional, Type
+from typing import Any, Dict, Optional, Type, List, Union
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -11,7 +11,6 @@ except ImportError:
 
 class FirecrawlCrawlWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
-
 
 class FirecrawlCrawlWebsiteTool(BaseTool):
     """
@@ -88,7 +87,6 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
 
     def _run(self, url: str):
         return self._firecrawl.crawl_url(url, **self.config)
-
 
 try:
     from firecrawl import FirecrawlApp
