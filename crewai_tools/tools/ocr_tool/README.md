@@ -5,7 +5,9 @@
 This tool performs Optical Character Recognition (OCR) on images using supported LLMs. It can extract text from both local image files and images available via URLs. The tool leverages the LLM's vision capabilities to provide accurate text extraction from images.
 
 ## Installation
-Install the crewai_tools package
+
+Install the crewai_tools package:
+
 ```shell
 pip install 'crewai[tools]'
 ```
@@ -14,6 +16,7 @@ pip install 'crewai[tools]'
 
 Any LLM that supports the `vision` feature should work. It must accept image_url as a user message.
 The tool has been tested with:
+
 - OpenAI's `gpt-4o`
 - Gemini's `gemini/gemini-1.5-pro`
 
@@ -38,5 +41,6 @@ def researcher(self) -> Agent:
 ```
 
 The tool accepts either a local file path or a URL to the image:
+
 - For local files, provide the absolute or relative path
 - For remote images, provide the complete URL starting with 'http' or 'https'

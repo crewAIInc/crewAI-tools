@@ -28,6 +28,7 @@ from .mdx_seach_tool.mdx_search_tool import MDXSearchTool
 from .multion_tool.multion_tool import MultiOnTool
 from .mysql_search_tool.mysql_search_tool import MySQLSearchTool
 from .nl2sql.nl2sql_tool import NL2SQLTool
+from .ocr_tool.ocr_tool import OCRTool
 from .patronus_eval_tool import (
     PatronusEvalTool,
     PatronusLocalEvaluatorTool,
