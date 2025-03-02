@@ -91,9 +91,12 @@ class SeleniumScrapingTool(BaseTool):
                 raise ImportError(
                     "`selenium` and `webdriver-manager` package not found, please run `uv add selenium webdriver-manager`"
                 )
-        self.driver = webdriver.Chrome()
+        # Store the webdriver class instead of creating an instance
+        self._webdriver = webdriver
         self._options = Options()
         self._by = By
+        self.driver = None  # Will be initialized lazily when needed
+        
         if cookie is not None:
             self.cookie = cookie
 
@@ -108,6 +111,12 @@ class SeleniumScrapingTool(BaseTool):
             self.args_schema = FixedSeleniumScrapingToolSchema
 
         self._generate_description()
+
+    def _create_driver_instance(self):
+        """Create a new WebDriver instance if one doesn't exist yet."""
+        if self.driver is None:
+            self.driver = self._webdriver.Chrome()
+        return self.driver
 
     def _run(
         self,
@@ -165,7 +174,15 @@ class SeleniumScrapingTool(BaseTool):
 
         options = self._options
         options.add_argument("--headless")
-        driver = self.driver(options=options)
+        
+        # Create a new WebDriver instance if needed
+        if self.driver is None:
+            self.driver = self._webdriver.Chrome(options=options)
+        else:
+            # If driver already exists, just use it
+            pass
+            
+        driver = self.driver
         driver.get(url)
         time.sleep(wait_time)
         if cookie:
@@ -176,4 +193,11 @@ class SeleniumScrapingTool(BaseTool):
         return driver
 
     def close(self):
-        self.driver.close()
+        """Close the WebDriver if it exists."""
+        if self.driver is not None:
+            try:
+                self.driver.quit()  # quit() is more thorough than close()
+            except Exception:
+                pass  # Ignore errors during cleanup
+            finally:
+                self.driver = None
