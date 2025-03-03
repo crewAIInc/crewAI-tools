@@ -10,6 +10,7 @@ from .tools import (
     DirectoryReadTool,
     DirectorySearchTool,
     DOCXSearchTool,
+    E2BCodeInterpreterTool,
     EXASearchTool,
     FileReadTool,
     FileWriterTool,
