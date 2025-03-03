@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import os
-from typing import Any, Type
+from typing import Any, Type, Optional
 
 import requests
 from crewai.tools import BaseTool
@@ -32,6 +32,15 @@ class SerperDevToolSchema(BaseModel):
     search_query: str = Field(
         ..., description="Mandatory search query you want to use to search the internet"
     )
+    country: Optional[str] = Field(
+        None, description="Optional two-letter country code (e.g., 'us', 'uk', 'fr') for localized results"
+    )
+    language: Optional[str] = Field(
+        None, description="Optional two-letter language code (e.g., 'en', 'es', 'fr') for results in specific language"
+    )
+    location: Optional[str] = Field(
+        None, description="Optional location parameter (e.g., 'New York, NY') for location-specific results"
+    )
 
 
 class SerperDevTool(BaseTool):
@@ -45,6 +54,9 @@ class SerperDevTool(BaseTool):
     n_results: int = 10
     save_file: bool = False
     search_type: str = "search"
+    country: Optional[str] = ""  # Maps to 'gl' parameter in Serper API
+    location: Optional[str] = ""
+    locale: Optional[str] = ""   # Maps to 'hl' parameter in Serper API
 
     def _get_search_url(self, search_type: str) -> str:
         """Get the appropriate endpoint URL based on search type."""
@@ -143,10 +155,28 @@ class SerperDevTool(BaseTool):
                 continue
         return processed_results
 
-    def _make_api_request(self, search_query: str, search_type: str) -> dict:
+    def _make_api_request(self, search_query: str, search_type: str, country: Optional[str] = None,
+                         location: Optional[str] = None, language: Optional[str] = None) -> dict:
         """Make API request to Serper."""
         search_url = self._get_search_url(search_type)
-        payload = json.dumps({"q": search_query, "num": self.n_results})
+
+        # Build payload with search parameters
+        payload = {"q": search_query, "num": self.n_results}
+
+        # Use parameters passed to the method, falling back to class properties
+        effective_country = country if country is not None else self.country
+        effective_location = location if location is not None else self.location
+        effective_language = language if language is not None else self.locale
+
+        # Add localization parameters if they have values
+        if effective_country:
+            payload["gl"] = effective_country
+        if effective_location:
+            payload["location"] = effective_location
+        if effective_language:
+            payload["hl"] = effective_language
+
+        payload = json.dumps(payload)
         headers = {
             "X-API-KEY": os.environ["SERPER_API_KEY"],
             "content-type": "application/json",
@@ -216,7 +246,18 @@ class SerperDevTool(BaseTool):
         search_type = kwargs.get("search_type", self.search_type)
         save_file = kwargs.get("save_file", self.save_file)
 
-        results = self._make_api_request(search_query, search_type)
+        # Get localization parameters from kwargs if provided
+        country = kwargs.get("country")
+        location = kwargs.get("location")
+        language = kwargs.get("language")
+
+        results = self._make_api_request(
+            search_query,
+            search_type,
+            country=country,
+            location=location,
+            language=language
+        )
 
         formatted_results = {
             "searchParameters": {
