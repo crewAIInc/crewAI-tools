@@ -5,6 +5,7 @@
 <div align="left">
 
 # **crewAI Tools**
+
 Welcome to crewAI Tools! This repository provides a comprehensive guide for setting up sophisticated tools for [crewAI](https://github.com/crewAIInc/crewAI) agents, empowering your AI solutions with bespoke tooling.
 
 In the realm of CrewAI agents, tools are pivotal for enhancing functionality. This guide outlines the steps to equip your agents with an arsenal of ready-to-use tools and the methodology to craft your own.
@@ -13,7 +14,7 @@ In the realm of CrewAI agents, tools are pivotal for enhancing functionality. Th
 
 <h3>
 
-[Homepage](https://www.crewai.io/) | [Documentation](https://docs.crewai.com/) | [Chat with Docs](https://chatg.pt/DWjSBZn) | [Examples](https://github.com/crewAIInc/crewAI-examples) | [Discord](https://discord.com/invite/X4JWnZnxPb) | [Discourse](https://community.crewai.com/)
+[Homepage](https://www.crewai.io/) | [Documentation](https://docs.crewai.com/) | [Chat with Docs](https://chatg.pt/DWjSBZn) | [Examples](https://github.com/crewAIInc/crewAI-examples) | [Community Forum](https://community.crewai.com/)
 
 </h3>
 
@@ -22,8 +23,8 @@ In the realm of CrewAI agents, tools are pivotal for enhancing functionality. Th
 ## Table of contents
 
 - [Creating Your Tools](#creating-your-tools)
-	- [Subclassing `BaseTool`](#subclassing-basetool)
-	- [Utilizing the `tool` Decorator](#utilizing-the-tool-decorator)
+  - [Subclassing `BaseTool`](#subclassing-basetool)
+  - [Utilizing the `tool` Decorator](#utilizing-the-tool-decorator)
 - [Contribution Guidelines](#contribution-guidelines)
 - [Development Setup](#development-setup)
 
@@ -45,6 +46,7 @@ For a complete list and detailed documentation of each tool, please refer to the
 Tools are always expect to return strings, as they are meant to be used by the agents to generate responses.
 
 There are three ways to create tools for crewAI agents:
+
 - [Subclassing `BaseTool`](#subclassing-basetool)
 - [Using the `tool` decorator](#utilizing-the-tool-decorator)
 
@@ -63,7 +65,6 @@ class MyCustomTool(BaseTool):
 ```
 
 Define a new class inheriting from `BaseTool`, specifying `name`, `description`, and the `_run` method for operational logic.
-
 
 ### Utilizing the `tool` Decorator
 
@@ -140,4 +141,4 @@ Thank you for your interest in enhancing the capabilities of AI agents through a
 
 ## Contact
 
-For questions or support, please join our [Discord community](https://discord.com/invite/X4JWnZnxPb), [Discourse](https://community.crewai.com/) or open an issue in this repository.
+For questions or support, please join our [Community Forum](https://community.crewai.com/) or open an issue in this repository.
