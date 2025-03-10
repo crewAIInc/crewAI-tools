@@ -62,7 +62,7 @@ class NL2CypherTool(BaseTool):
         # Get schema
         self._get_schema()
 
-    def _get_schema(self):
+    def _get_schema(self) -> None:
         self.structured_schema = get_structured_schema(
             driver=self._driver,
             is_enhanced=True,
@@ -72,7 +72,7 @@ class NL2CypherTool(BaseTool):
         )
         self.schema = format_schema(schema=self.structured_schema, is_enhanced=True)
 
-    def _run(self, query: str):
+    def _run(self, query: str) -> list:
         try:
             data = self.execute_cypher(query)
         except Exception as exc:
