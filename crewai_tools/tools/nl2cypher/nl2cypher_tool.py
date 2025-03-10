@@ -3,7 +3,12 @@ from typing import Any, Type, Union
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 from neo4j import GraphDatabase, Query
-from neo4j.exceptions import Neo4jError, ConfigurationError, ServiceUnavailable, AuthError
+from neo4j.exceptions import (
+    Neo4jError,
+    ConfigurationError,
+    ServiceUnavailable,
+    AuthError,
+)
 
 from neo4j_graphrag.schema import (
     _value_sanitize,
@@ -33,7 +38,9 @@ class NL2CypherTool(BaseTool):
     args_schema: Type[BaseModel] = NL2CypherToolInput
 
     def model_post_init(self, __context: Any) -> None:
-        self._driver = GraphDatabase.driver(self.uri, auth=(self.username, self.password))
+        self._driver = GraphDatabase.driver(
+            self.uri, auth=(self.username, self.password)
+        )
         # Verify connection
         try:
             self._driver.verify_connectivity()
@@ -63,9 +70,7 @@ class NL2CypherTool(BaseTool):
             timeout=self.timeout,
             sanitize=self.sanitize,
         )
-        self.schema = format_schema(
-            schema=self.structured_schema, is_enhanced=True
-        )
+        self.schema = format_schema(schema=self.structured_schema, is_enhanced=True)
 
     def _run(self, cypher_query: str):
         try:
@@ -80,7 +85,9 @@ class NL2CypherTool(BaseTool):
             )
         return data
 
-    def execute_cypher(self, cypher_query: str, params: dict = None) -> Union[list, str]:
+    def execute_cypher(
+        self, cypher_query: str, params: dict = None
+    ) -> Union[list, str]:
         try:
             data, _, _ = self._driver.execute_query(
                 Query(text=cypher_query, timeout=self.timeout),
@@ -107,12 +114,11 @@ class NL2CypherTool(BaseTool):
                     and e.message is not None
                     and (
                         "in an open transaction is not possible" in e.message
-                        or "tried to execute in an explicit transaction"
-                        in e.message
+                        or "tried to execute in an explicit transaction" in e.message
                     )
                 )
             ):
-                    raise
+                raise
         # fallback to allow implicit transactions
         with self._driver.session(database=self.database) as session:
             result = session.run(Query(text=cypher_query, timeout=self.timeout), params)
