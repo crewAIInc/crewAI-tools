@@ -2,8 +2,7 @@ from typing import Any, Type, Union
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-from neo4j import GraphDatabase
-from neo4j import Query
+from neo4j import GraphDatabase, Query
 from neo4j.exceptions import Neo4jError, ConfigurationError, ServiceUnavailable, AuthError
 
 from neo4j_graphrag.schema import (
@@ -73,11 +72,12 @@ class NL2CypherTool(BaseTool):
             data = self.execute_cypher(cypher_query)
         except Exception as exc:
             data = (
-                f"Based on these tables {self.tables} and columns {self.columns}, "
-                "you can create SQL queries to retrieve data from the database."
-                f"Get the original request {cypher_query} and the error {exc} and create the correct SQL query."
+                f"Based on the provided schema {self.schema}, "
+                "you can construct a valid Cypher query to retrieve the desired data. "
+                f"The original query was: {cypher_query}. "
+                f"The encountered error was: {exc}. "
+                "Use this information to generate a corrected Cypher query."
             )
-
         return data
 
     def execute_cypher(self, cypher_query: str, params: dict = None) -> Union[list, str]:
