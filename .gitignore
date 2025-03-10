@@ -9,3 +9,6 @@ docs_crew/
 chroma.sqlite3
 venv
 .venv/
+agent_history.gif
+poetry.lock
+uv.lock
