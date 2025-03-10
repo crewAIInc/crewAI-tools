@@ -18,7 +18,7 @@ from neo4j_graphrag.schema import (
 
 
 class NL2CypherToolInput(BaseModel):
-    cypher_query: str = Field(
+    query: str = Field(
         title="Cypher Query",
         description="The Cypher query to execute.",
     )
@@ -72,14 +72,14 @@ class NL2CypherTool(BaseTool):
         )
         self.schema = format_schema(schema=self.structured_schema, is_enhanced=True)
 
-    def _run(self, cypher_query: str):
+    def _run(self, query: str):
         try:
-            data = self.execute_cypher(cypher_query)
+            data = self.execute_cypher(query)
         except Exception as exc:
             data = (
                 f"Based on the provided schema {self.schema}, "
                 "you can construct a valid Cypher query to retrieve the desired data. "
-                f"The original query was: {cypher_query}. "
+                f"The original query was: {query}. "
                 f"The encountered error was: {exc}. "
                 "Use this information to generate a corrected Cypher query."
             )
@@ -91,7 +91,7 @@ class NL2CypherTool(BaseTool):
         try:
             data, _, _ = self._driver.execute_query(
                 Query(text=cypher_query, timeout=self.timeout),
-                database_=self._database,
+                database_=self.database,
                 parameters_=params,
             )
             json_data = [r.data() for r in data]
