@@ -15,6 +15,7 @@ from .tools import (
     FileReadTool,
     FileWriterTool,
     FirecrawlCrawlWebsiteTool,
+    FirecrawlExtractTool,
     FirecrawlScrapeWebsiteTool,
     FirecrawlSearchTool,
     GithubSearchTool,
