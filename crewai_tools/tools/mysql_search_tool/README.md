@@ -10,6 +10,29 @@ To install the `crewai_tools` package and utilize the MySQLSearchTool, execute t
 pip install 'crewai[tools]'
 ```
 
+### MySQL Dependencies
+To use the MySQLSearchTool, you need to install the MySQL dependencies:
+
+```shell
+pip install 'crewai-tools[mysql]'
+```
+
+Or if you're using the crewai package with tools:
+
+```shell
+pip install 'crewai[tools,mysql]'
+```
+
+### Version Compatibility
+- MySQL Server: 5.7+
+- mysql-connector-python: 8.1.0+
+
+### Troubleshooting
+Common installation issues:
+- If you encounter `EnvironmentError`, ensure MySQL server is running.
+- For authentication issues, verify your MySQL credentials.
+- If you see `ImportError: No module named 'mysql'`, make sure to install with the mysql extra: `pip install 'crewai-tools[mysql]'`
+
 ## Example
 Below is an example showcasing how to use the MySQLSearchTool to conduct a semantic search on a table within a MySQL database:
 
