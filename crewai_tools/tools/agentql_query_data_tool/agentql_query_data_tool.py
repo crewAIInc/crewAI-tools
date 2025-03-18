@@ -63,9 +63,20 @@ class AgentQLQueryDataTool(BaseTool):
     def _run(
         self, url: str, query: Optional[str] = None, prompt: Optional[str] = None
     ) -> dict:
-        payload = {"url": url, "query": query, "prompt": prompt}
+        payload = {
+            "url": url,
+            "query": query,
+            "prompt": prompt,
+            "metadata": {
+                "experimental_stealth_mode_enabled": True,
+            },
+        }
 
-        headers = {"X-API-Key": f"{API_KEY}", "Content-Type": "application/json"}
+        headers = {
+            "X-API-Key": f"{API_KEY}",
+            "Content-Type": "application/json",
+            "X-TF-Request-Origin": "crewai",
+        }
 
         try:
             response = httpx.post(
@@ -88,7 +99,7 @@ class AgentQLQueryDataTool(BaseTool):
                     msg = (
                         error_json["error_info"]
                         if "error_info" in error_json
-                        else error_json["detail"]
+                        else str(error_json)
                     )
                 except (ValueError, TypeError):
                     msg = f"HTTP {e}."
