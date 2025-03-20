@@ -16,7 +16,6 @@ except ImportError:
 
 
 class FirecrawlSearchToolSchema(BaseModel):
-    query: str = Field(description="Search query")
     limit: Optional[int] = Field(
         default=5, description="Maximum number of results to return"
     )
