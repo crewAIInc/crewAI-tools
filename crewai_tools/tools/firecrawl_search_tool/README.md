@@ -4,6 +4,8 @@
 
 [Firecrawl](https://firecrawl.dev) is a platform for crawling and convert any website into clean markdown or structured data.
 
+The [search endpoint](https://docs.firecrawl.dev/api-reference/endpoint/search) combines web search (SERP) with Firecrawl’s scraping capabilities to return full page content for any query.
+
 ## Installation
 
 - Get an API key from [firecrawl.dev](https://firecrawl.dev) and set it in environment variables (`FIRECRAWL_API_KEY`).
@@ -20,8 +22,12 @@ Utilize the FirecrawlSearchTool as follows to allow your agent to load websites:
 ```python
 from crewai_tools import FirecrawlSearchTool
 
-tool = FirecrawlSearchTool()
+# Initialize the FirecrawlSearchTool with the arguments
+tool = FirecrawlSearchTool(query='what is firecrawl?')
+print(tool.run())
 
+# Or use the `run` method with the arguments
+tool = FirecrawlSearchTool()
 print(tool.run(query='what is firecrawl?'))
 ```
 
@@ -68,4 +74,4 @@ print(tool.run(query='what is firecrawl?'))
 | **location** | `string` | **Optional**. Location parameter for search results. |
 | **timeout** | `string` | **Optional**. Timeout in milliseconds. Default: 60000. |
 | **scrapeOptions** | `object` | **Optional**. Options for scraping search results. |
-| **scrapeOptions.formats** | `enum<string>` | **Optional**. Formats to include in the output. Available options: `markdown`, `html`, `rawHtml`, `links`, `screenshot`, `screenshot@fullPage`, `extract`. |
+| **scrapeOptions.formats** | `enum<string>[]` | **Optional**. Formats to include in the output. Available options: `markdown`, `html`, `rawHtml`, `links`, `screenshot`, `screenshot@fullPage`, `extract`. |
