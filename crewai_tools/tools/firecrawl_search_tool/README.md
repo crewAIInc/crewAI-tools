@@ -20,16 +20,52 @@ Utilize the FirecrawlSearchTool as follows to allow your agent to load websites:
 ```python
 from crewai_tools import FirecrawlSearchTool
 
-tool = FirecrawlSearchTool(query='what is firecrawl?')
+tool = FirecrawlSearchTool()
+
+print(tool.run(query='what is firecrawl?'))
+```
+
+## Output format
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "title": "<string>",
+      "description": "<string>",
+      "url": "<string>",
+      "markdown": "<string>",
+      "html": "<string>",
+      "rawHtml": "<string>",
+      "links": [
+        "<string>"
+      ],
+      "screenshot": "<string>",
+      "metadata": {
+        "title": "<string>",
+        "description": "<string>",
+        "sourceURL": "<string>",
+        "statusCode": 123,
+        "error": "<string>"
+      }
+    }
+  ],
+  "warning": "<string>"
+}
 ```
 
 ## Arguments
 
-- `api_key`: Optional. Specifies Firecrawl API key. Defaults is the `FIRECRAWL_API_KEY` environment variable.
-- `query`: The search query string to be used for searching.
-- `page_options`: Optional. Options for result formatting.
-  - `onlyMainContent`: Optional. Only return the main content of the page excluding headers, navs, footers, etc.
-  - `includeHtml`: Optional. Include the raw HTML content of the page. Will output a html key in the response.
-  - `fetchPageContent`: Optional. Fetch the full content of the page.
-- `search_options`: Optional. Options for controlling the crawling behavior.
-  - `limit`: Optional. Maximum number of pages to crawl.
+| Argument       | Type     | Description                                                                                                                         |
+|:---------------|:---------|:-------------------------------------------------------------------------------------------------------------------------------------|
+| **api_key**     | `string` | **Optional**. Specifies Firecrawl API key. Defaults is the `FIRECRAWL_API_KEY` environment variable. |
+| **query** | `string` | **Required**. The search query. |
+| **limit** | `integer` | **Optional**. Maximum number of results to return. Default: 5. Required range: 1 <= x <= 10 |
+| **tbs** | `string` | **Optional**. Time-based search parameter. |
+| **lang** | `string` | **Optional**. Language code for search results. Default: "en". |
+| **country** | `string` | **Optional**. Country code for search results. Default: "us". |
+| **location** | `string` | **Optional**. Location parameter for search results. |
+| **timeout** | `string` | **Optional**. Timeout in milliseconds. Default: 60000. |
+| **scrapeOptions** | `object` | **Optional**. Options for scraping search results. |
+| **scrapeOptions.formats** | `enum<string>` | **Optional**. Formats to include in the output. Available options: `markdown`, `html`, `rawHtml`, `links`, `screenshot`, `screenshot@fullPage`, `extract`. |
