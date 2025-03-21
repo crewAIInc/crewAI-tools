@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Type
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, List, Union
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -27,19 +27,18 @@ class FirecrawlSearchToolSchema(BaseModel):
     country: Optional[str] = Field(
         default="us", description="Country code for search results"
     )
-    location: Optional[str] = Field(
-        default=None, description="Location parameter for search results"
+    location: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Location settings for the request",
     )
     timeout: Optional[int] = Field(default=60000, description="Timeout in milliseconds")
     scrape_options: Optional[Dict[str, Any]] = Field(
-        default=None, description="Options for scraping search results"
+        default=None,
+        description="Options for scraping search results",
     )
 
 
 class FirecrawlSearchTool(BaseTool):
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True, validate_assignment=True, frozen=False
-    )
     model_config = ConfigDict(
         arbitrary_types_allowed=True, validate_assignment=True, frozen=False
     )
@@ -87,21 +86,22 @@ class FirecrawlSearchTool(BaseTool):
         tbs: Optional[str] = None,
         lang: Optional[str] = "en",
         country: Optional[str] = "us",
-        location: Optional[str] = None,
+        location: Optional[Dict[str, Any]] = None,
         timeout: Optional[int] = 60000,
-        scrape_options: Optional[Dict[str, Any]] = None,
+        scrape_options: Optional[Dict[str, Any]] = None
     ) -> Any:
         if not self.firecrawl:
             raise RuntimeError("FirecrawlApp not properly initialized")
 
         options = {
+            "query": query,
             "limit": limit,
             "tbs": tbs,
             "lang": lang,
             "country": country,
             "location": location,
             "timeout": timeout,
-            "scrapeOptions": scrape_options or {},
+            "scrapeOptions": scrape_options or {}
         }
         return self.firecrawl.search(**options)
 
