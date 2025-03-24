@@ -3,7 +3,7 @@ from typing import Any, Optional, Type, TYPE_CHECKING
 from urllib.parse import urlparse
 
 from crewai.tools import BaseTool
-from pydantic import BaseModel, Field, validator, ConfigDict
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 # Type checking import
 if TYPE_CHECKING:
@@ -31,7 +31,7 @@ class ScrapegraphScrapeToolSchema(FixedScrapegraphScrapeToolSchema):
         description="Prompt to guide the extraction of content",
     )
 
-    @validator("website_url")
+    @field_validator("website_url")
     def validate_url(cls, v):
         """Validate URL format"""
         try:
