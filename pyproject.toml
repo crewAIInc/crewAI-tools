@@ -71,9 +71,8 @@ scrapegraph-py = [
     "scrapegraph-py>=1.9.0",
 ]
 linkup-sdk = [
-    "linkup-sdk>=0.2.2",
+    "linkup-sdk>=0.2.3",
 ]
-
 hyperbrowser = [
     "hyperbrowser>=0.18.0",
 ]
