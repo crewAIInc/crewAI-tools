@@ -19,6 +19,7 @@ dependencies = [
     "embedchain>=0.1.114",
     "crewai>=0.105.0",
     "click>=8.1.8",
+    "lancedb>=0.5.4",
 ]
 
 [project.urls]
