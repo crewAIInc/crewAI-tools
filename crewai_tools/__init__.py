@@ -27,6 +27,7 @@ from .tools import (
     MultiOnTool,
     MySQLSearchTool,
     NL2SQLTool,
+    OCRTool,
     PatronusEvalTool,
     PatronusLocalEvaluatorTool,
     PatronusPredefinedCriteriaEvalTool,
