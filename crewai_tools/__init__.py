@@ -19,7 +19,13 @@ from .tools import (
     FirecrawlScrapeWebsiteTool,
     FirecrawlSearchTool,
     GithubSearchTool,
+    HyperbrowserBrowserUseTool,
+    HyperbrowserClaudeComputerUseTool,
+    HyperbrowserOpenAICuaTool,
+    HyperbrowserCrawlTool,
+    HyperbrowserExtractTool,
     HyperbrowserLoadTool,
+    HyperbrowserScrapeTool,
     JSONSearchTool,
     LinkupSearchTool,
     LlamaIndexTool,
@@ -61,8 +67,8 @@ from .tools import (
 )
 
 from .aws import (
+    BedrockInvokeAgentTool,
+    BedrockKBRetrieverTool,
     S3ReaderTool,
     S3WriterTool,
-    BedrockKBRetrieverTool,
-    BedrockInvokeAgentTool,
 )

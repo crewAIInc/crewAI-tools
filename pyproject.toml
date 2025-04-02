@@ -75,7 +75,7 @@ linkup-sdk = [
 ]
 
 hyperbrowser = [
-    "hyperbrowser>=0.18.0",
+    "hyperbrowser>=0.39.0",
 ]
 snowflake = [
     "cryptography>=43.0.3",
