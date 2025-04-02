@@ -1,10 +1,8 @@
 from typing import TYPE_CHECKING, Optional, Type
 
-from crewai.tools import BaseTool
-from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
+from pydantic import BaseModel, ConfigDict, Field
 
 if TYPE_CHECKING:
-    from hyperbrowser import Hyperbrowser
     from hyperbrowser.models import (
         BrowserUseTaskResponse,
         CreateSessionParams,
@@ -13,16 +11,16 @@ if TYPE_CHECKING:
 
 
 try:
-    from hyperbrowser import Hyperbrowser
     from hyperbrowser.models import (
         BrowserUseTaskResponse,
         CreateSessionParams,
         StartBrowserUseTaskParams,
     )
-
-    HYPERBROWSER_AVAILABLE = True
 except ImportError:
-    HYPERBROWSER_AVAILABLE = False
+    pass
+
+from ..common.errors import NOT_INITIALIZED_ERROR
+from ..common.base import HyperBrowserBase
 
 
 class HyperbrowserBrowserUseToolSchema(BaseModel):
@@ -31,7 +29,7 @@ class HyperbrowserBrowserUseToolSchema(BaseModel):
     """
 
     model_config = ConfigDict(
-        populate_by_alias=True,
+        populate_by_alias=True,  # type: ignore
     )
 
     task: str
@@ -57,49 +55,15 @@ class HyperbrowserBrowserUseToolSchema(BaseModel):
     )
 
 
-class HyperbrowserBrowserUseTool(BaseTool):
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True, validate_assignment=True, frozen=False
-    )
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True, validate_assignment=True, frozen=False
-    )
+class HyperbrowserBrowserUseTool(HyperBrowserBase):
     name: str = "Hyperbrowser web browser use tool"
-    description: str = "Use a browser to interact with a webpage using Hyperbrowser and return the results"
+    description: str = (
+        "Use a browser to interact with a webpage using Hyperbrowser and return the results"
+    )
     args_schema: Type[BaseModel] = HyperbrowserBrowserUseToolSchema
-    api_key: Optional[str] = None
-    _hyperbrowser: Optional["Hyperbrowser"] = PrivateAttr(None)
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
-        super().__init__(**kwargs)
-        self.api_key = api_key
-        self._initialize_hyperbrowser()
-
-    def _initialize_hyperbrowser(self) -> None:
-        try:
-            if HYPERBROWSER_AVAILABLE:
-                self._hyperbrowser = Hyperbrowser(api_key=self.api_key)
-            else:
-                raise ImportError
-        except ImportError:
-            import click
-
-            if click.confirm(
-                "You are missing the 'hyperbrowser' package. Would you like to install it?"
-            ):
-                import subprocess
-
-                try:
-                    subprocess.run(["uv", "add", "hyperbrowser"], check=True)
-                    from hyperbrowser import Hyperbrowser
-
-                    self._hyperbrowser = Hyperbrowser(api_key=self.api_key)
-                except subprocess.CalledProcessError:
-                    raise ImportError("Failed to install hyperbrowser package")
-            else:
-                raise ImportError(
-                    "`hyperbrowser` package not found, please run `uv add hyperbrowser`"
-                )
+        super().__init__(api_key=api_key, **kwargs)
 
     def _run(
         self,
@@ -113,9 +77,12 @@ class HyperbrowserBrowserUseTool(BaseTool):
         session_options: Optional[CreateSessionParams] = None,
     ) -> BrowserUseTaskResponse:
         if not self._hyperbrowser:
-            raise RuntimeError("Hyperbrowser not properly initialized")
+            raise NOT_INITIALIZED_ERROR
 
-        return self._hyperbrowser.agents.browser_use.start_and_wait(
+        if session_options is not None:
+            session_options = CreateSessionParams.model_validate(session_options)
+
+        result = self._hyperbrowser.agents.browser_use.start_and_wait(
             StartBrowserUseTaskParams(
                 task=task,
                 use_vision=use_vision,
@@ -127,3 +94,5 @@ class HyperbrowserBrowserUseTool(BaseTool):
                 session_options=session_options,
             )
         )
+
+        return result

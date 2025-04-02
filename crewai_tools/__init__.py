@@ -21,6 +21,7 @@ from .tools import (
     GithubSearchTool,
     HyperbrowserBrowserUseTool,
     HyperbrowserClaudeComputerUseTool,
+    HyperbrowserOpenAICuaTool,
     HyperbrowserCrawlTool,
     HyperbrowserExtractTool,
     HyperbrowserLoadTool,
@@ -71,4 +72,3 @@ from .aws import (
     S3ReaderTool,
     S3WriterTool,
 )
-
