@@ -1,7 +1,7 @@
-from typing import Any, Optional, Type
+from typing import Any, Dict, Optional, Type, Union
 
 from embedchain.models.data_type import DataType
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from ..rag.rag_tool import RagTool
 
@@ -9,10 +9,23 @@ from ..rag.rag_tool import RagTool
 class FixedJSONSearchToolSchema(BaseModel):
     """Input for JSONSearchTool."""
 
-    search_query: str = Field(
+    search_query: Union[str, Dict[str, Any]] = Field(
         ...,
-        description="Mandatory search query you want to use to search the JSON's content",
+        description="Mandatory search query as either a string or a dictionary with 'description' key",
     )
+
+    @model_validator(mode="after")
+    def validate_search_query(self):
+        """Validate and convert search_query to string format."""
+        if isinstance(self.search_query, dict):
+            if "description" not in self.search_query:
+                raise ValueError("Dictionary input must contain a 'description' key")
+            if not isinstance(self.search_query["description"], str):
+                raise ValueError("Description value must be a string")
+            self.search_query = self.search_query["description"]
+        elif not isinstance(self.search_query, str):
+            raise ValueError("search_query must be a string or a dictionary with a 'description' key")
+        return self
 
 
 class JSONSearchToolSchema(FixedJSONSearchToolSchema):
