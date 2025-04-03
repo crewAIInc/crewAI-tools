@@ -1,8 +1,11 @@
 from typing import List
+from logging import getLogger
 
 from crewai.tools import BaseTool
 from goat import WalletClientBase, PluginBase
 from goat_adapters.crewai import get_crewai_tools
+
+logger = getLogger(__name__)
 
 def get_goat_toolset(wallet: WalletClientBase, plugins: List[PluginBase]) -> List[BaseTool]:
     """
@@ -19,5 +22,5 @@ def get_goat_toolset(wallet: WalletClientBase, plugins: List[PluginBase]) -> Lis
     try:
         return get_crewai_tools(wallet=wallet, plugins=plugins)
     except Exception as e:
-        print(f"An unexpected error occurred while retrieving GOAT tools via the toolset facade: {e}")
+        logger.error(f"An unexpected error occurred while retrieving GOAT tools via the toolset facade: {e}")
         return [] 
