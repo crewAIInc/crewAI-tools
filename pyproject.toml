@@ -73,7 +73,9 @@ scrapegraph-py = [
 linkup-sdk = [
     "linkup-sdk>=0.2.2",
 ]
-
+goat = [
+    "goat-sdk-adapter-crewai>=0.1.0",
+]
 hyperbrowser = [
     "hyperbrowser>=0.18.0",
 ]
