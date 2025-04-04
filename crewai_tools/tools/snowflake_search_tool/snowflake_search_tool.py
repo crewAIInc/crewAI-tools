@@ -19,6 +19,10 @@ try:
     SNOWFLAKE_AVAILABLE = True
 except ImportError:
     SNOWFLAKE_AVAILABLE = False
+    # Define placeholder values for type checking
+    snowflake = None
+    default_backend = None
+    serialization = None
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -147,8 +151,12 @@ class SnowflakeSearchTool(BaseTool):
 
     async def _get_connection(self) -> "SnowflakeConnection":
         """Get a connection from the pool or create a new one."""
+        if self._pool_lock is None:
+            self._pool_lock = asyncio.Lock()
+
         async with self._pool_lock:
             if not self._connection_pool:
+                self._connection_pool = []
                 conn = await asyncio.get_event_loop().run_in_executor(
                     self._thread_pool, self._create_connection
                 )
@@ -157,6 +165,9 @@ class SnowflakeSearchTool(BaseTool):
 
     def _create_connection(self) -> "SnowflakeConnection":
         """Create a new Snowflake connection."""
+        if not SNOWFLAKE_AVAILABLE:
+            raise ImportError("Snowflake dependencies not available")
+
         conn_params = {
             "account": self.config.account,
             "user": self.config.user,
@@ -196,6 +207,7 @@ class SnowflakeSearchTool(BaseTool):
         for attempt in range(self.max_retries):
             try:
                 conn = await self._get_connection()
+                cursor = None
                 try:
                     cursor = conn.cursor()
                     cursor.execute(query, timeout=timeout)
@@ -211,17 +223,69 @@ class SnowflakeSearchTool(BaseTool):
 
                     return results
                 finally:
-                    cursor.close()
-                    async with self._pool_lock:
-                        self._connection_pool.append(conn)
-            except (DatabaseError, OperationalError) as e:
+                    if cursor:
+                        cursor.close()
+                    if self._pool_lock and self._connection_pool:
+                        async with self._pool_lock:
+                            self._connection_pool.append(conn)
+            except Exception as e:
                 if attempt == self.max_retries - 1:
                     raise
                 await asyncio.sleep(self.retry_delay * (2**attempt))
                 logger.warning(f"Query failed, attempt {attempt + 1}: {str(e)}")
                 continue
 
-    async def _run(
+        # Default return to satisfy type checker
+        return []
+
+    def _run(
+        self,
+        query: str,
+        database: Optional[str] = None,
+        snowflake_schema: Optional[str] = None,
+        timeout: int = 300,
+        **kwargs: Any,
+    ) -> Any:
+        """
+        Synchronous wrapper around _run_async to execute a Snowflake query.
+
+        Args:
+            query: The SQL query to execute
+            database: Optional database to use for the query
+            snowflake_schema: Optional schema to use for the query
+            timeout: Query timeout in seconds (default: 300)
+            **kwargs: Additional keyword arguments to pass to the executor
+
+        Returns:
+            The query results
+
+        Raises:
+            Exception: If the query execution fails
+        """
+        # Using asyncio already imported at the top of the file
+
+        # Create a new event loop if no current one exists
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        # Run the async function and return its result
+        return loop.run_until_complete(
+            self._run_async(
+                query=query,
+                database=database,
+                snowflake_schema=snowflake_schema,
+                timeout=timeout,
+                **kwargs,
+            )
+        )
+
+    async def _run_async(
         self,
         query: str,
         database: Optional[str] = None,
