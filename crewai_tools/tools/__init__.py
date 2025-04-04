@@ -1,4 +1,5 @@
 from .ai_mind_tool.ai_mind_tool import AIMindDataSource, AIMindEnvVar, AIMindTool
+from .apify_actors_tool.apify_actors_tool import ApifyActorsTool
 from .brave_search_tool.brave_search_tool import BraveSearchTool
 from .browserbase_load_tool.browserbase_load_tool import BrowserbaseLoadTool
 from .code_docs_search_tool.code_docs_search_tool import CodeDocsSearchTool
@@ -6,6 +7,7 @@ from .code_interpreter_tool.code_interpreter_tool import CodeInterpreterTool
 from .composio_tool.composio_tool import ComposioTool
 from .csv_search_tool.csv_search_tool import CSVSearchTool
 from .dalle_tool.dalle_tool import DallETool
+from .databricks_query_tool.databricks_query_tool import DatabricksQueryTool
 from .directory_read_tool.directory_read_tool import DirectoryReadTool
 from .directory_search_tool.directory_search_tool import DirectorySearchTool
 from .docx_search_tool.docx_search_tool import DOCXSearchTool
@@ -35,6 +37,7 @@ from .patronus_eval_tool import (
 )
 from .pdf_search_tool.pdf_search_tool import PDFSearchTool
 from .pg_seach_tool.pg_search_tool import PGSearchTool
+from .qdrant_vector_search_tool.qdrant_search_tool import QdrantVectorSearchTool
 from .rag.rag_tool import RagTool
 from .scrape_element_from_website.scrape_element_from_website import (
     ScrapeElementFromWebsiteTool,

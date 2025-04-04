@@ -1,5 +1,6 @@
 from .tools import (
     AIMindDataSource, AIMindEnvVar, AIMindTool,
+    ApifyActorsTool,
     BraveSearchTool,
     BrowserbaseLoadTool,
     CodeDocsSearchTool,
@@ -7,6 +8,7 @@ from .tools import (
     ComposioTool,
     CSVSearchTool,
     DallETool,
+    DatabricksQueryTool,
     DirectoryReadTool,
     DirectorySearchTool,
     DOCXSearchTool,
@@ -30,6 +32,7 @@ from .tools import (
     PatronusPredefinedCriteriaEvalTool,
     PDFSearchTool,
     PGSearchTool,
+    QdrantVectorSearchTool,
     RagTool,
     ScrapeElementFromWebsiteTool,
     ScrapegraphScrapeTool,
@@ -55,4 +58,11 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
+)
+
+from .aws import (
+    S3ReaderTool,
+    S3WriterTool,
+    BedrockKBRetrieverTool,
+    BedrockInvokeAgentTool,
 )
