@@ -57,8 +57,10 @@ class SeleniumScrapingTool(BaseTool):
     wait_time: Optional[int] = 3
     css_element: Optional[str] = None
     return_html: Optional[bool] = False
-    _options: Optional[dict] = None
+    _options: Optional[Any] = None
     _by: Optional[Any] = None
+    _webdriver: Optional[Any] = None
+    _options_class: Optional[Any] = None
 
     def __init__(
         self,
@@ -72,6 +74,9 @@ class SeleniumScrapingTool(BaseTool):
             from selenium import webdriver
             from selenium.webdriver.chrome.options import Options
             from selenium.webdriver.common.by import By
+            self._webdriver = webdriver
+            self._options_class = Options
+            self._by = By
         except ImportError:
             import click
 
@@ -87,13 +92,14 @@ class SeleniumScrapingTool(BaseTool):
                 from selenium import webdriver
                 from selenium.webdriver.chrome.options import Options
                 from selenium.webdriver.common.by import By
+                self._webdriver = webdriver
+                self._options_class = Options
+                self._by = By
             else:
                 raise ImportError(
                     "`selenium` and `webdriver-manager` package not found, please run `uv add selenium webdriver-manager`"
                 )
-        self.driver = webdriver.Chrome()
-        self._options = Options()
-        self._by = By
+
         if cookie is not None:
             self.cookie = cookie
 
@@ -108,6 +114,14 @@ class SeleniumScrapingTool(BaseTool):
             self.args_schema = FixedSeleniumScrapingToolSchema
 
         self._generate_description()
+
+    def _create_driver_instance(self):
+        if self.driver is None:
+            options = self._options_class()
+            options.add_argument("--headless")
+            self._options = options
+            self.driver = self._webdriver.Chrome(options=options)
+        return self.driver
 
     def _run(
         self,
@@ -163,9 +177,10 @@ class SeleniumScrapingTool(BaseTool):
         if not re.match(r"^https?://", url):
             raise ValueError("URL must start with http:// or https://")
 
-        options = self._options
-        options.add_argument("--headless")
-        driver = self.driver(options=options)
+        if self.driver is None:
+            self._create_driver_instance()
+            
+        driver = self.driver
         driver.get(url)
         time.sleep(wait_time)
         if cookie:
@@ -176,4 +191,10 @@ class SeleniumScrapingTool(BaseTool):
         return driver
 
     def close(self):
-        self.driver.close()
+        if self.driver is not None:
+            try:
+                self.driver.quit()
+            except Exception:
+                pass
+            finally:
+                self.driver = None
