@@ -26,7 +26,7 @@ from crewai_tools.aws.bedrock import BedrockInlineAgentTool
 
 # Initialize the tool with direct parameters
 aws_security_analyzer = BedrockInlineAgentTool(
-    model_id="us.amazon.nova-pro-v1:0",
+    model_id="bedrock/us.amazon.nova-pro-v1:0",
     region_name="us-east-1",
     instruction="""You are an AWS security analysis expert specializing in identifying security vulnerabilities and compliance issues.
     
@@ -59,7 +59,7 @@ Example `bedrock_agents.yaml` file:
 
 ```yaml
 service_limits_analyzer:
-  model_id: "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
+  model_id: "bedrock/us.anthropic.claude-3-7-sonnet-20250219-v1:0"
   instruction: |
     You are an AWS service limits and quotas expert.
     Your task is to analyze AWS service usage, identify potential quota issues, and recommend solutions.
@@ -134,7 +134,7 @@ print(result)
 | Argument | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
 | config | dict | Yes* | None | Configuration dictionary for the tool (alternative to individual parameters) |
-| model_id | str | Yes* | None | The Bedrock model ID to use for the inline agent |
+| model_id | str | Yes* | None | The Bedrock model ID to use for the inline agent. Follow model |
 | region_name | str | Yes* | "us-east-1" | AWS region for Bedrock |
 | instruction | str | Yes* | None | Instructions for the inline agent |
 | enable_trace | bool | No | False | Whether to enable trace logging |
@@ -171,7 +171,7 @@ from crewai_tools.aws.bedrock.exceptions import BedrockAgentError, BedrockValida
 try:
     # Initialize the tool
     bedrock_agent = BedrockInlineAgentTool(
-        model_id="us.amazon.nova-pro-v1:0",
+        model_id="bedrock/us.amazon.nova-pro-v1:0",
         region_name="us-east-1",
         instruction="You are an AWS security expert...",
         enable_code_interpreter=True
