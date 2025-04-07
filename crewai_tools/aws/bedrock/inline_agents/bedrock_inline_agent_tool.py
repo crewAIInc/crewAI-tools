@@ -8,6 +8,7 @@ from datetime import datetime
 from crewai.utilities.config import process_config
 
 from utils.response_handler import ResponseHandler
+from ..exceptions import BedrockAgentError, BedrockValidationError
 
 
 class BedrockInlineAgentTool(BaseTool):
@@ -66,11 +67,11 @@ class BedrockInlineAgentTool(BaseTool):
         
         # Validate required fields
         if not self.model_id:
-            raise ValueError("model_id must be provided either directly or through config")
+            raise BedrockValidationError("model_id must be provided either directly or through config")
         if not self.region_name:
-            raise ValueError("region_name must be provided either directly or through config")
+            raise BedrockValidationError("region_name must be provided either directly or through config")
         if not self.instruction:
-            raise ValueError("instruction must be provided either directly or through config")
+            raise BedrockValidationError("instruction must be provided either directly or through config")
         
         # Check if VERBOSE_MODE environment variable is set to override enable_trace
         if os.environ.get("VERBOSE_MODE", "false").lower() == "true":
@@ -115,6 +116,8 @@ class BedrockInlineAgentTool(BaseTool):
             
             return response
             
+        except BedrockAgentError as e:
+            return f"Bedrock Agent Error: {str(e)}"
         except Exception as e:
             return f"Error interacting with Bedrock Inline Agent: {str(e)}"
     
@@ -187,13 +190,23 @@ class BedrockInlineAgentTool(BaseTool):
 
         Returns:
             The processed response from the agent.
+            
+        Raises:
+            BedrockAgentError: If there is an error invoking the Bedrock Inline Agent.
         """
-        agent_resp = self._bedrock_client.invoke_inline_agent(**request_params)
-        
-        # Process the response using the response handler
-        agent_answer = self._response_handler.process_response(agent_resp)
-        
-        return agent_answer
+        try:
+            agent_resp = self._bedrock_client.invoke_inline_agent(**request_params)
+            
+            # Process the response using the response handler
+            agent_answer = self._response_handler.process_response(agent_resp)
+            
+            return agent_answer
+        except Exception as e:
+            # Wrap the exception in a BedrockAgentError
+            error_message = f"Error invoking Bedrock Inline Agent: {str(e)}"
+            if self.enable_trace:
+                print(f"[ERROR] {error_message}")
+            raise BedrockAgentError(error_message) from e
     
     def get_generated_files(self) -> List[Dict]:
         """Get information about files generated during the last invocation.

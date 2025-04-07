@@ -160,6 +160,65 @@ AWS_SECRET_ACCESS_KEY=your-secret-key    # Required for AWS authentication
 BEDROCK_KB_ID=your-knowledge-base-id     # Optional: Knowledge base ID
 ```
 
+## Error Handling
+
+The BedrockInlineAgentTool uses custom exceptions to provide more meaningful error messages. Here's how to handle these exceptions in your code:
+
+```python
+from crewai_tools.aws.bedrock import BedrockInlineAgentTool
+from crewai_tools.aws.bedrock.exceptions import BedrockAgentError, BedrockValidationError
+
+try:
+    # Initialize the tool
+    bedrock_agent = BedrockInlineAgentTool(
+        model_id="us.amazon.nova-pro-v1:0",
+        region_name="us-east-1",
+        instruction="You are an AWS security expert...",
+        enable_code_interpreter=True
+    )
+    
+    # Run a query
+    result = bedrock_agent.run("Analyze my EC2 security groups")
+    print(result)
+    
+except BedrockValidationError as e:
+    # Handle validation errors (missing or invalid parameters)
+    print(f"Configuration error: {str(e)}")
+    # Example: "Configuration error: model_id must be provided either directly or through config"
+    
+except BedrockAgentError as e:
+    # Handle Bedrock agent execution errors
+    print(f"Bedrock Agent error: {str(e)}")
+    
+    # You can access the original exception if needed
+    if e.__cause__:
+        print(f"Original error: {e.__cause__}")
+        
+except Exception as e:
+    # Handle any other unexpected errors
+    print(f"Unexpected error: {str(e)}")
+```
+
+### Common Validation Errors
+
+The tool performs validation on required parameters and will raise `BedrockValidationError` in these cases:
+
+- Missing model ID: `"model_id must be provided either directly or through config"`
+- Missing region: `"region_name must be provided either directly or through config"`
+- Missing instructions: `"instruction must be provided either directly or through config"`
+
+### Agent Execution Errors
+
+When interacting with the Bedrock service, various errors might occur. The tool wraps these in `BedrockAgentError` exceptions:
+
+- Authentication failures
+- Service unavailability
+- Rate limiting
+- Invalid model ID
+- Knowledge base access issues
+
+These errors are captured and wrapped with additional context to help with troubleshooting.
+
 ## Use Cases
 
 ### Federated Agent Architecture
@@ -191,3 +250,4 @@ BEDROCK_KB_ID=your-knowledge-base-id     # Optional: Knowledge base ID
 - **Why it matters**: Your workflows need to interact with AWS services but you don't want to build custom integrations
 - **How this helps**: Leverage Bedrock's native AWS service integrations through the inline agent interface
 - **Business value**: Reduce development time by using pre-built integrations rather than creating custom API connections
+
