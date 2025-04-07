@@ -133,19 +133,23 @@ print(result)
 
 | Argument | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
+| config | dict | Yes* | None | Configuration dictionary for the tool (alternative to individual parameters) |
 | model_id | str | Yes* | None | The Bedrock model ID to use for the inline agent |
-| config | dict | Yes* | None | Configuration dictionary for the inline agent |
-| region_name | str | No | us-east-1 | AWS region for Bedrock |
-| instruction | str | No | None | Instructions for the inline agent |
-| enable_trace | bool | No | False | Whether to enable trace for debugging |
-| enable_code_interpreter | bool | No | False | Whether to enable code interpreter |
+| region_name | str | Yes* | "us-east-1" | AWS region for Bedrock |
+| instruction | str | Yes* | None | Instructions for the inline agent |
+| enable_trace | bool | No | False | Whether to enable trace logging |
+| enable_code_interpreter | bool | No | True | Whether to enable code interpreter |
 | knowledge_base_id | str | No | None | ID of the Bedrock knowledge base to use |
 | kb_description | str | No | None | Description of the knowledge base |
-| output_folder | str | No | None | Folder to save outputs (like visualizations) |
-| name | str | No | None | Custom name for the tool |
-| description | str | No | None | Custom description for the tool |
+| kb_num_results | int | No | 3 | Number of results to return from the knowledge base |
+| kb_search_type | str | No | "HYBRID" | Type of search to perform (HYBRID, SEMANTIC) |
+| lambda_function_arn | str | No | None | Optional Lambda function ARN for custom actions |
+| action_group_name | str | No | None | Name for the custom action group |
+| output_folder | str | No | "output" | Folder to save generated files |
+| name | str | No | "BedrockInlineAgent" | Custom name for the tool |
+| description | str | No | "Use this tool to interact with an Amazon Bedrock Inline Agent." | Custom description for the tool |
 
-*Either `model_id` or `config` must be provided
+*Either provide the `config` parameter OR the required individual parameters (`model_id`, `region_name`, `instruction`)
 
 ## Environment Variables
 
