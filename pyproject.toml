@@ -95,6 +95,9 @@ apify = [
 databricks-sdk = [
     "databricks-sdk>=0.46.0",
 ]
+mcp = [
+    "mcp>=1.6.0",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
