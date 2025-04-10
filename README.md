@@ -94,10 +94,12 @@ pip install crewai[tools]
 
 ### Development Setup
 
+- Create virtual env for Python 3.11: `uv venv --python 3.11`
+- Activate: `source .venv/bin/activate`
 - Install dependencies: `uv sync`
 - Run tests: `uv run pytest`
 - Run static type checking: `uv run pyright`
-- Set up pre-commit hooks: `pre-commit install`
+- Set up pre-commit hooks: `uvx pre-commit install`
 
 ---
 
