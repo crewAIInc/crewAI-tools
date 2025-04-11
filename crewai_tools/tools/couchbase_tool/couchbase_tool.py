@@ -118,6 +118,21 @@ class CouchbaseFTSVectorSearchTool(BaseTool):
         return True
 
     def __init__(self, **kwargs):
+        """Initialize the CouchbaseFTSVectorSearchTool.
+
+        Args:
+            **kwargs: Keyword arguments to pass to the BaseTool constructor and
+                      to configure the Couchbase connection and search parameters.
+                      Requires 'cluster', 'bucket_name', 'scope_name',
+                      'collection_name', 'index_name', and 'embedding_function'.
+
+        Raises:
+            ValueError: If required parameters are missing, the Couchbase cluster
+                        cannot be reached, or the specified bucket, scope,
+                        collection, or index does not exist.
+            ImportError: If the 'couchbase' package is not installed and the user
+                         chooses not to install it.
+        """
         super().__init__(**kwargs)
         if COUCHBASE_AVAILABLE:
             try:
@@ -174,6 +189,18 @@ class CouchbaseFTSVectorSearchTool(BaseTool):
                 )
 
     def _run(self, query: str) -> str:
+        """Execute a vector search query against the Couchbase index.
+
+        Args:
+            query: The search query string.
+
+        Returns:
+            A JSON string containing the search results.
+
+        Raises:
+            ImportError: If the 'couchbase' package is not installed.
+            ValueError: If the search query fails or returns results without fields.
+        """
         if not COUCHBASE_AVAILABLE:
             raise ImportError(
                 "You are missing the 'couchbase' package. Would you like to install it?"

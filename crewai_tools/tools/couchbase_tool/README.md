@@ -3,6 +3,7 @@
 Couchbase is a NoSQL database with vector search capabilities. Users can store and query vector embeddings. You can learn more about Couchbase vector search here: https://docs.couchbase.com/cloud/vector-search/vector-search.html 
 
 This tool is specifically crafted for performing semantic search using Couchbase. Use this tool to find semantically similar docs to a given query.
+
 ## Installation
 Install the crewai_tools package by executing the following command in your terminal:
 
@@ -17,8 +18,14 @@ Before instantiating the tool, you need a Couchbase cluster.
 
 You will need to create a bucket, scope and collection on the cluster. Then, [follow this guide](https://docs.couchbase.com/python-sdk/current/hello-world/start-using-sdk.html) to create a Couchbase Cluster object and load documents into your collection.
 
+Follow the docs below to create a vector search index on Couchbase.
+- [Create a vector search index on Couchbase Capella.](https://docs.couchbase.com/cloud/vector-search/create-vector-search-index-ui.html)
+- [Create a vector search index on your local Couchbase server.](https://docs.couchbase.com/server/current/vector-search/create-vector-search-index-ui.html)
+
+Ensure that the `Dimension` field in the index matches the embedding model. For example, OpenAI's `text-embedding-3-small` model has an embedding dimension of 1536 dimensions, and so the `Dimension` field must be 1536 in the index.
+
 ## Example
-To utilize the WeaviateVectorSearchTool for different use cases, follow these examples:
+To utilize the CouchbaseFTSVectorSearchTool for different use cases, follow these examples:
 
 ```python
 from crewai_tools import CouchbaseFTSVectorSearchTool
