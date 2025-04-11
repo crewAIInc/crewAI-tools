@@ -73,6 +73,9 @@ scrapegraph-py = [
 linkup-sdk = [
     "linkup-sdk>=0.2.2",
 ]
+ollama = [
+    "ollama>=0.3.0",
+]
 
 hyperbrowser = [
     "hyperbrowser>=0.18.0",

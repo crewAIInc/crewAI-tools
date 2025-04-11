@@ -55,3 +55,8 @@ tool = PDFSearchTool(
     )
 )
 ```
+
+**Note**: When using `ollama` as a provider, you need to install the ollama package:
+```shell
+pip install 'crewai-tools[ollama]'
+```
