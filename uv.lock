@@ -555,7 +555,7 @@ name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
 wheels = [
@@ -631,6 +631,38 @@ wheels = [
 ]
 
 [[package]]
+name = "couchbase"
+version = "4.3.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/31/6d/560ce2b7a93c6d90777008f39616e86bdf6c0f9bdcff685f7047d71786a6/couchbase-4.3.5.tar.gz", hash = "sha256:2e2f239b2959ece983195e3ee17a9142bc75b23b0f6733031198648a5f1107ed", size = 6514248 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fd/4f/53a8ec5b224de0bb809f286c9a2dd61480f6d961f148b69f5f097a3a0c3b/couchbase-4.3.5-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:7b354e59ebd3da994b54fa48859116e59d72394307f52783b83cb76d125414d5", size = 4774091 },
+    { url = "https://files.pythonhosted.org/packages/88/ca/e9023131d7ee24295832ada018257f49cd77797e5f81041d69fe3cfd09f0/couchbase-4.3.5-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:3a701989e3539faf8b50278337a1df88c6713b1da2d4eb7c1161c0c73c618a3a", size = 4295795 },
+    { url = "https://files.pythonhosted.org/packages/cd/50/b120e3796881702e8e8df8b91d15be2b8d87d91d0282149bcd24667a3f44/couchbase-4.3.5-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:80144ead758494e353d79ac939cdfd8d567f08d5c49c6c3633b4d30f5cb1bb34", size = 4801797 },
+    { url = "https://files.pythonhosted.org/packages/6d/69/7df3e23b67f5a1ec37c3c7f69eaeb87b720e7c0540f4db5ece992d65a9a9/couchbase-4.3.5-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:2981c90cb222809513333d7edcfdff4cda16eb7144cd100775552900109d22d9", size = 5017366 },
+    { url = "https://files.pythonhosted.org/packages/0a/d1/5fa56c37d818d769b6b3db8c29131ad9037305471d20e1e87dd31c549632/couchbase-4.3.5-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:2ca0bf5d0a4a70747c5bb8284efb9e7631dfbfd671b2c1847715cc338c4cf17b", size = 5676073 },
+    { url = "https://files.pythonhosted.org/packages/69/ff/b5b59b05803ffe9ea1995c6d69c1ac1936073048f54fbef1a3f3689f2c5c/couchbase-4.3.5-cp310-cp310-win_amd64.whl", hash = "sha256:e21fe0d38828db02271ece96359cc6b4f2bbc17b3a7f617c799987c6fdea6920", size = 4013923 },
+    { url = "https://files.pythonhosted.org/packages/64/8f/8d4e94893d1a1087bdf1045a055c44bfbfafc109dd193566f8f6216fbdcc/couchbase-4.3.5-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:21cb325b4a5b017581ee038dc2362865bcd59b3aa65685432a362f9f8e8f3276", size = 4774089 },
+    { url = "https://files.pythonhosted.org/packages/fa/ff/00e02271cdb23968f523661b92988bd14e2e68a7c546fe3660efd2e0fc5a/couchbase-4.3.5-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:5f063f79af8fe2425025ac9675e95bc914329db72f40adfd609451dcaf177920", size = 4295794 },
+    { url = "https://files.pythonhosted.org/packages/38/15/f0ad47c6e5a2245121a70e687caab25dd080c4d24df2dc098aebd634121a/couchbase-4.3.5-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:c28c05189c138408693d926211d80e0cb82fae02ac5e4619cb37efeb26349c1c", size = 4801822 },
+    { url = "https://files.pythonhosted.org/packages/c8/58/9958caf475a3732d40557b62bfcc8bf1f3658338e80c17d7d8ceab05179b/couchbase-4.3.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:caf8f30cd1d587829685cffe575ec2b0f750a10611fe9f14e615070c1756079b", size = 5017314 },
+    { url = "https://files.pythonhosted.org/packages/52/31/6f186553b4f58e7762d82950eb778deaf58fe48c8be58f7926e08ce3ee28/couchbase-4.3.5-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:0aaef43bac983332e8bd8484a286a9576a878a95b4e5bfc6bf9c4aa8b3ff71b4", size = 5675942 },
+    { url = "https://files.pythonhosted.org/packages/06/ff/70240653c27372c4da12a4dd5dfc3603e7c91d890014a9c1bc25c4053615/couchbase-4.3.5-cp311-cp311-win_amd64.whl", hash = "sha256:07deb48cd32e726088d2b2b93bb52fdca0b26e3e36b7d8b3728ea993a90b4327", size = 4013966 },
+    { url = "https://files.pythonhosted.org/packages/50/e3/2f56064284d2687e58aedab57511636832cc9cd5380d379849ec65bf8819/couchbase-4.3.5-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:5c9f5754d7391ad3c53adb46a8b401bfd4e0db38aba707a5ed6daad295091afd", size = 4775392 },
+    { url = "https://files.pythonhosted.org/packages/36/a1/8ec76a289d8e5941d252195de6190f86d7c6e67d8a5b4c949d7282c8176d/couchbase-4.3.5-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:92cea5d666d484c3801c2186ba2e0dd9df1bc654296c5862c94bf7a56e7e1e34", size = 4023876 },
+    { url = "https://files.pythonhosted.org/packages/00/4b/ec60796cd22acfc5eb3d3fc638923b19639aa9463a7f7106e8f2d9a11929/couchbase-4.3.5-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:f471b746cf13e9789de13fccd1ba4fbd3ae95e72710c3b07eb98cf8d72a5053b", size = 4803302 },
+    { url = "https://files.pythonhosted.org/packages/39/5b/814b5a422ea153981e8894c32b0451fefe5e3bd95128b59fe9744df07a9f/couchbase-4.3.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:80de6c8ddf39c4ee380d093fcf83a6300e837db8a6f60a8ddb7df6fcbb662595", size = 5022682 },
+    { url = "https://files.pythonhosted.org/packages/26/1d/3cdd06a46c436bc2d8d14d57e994785783e809a37bb65ab3631dd1ca4fbd/couchbase-4.3.5-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:9ce0c9e073a616cc6353ea93e9bac0fe6f79ff6df03fccf0c846f19b5ddf957b", size = 5675465 },
+    { url = "https://files.pythonhosted.org/packages/0e/ec/2544932af7e118acbb6fe0b59163b4a8c8c72faec8fdb4bbeb062939b94c/couchbase-4.3.5-cp312-cp312-win_amd64.whl", hash = "sha256:b78f98001f40450ef1bbaf7d73fa28f0734e9bd72b38b96c18eb2090a09094fb", size = 4022539 },
+    { url = "https://files.pythonhosted.org/packages/e5/a5/d4fec9aa9ddda69b6c63dd3ed56b6eabcd2d55bf70c047f9505d9347124f/couchbase-4.3.5-cp313-cp313-macosx_10_15_x86_64.whl", hash = "sha256:4f1462a0a353a13203f21313b17b30a5e13a2f86205b5437b4f5bd86878ad2aa", size = 4775363 },
+    { url = "https://files.pythonhosted.org/packages/0c/76/ac23a4ce4b99500c9ddff1890167b3f69308bbd7f182825ffa8e00e5f451/couchbase-4.3.5-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:d13924326834f81eae2ecb820119bc80460d6b556eb9cad63c5214ddd12e408e", size = 4297936 },
+    { url = "https://files.pythonhosted.org/packages/55/0c/332337ca95961b431bef46c3577edc7272ca16bb0dc0bbd6f68d9b3f6ce4/couchbase-4.3.5-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:c12ffcdbf11ab959c69f6e96f9e2aa9259c84ef9771cd3f10fa3930dade2fb2f", size = 4803523 },
+    { url = "https://files.pythonhosted.org/packages/65/a7/5bd6fa0742bf6034166962a4bc8336b4194f82da298dad6837b3c0a2eaf7/couchbase-4.3.5-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:9deee11a39765455a326fd66d570163543cdaf65dc95e0e44c257dd14febdd3e", size = 5022641 },
+    { url = "https://files.pythonhosted.org/packages/c3/e6/67d19b60656e9c5956b7cf3ef4ca1ea28d34c1339bb77ce58e34cd390894/couchbase-4.3.5-cp313-cp313-musllinux_1_1_x86_64.whl", hash = "sha256:693675658668e83685f6e3d8a969ffb0447a48e74efe6fa77dadca281fa72b8d", size = 5675393 },
+    { url = "https://files.pythonhosted.org/packages/18/43/4eca7ca72cf7b3c5c99afa2336a13cddeb10925dedfaea4db2b9026fb154/couchbase-4.3.5-cp313-cp313-win_amd64.whl", hash = "sha256:3b6aaeb3aea49c2b8f891e3dbaf8e5d73d049badee784bef14c6f24098528db9", size = 4016956 },
+]
+
+[[package]]
 name = "crewai"
 version = "0.105.0"
 source = { registry = "https://pypi.org/simple" }
@@ -695,6 +727,9 @@ browserbase = [
 composio-core = [
     { name = "composio-core" },
 ]
+couchbase = [
+    { name = "couchbase" },
+]
 databricks-sdk = [
     { name = "databricks-sdk" },
 ]
@@ -750,6 +785,7 @@ weaviate-client = [
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
+    { name = "pytest-asyncio" },
 ]
 
 [package.metadata]
@@ -759,6 +795,7 @@ requires-dist = [
     { name = "chromadb", specifier = ">=0.4.22" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
+    { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
     { name = "crewai", specifier = ">=0.105.0" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
@@ -790,7 +827,11 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.3.4" }]
+dev = [
+    { name = "pytest", specifier = ">=8.0.0" },
+    { name = "pytest", specifier = ">=8.3.4" },
+    { name = "pytest-asyncio", specifier = ">=0.25.2" },
+]
 
 [[package]]
 name = "cryptography"
@@ -3228,7 +3269,7 @@ name = "portalocker"
 version = "2.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pywin32", marker = "platform_system == 'Windows'" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ed/d3/c6c64067759e87af98cc668c1cc75171347d0f1577fab7ca3749134e3cd4/portalocker-2.10.1.tar.gz", hash = "sha256:ef1bf844e878ab08aee7e40184156e1151f228f103aa5c6bd0724cc330960f8f", size = 40891 }
 wheels = [
@@ -3739,6 +3780,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/05/35/30e0d83068951d90a01852cb1cef56e5d8a09d20c7f511634cc2f7e0372a/pytest-8.3.4.tar.gz", hash = "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761", size = 1445919 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/11/92/76a1c94d3afee238333bc0a42b82935dd8f9cf8ce9e336ff87ee14d9e1cf/pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6", size = 343083 },
+]
+
+[[package]]
+name = "pytest-asyncio"
+version = "0.26.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8e/c4/453c52c659521066969523e87d85d54139bbd17b78f09532fb8eb8cdb58e/pytest_asyncio-0.26.0.tar.gz", hash = "sha256:c4df2a697648241ff39e7f0e4a73050b03f123f760673956cf0d72a4990e312f", size = 54156 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/20/7f/338843f449ace853647ace35870874f69a764d251872ed1b4de9f234822c/pytest_asyncio-0.26.0-py3-none-any.whl", hash = "sha256:7b51ed894f4fbea1340262bdae5135797ebbe21d8638978e35d31c6d19f72fb0", size = 19694 },
 ]
 
 [[package]]
@@ -4647,7 +4700,7 @@ name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [
