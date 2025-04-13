@@ -86,3 +86,73 @@ def test_file_read_tool_constructor_and_run():
     # Clean up
     os.remove(test_file1)
     os.remove(test_file2)
+
+
+def test_file_read_tool_chunk_reading():
+    """Test FileReadTool reading specific chunks of a file."""
+    # Create a test file with multiple lines
+    test_file = "/tmp/multiline_test.txt"
+    lines = [
+        "Line 1\n",
+        "Line 2\n",
+        "Line 3\n",
+        "Line 4\n",
+        "Line 5\n",
+        "Line 6\n",
+        "Line 7\n",
+        "Line 8\n",
+        "Line 9\n",
+        "Line 10\n",
+    ]
+
+    with open(test_file, "w") as f:
+        f.writelines(lines)
+
+    tool = FileReadTool()
+
+    # Test reading a specific chunk (lines 3-5)
+    result = tool._run(file_path=test_file, start_line=3, line_count=3)
+    expected = "".join(lines[2:5])  # Lines are 0-indexed in the array
+    assert result == expected
+
+    # Test reading from a specific line to the end
+    result = tool._run(file_path=test_file, start_line=8)
+    expected = "".join(lines[7:])
+    assert result == expected
+
+    # Test with default values (should read entire file)
+    result = tool._run(file_path=test_file)
+    expected = "".join(lines)
+    assert result == expected
+
+    # Test when start_line is 1 but line_count is specified
+    result = tool._run(file_path=test_file, start_line=1, line_count=5)
+    expected = "".join(lines[0:5])
+    assert result == expected
+
+    # Clean up
+    os.remove(test_file)
+
+
+def test_file_read_tool_chunk_error_handling():
+    """Test error handling for chunk reading."""
+    # Create a test file with just a few lines
+    test_file = "/tmp/short_test.txt"
+    lines = ["Line 1\n", "Line 2\n", "Line 3\n"]
+
+    with open(test_file, "w") as f:
+        f.writelines(lines)
+
+    tool = FileReadTool()
+
+    # Test start_line exceeding file length
+    result = tool._run(file_path=test_file, start_line=10)
+    assert "Error: Start line 10 exceeds the number of lines in the file" in result
+
+    # Test reading partial chunk when line_count exceeds available lines
+    result = tool._run(file_path=test_file, start_line=2, line_count=10)
+    expected = "".join(lines[1:])  # Should return from line 2 to end
+    assert result == expected
+
+    # Clean up
+    os.remove(test_file)
