@@ -58,6 +58,7 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
+    CurlCommandoTool,
 )
 
 from .aws import (
