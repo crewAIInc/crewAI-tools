@@ -31,7 +31,7 @@ class MCPServerAdapter:
 
     Usage:
         # context manager + stdio
-        with MCPServerAdapter(StdioServerParameters(...)) as tools:
+        with MCPServerAdapter(...) as tools:
             # tools is now available
 
         # context manager + sse
@@ -39,7 +39,7 @@ class MCPServerAdapter:
             # tools is now available
 
         # manually start / stop mcp server
-        mcp_server = MCPServerAdapter(StdioServerParameters(...))
+        mcp_server = MCPServerAdapter(...)
         tools = mcp_server.tools
         mcp_server.stop()
 
