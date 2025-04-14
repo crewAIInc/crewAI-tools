@@ -37,6 +37,18 @@ def snowflake_tool(mock_config):
         yield tool
 
 
+@pytest.fixture
+def clear_cache():
+    # Clear the cache before and after each test
+    from crewai_tools.tools.snowflake_search_tool.snowflake_search_tool import (
+        _query_cache,
+    )
+
+    _query_cache.clear()
+    yield
+    _query_cache.clear()
+
+
 # Unit Tests
 @pytest.mark.asyncio
 async def test_successful_query_execution(snowflake_tool, mock_snowflake_connection):
@@ -51,6 +63,64 @@ async def test_successful_query_execution(snowflake_tool, mock_snowflake_connect
         assert results[0]["col1"] == 1
         assert results[0]["col2"] == "value1"
         mock_snowflake_connection.cursor.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_query_caching(snowflake_tool, mock_snowflake_connection, clear_cache):
+    with patch.object(snowflake_tool, "_create_connection") as mock_create_conn:
+        mock_create_conn.return_value = mock_snowflake_connection
+
+        # First query execution
+        results1 = await snowflake_tool._run(
+            query="SELECT * FROM test_table", timeout=300
+        )
+
+        # Second execution of the same query
+        results2 = await snowflake_tool._run(
+            query="SELECT * FROM test_table", timeout=300
+        )
+
+        # Different query
+        results3 = await snowflake_tool._run(
+            query="SELECT * FROM different_table", timeout=300
+        )
+
+        # Verify results are the same for cached query
+        assert results1 == results2
+
+        # Verify cursor.execute was called only twice (once for first query, once for different query)
+        assert mock_snowflake_connection.cursor.call_count == 2
+
+        # Verify cache behavior with different parameters
+        results4 = await snowflake_tool._run(
+            query="SELECT * FROM test_table", timeout=600  # Different timeout
+        )
+
+        # Should trigger new query due to different cache key
+        assert mock_snowflake_connection.cursor.call_count == 3
+
+
+@pytest.mark.asyncio
+async def test_cache_size_limit(snowflake_tool, mock_snowflake_connection, clear_cache):
+    with patch.object(snowflake_tool, "_create_connection") as mock_create_conn:
+        mock_create_conn.return_value = mock_snowflake_connection
+
+        # Execute queries up to cache size limit + 1
+        from crewai_tools.tools.snowflake_search_tool.snowflake_search_tool import (
+            CACHE_SIZE,
+            _query_cache,
+        )
+
+        for i in range(CACHE_SIZE + 1):
+            await snowflake_tool._run(query=f"SELECT * FROM table_{i}", timeout=300)
+
+        # First query should have been evicted
+        first_query_key = snowflake_tool._get_cache_key("SELECT * FROM table_0", 300)
+        assert first_query_key not in _query_cache
+
+        # Second query should appear
+        second_query_key = snowflake_tool._get_cache_key("SELECT * FROM table_1", 300)
+        assert second_query_key in _query_cache
 
 
 @pytest.mark.asyncio
