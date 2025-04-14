@@ -8,17 +8,6 @@ from typing import Any
 
 from crewai.tools import BaseTool
 
-try:
-    from mcp import (
-        StdioServerParameters,
-    )
-    from mcpadapt.core import MCPAdapt
-    from mcpadapt.crewai_adapter import CrewAIAdapter
-except ImportError:
-    raise ImportError(
-        "MCP needs optional dependencies to be installed, run `uv add crewai-tools[mcp]`"
-    )
-
 
 class MCPServerAdapter:
     """Manages the lifecycle of an MCP server and make its tools available to CrewAI.
@@ -58,6 +47,17 @@ class MCPServerAdapter:
                 `StdioServerParameters` or a `dict` respectively for STDIO and SSE.
 
         """
+
+        try:
+            from mcp import (
+                StdioServerParameters,
+            )
+            from mcpadapt.core import MCPAdapt
+            from mcpadapt.crewai_adapter import CrewAIAdapter
+        except ImportError:
+            raise ImportError(
+                "MCP needs optional dependencies to be installed, run `uv add crewai-tools[mcp]`"
+            )
         super().__init__()
         self._serverparams = StdioServerParameters(**serverparams)
         self._adapter = MCPAdapt(self._serverparams, CrewAIAdapter())
