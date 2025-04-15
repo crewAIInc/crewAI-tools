@@ -1,12 +1,29 @@
+from __future__ import annotations
+
 """
 MCPServer for CrewAI.
 
 
 """
 
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from crewai.tools import BaseTool
+
+if TYPE_CHECKING:
+    from mcp import StdioServerParameters
+    from mcpadapt.core import MCPAdapt
+    from mcpadapt.crewai_adapter import CrewAIAdapter
+
+
+try:
+    import mcp
+    import mcpadapt.core
+    import mcpadapt.crewai_adapter
+except ImportError:
+    raise ImportError(
+        "MCP needs optional dependencies to be installed, run `uv add crewai-tools[mcp]`"
+    )
 
 
 class MCPServerAdapter:
@@ -27,10 +44,15 @@ class MCPServerAdapter:
         with MCPServerAdapter({"url": "http://localhost:8000/sse"}) as tools:
             # tools is now available
 
-        # manually start / stop mcp server
-        mcp_server = MCPServerAdapter(...)
-        tools = mcp_server.tools
-        mcp_server.stop()
+        # manually stop mcp server
+        try:
+            mcp_server = MCPServerAdapter(...)
+            tools = mcp_server.tools
+            mcp_server.stop()
+        except Exception as e:
+            print(e)
+            mcp_server.stop()
+            raise e
 
         # Best practice is ensure cleanup is done after use.
         mcp_server.stop() # run after crew().kickoff()
@@ -38,7 +60,7 @@ class MCPServerAdapter:
 
     def __init__(
         self,
-        serverparams: dict[str, Any],
+        serverparams: StdioServerParameters | dict[str, Any],
     ):
         """Initialize the MCP Server
 
@@ -48,19 +70,11 @@ class MCPServerAdapter:
 
         """
 
-        try:
-            from mcp import (
-                StdioServerParameters,
-            )
-            from mcpadapt.core import MCPAdapt
-            from mcpadapt.crewai_adapter import CrewAIAdapter
-        except ImportError:
-            raise ImportError(
-                "MCP needs optional dependencies to be installed, run `uv add crewai-tools[mcp]`"
-            )
         super().__init__()
-        self._serverparams = StdioServerParameters(**serverparams)
-        self._adapter = MCPAdapt(self._serverparams, CrewAIAdapter())
+        self._serverparams = serverparams
+        self._adapter = mcpadapt.core.MCPAdapt(
+            self._serverparams, mcpadapt.crewai_adapter.CrewAIAdapter()
+        )
         self._tools = None
         self.start()
 
