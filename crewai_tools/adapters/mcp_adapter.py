@@ -17,13 +17,13 @@ if TYPE_CHECKING:
 
 
 try:
-    import mcp
-    import mcpadapt.core
-    import mcpadapt.crewai_adapter
+    from mcp import StdioServerParameters
+    from mcpadapt.core import MCPAdapt
+    from mcpadapt.crewai_adapter import CrewAIAdapter
+
+    MCP_AVAILABLE = True
 except ImportError:
-    raise ImportError(
-        "MCP needs optional dependencies to be installed, run `uv add crewai-tools[mcp]`"
-    )
+    MCP_AVAILABLE = False
 
 
 class MCPServerAdapter:
@@ -71,12 +71,35 @@ class MCPServerAdapter:
         """
 
         super().__init__()
-        self._serverparams = serverparams
-        self._adapter = mcpadapt.core.MCPAdapt(
-            self._serverparams, mcpadapt.crewai_adapter.CrewAIAdapter()
-        )
-        self._tools = None
-        self.start()
+        try:
+            if not MCP_AVAILABLE:
+                import click
+
+                if click.confirm(
+                    "You are missing the 'mcp' package. Would you like to install it?"
+                ):
+                    import subprocess
+
+                    try:
+                        subprocess.run(
+                            ["uv", "add", "mcp crewai-tools[mcp]"], check=True
+                        )
+
+                    except subprocess.CalledProcessError:
+                        raise ImportError("Failed to install mcp package")
+                else:
+                    raise ImportError(
+                        "`mcp` package not found, please run `uv add crewai-tools[mcp]`"
+                    )
+            else:
+                self._serverparams = serverparams
+                self._adapter = MCPAdapt(self._serverparams, CrewAIAdapter())
+                self._tools = None
+                self.start()
+        except ImportError:
+            raise ImportError(
+                "MCP needs optional dependencies to be installed, run `uv add crewai-tools[mcp]`"
+            )
 
     def start(self):
         """Start the MCP server and initialize the tools."""
