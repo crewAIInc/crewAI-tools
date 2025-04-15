@@ -82,7 +82,7 @@ To quickly get started with MCP in CrewAI you have 2 options:
 
 ### Option 1: Fully managed connection
 
-In this scenario we use a contextmanager (`with` statement) to open and close the the connection with the MCP server.
+In this scenario we use a contextmanager (`with` statement) to start and stop the the connection with the MCP server.
 This is done in the background and you only get to interact with the CrewAI tools corresponding to the MCP server's tools.
 
 For an STDIO based MCP server:
@@ -120,7 +120,7 @@ with MCPServerAdapter(serverparams) as tools:
 
 If you need more control over the MCP connection, you can instanciate the MCPServerAdapter into an `mcp_server_adapter` object which can be used to manage the connection with the MCP server and access the available tools.
 
-**important**: in this case you need to call `mcp_server_adapter.close()` to make sure the connection is correctly closed. We recommend that you use a `try ... finally` block run to make sure the `.close()` is called even in case of errors.
+**important**: in this case you need to call `mcp_server_adapter.stop()` to make sure the connection is correctly stopped. We recommend that you use a `try ... finally` block run to make sure the `.stop()` is called even in case of errors.
 
 Here is the same example for an STDIO MCP Server:
 
@@ -143,9 +143,9 @@ try:
     crew = Crew(..., agents=[agent], tasks=[task])
     crew.kickoff(...)
 
-# ** important ** don't forget to close the connection
+# ** important ** don't forget to stop the connection
 finally: 
-    mcp_server_adapter.close()
+    mcp_server_adapter.stop()
 ```
 
 And finally the same thing but for an SSE MCP Server:
@@ -165,9 +165,9 @@ try:
     crew = Crew(..., agents=[agent], tasks=[task])
     crew.kickoff(...)
 
-# ** important ** don't forget to close the connection
+# ** important ** don't forget to stop the connection
 finally: 
-    mcp_server_adapter.close()
+    mcp_server_adapter.stop()
 ```
 
 ### Considerations & Limitations
