@@ -95,6 +95,9 @@ apify = [
 databricks-sdk = [
     "databricks-sdk>=0.46.0",
 ]
+couchbase = [
+    "couchbase>=4.3.5",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
