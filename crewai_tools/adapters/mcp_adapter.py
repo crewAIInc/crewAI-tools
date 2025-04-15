@@ -124,8 +124,11 @@ class MCPServerAdapter:
         return self._tools
 
     def __enter__(self):
-        """Enter the context manager."""
-        return self._adapter.__enter__()
+        """
+        Enter the context manager. Note that `__init__()` already starts the MCP server.
+        So tools should already be available.
+        """
+        return self.tools
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Exit the context manager."""
