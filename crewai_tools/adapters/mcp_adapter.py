@@ -48,11 +48,9 @@ class MCPServerAdapter:
         try:
             mcp_server = MCPServerAdapter(...)
             tools = mcp_server.tools
+            ...
+        finally:
             mcp_server.stop()
-        except Exception as e:
-            print(e)
-            mcp_server.stop()
-            raise e
 
         # Best practice is ensure cleanup is done after use.
         mcp_server.stop() # run after crew().kickoff()
