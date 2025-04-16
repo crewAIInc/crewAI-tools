@@ -67,3 +67,7 @@ from .aws import (
     BedrockKBRetrieverTool,
     BedrockInvokeAgentTool,
 )
+
+from .adapters.mcp_adapter import (
+    MCPServerAdapter,
+)
