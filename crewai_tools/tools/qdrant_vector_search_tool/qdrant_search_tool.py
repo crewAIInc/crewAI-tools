@@ -4,13 +4,14 @@ from typing import Any, Optional, Type
 
 
 try:
-    from qdrant_client import QdrantClient
+    from qdrant_client import QdrantClient, AsyncQdrantClient
     from qdrant_client.http.models import Filter, FieldCondition, MatchValue
 
     QDRANT_AVAILABLE = True
 except ImportError:
     QDRANT_AVAILABLE = False
     QdrantClient = Any  # type placeholder
+    AsyncQdrantClient = Any  # type placeholder
     Filter = Any
     FieldCondition = Any
     MatchValue = Any
@@ -53,6 +54,7 @@ class QdrantVectorSearchTool(BaseTool):
 
     model_config = {"arbitrary_types_allowed": True}
     client: QdrantClient = None
+    async_client: AsyncQdrantClient = None
     name: str = "QdrantVectorSearchTool"
     description: str = "A tool to search the Qdrant database for relevant information on internal documents."
     args_schema: Type[BaseModel] = QdrantToolSchema
@@ -79,6 +81,10 @@ class QdrantVectorSearchTool(BaseTool):
         super().__init__(**kwargs)
         if QDRANT_AVAILABLE:
             self.client = QdrantClient(
+                url=self.qdrant_url,
+                api_key=self.qdrant_api_key if self.qdrant_api_key else None,
+            )
+            self.async_client = AsyncQdrantClient(
                 url=self.qdrant_url,
                 api_key=self.qdrant_api_key if self.qdrant_api_key else None,
             )
@@ -138,6 +144,66 @@ class QdrantVectorSearchTool(BaseTool):
             else self.custom_embedding_fn(query)
         )
         search_results = self.client.query_points(
+            collection_name=self.collection_name,
+            query=query_vector,
+            query_filter=search_filter,
+            limit=self.limit,
+            score_threshold=self.score_threshold,
+        )
+
+        # Format results similar to storage implementation
+        results = []
+        # Extract the list of ScoredPoint objects from the tuple
+        for point in search_results:
+            result = {
+                "metadata": point[1][0].payload.get("metadata", {}),
+                "context": point[1][0].payload.get("text", ""),
+                "distance": point[1][0].score,
+            }
+            results.append(result)
+
+        return json.dumps(results, indent=2)
+        
+    async def _arun(
+        self,
+        query: str,
+        filter_by: Optional[str] = None,
+        filter_value: Optional[str] = None,
+    ) -> str:
+        """Execute vector similarity search on Qdrant asynchronously.
+
+        Args:
+            query: Search query to vectorize and match
+            filter_by: Optional metadata field to filter on
+            filter_value: Optional value to filter by
+
+        Returns:
+            JSON string containing search results with metadata and scores
+
+        Raises:
+            ImportError: If qdrant-client is not installed
+            ValueError: If Qdrant credentials are missing
+        """
+
+        if not self.qdrant_url:
+            raise ValueError("QDRANT_URL is not set")
+
+        # Create filter if filter parameters are provided
+        search_filter = None
+        if filter_by and filter_value:
+            search_filter = Filter(
+                must=[
+                    FieldCondition(key=filter_by, match=MatchValue(value=filter_value))
+                ]
+            )
+
+        # Search in Qdrant using the built-in query method
+        query_vector = (
+            self._vectorize_query(query, embedding_model="text-embedding-3-large")
+            if not self.custom_embedding_fn
+            else self.custom_embedding_fn(query)
+        )
+        search_results = await self.async_client.query_points(
             collection_name=self.collection_name,
             query=query_vector,
             query_filter=search_filter,
