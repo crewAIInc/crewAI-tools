@@ -1,4 +1,4 @@
-from typing import Any, Optional, Type
+from typing import Any, Dict, Optional, Type, List, Union
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -12,24 +12,45 @@ except ImportError:
 
 class FirecrawlCrawlWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
-    maxDepth: Optional[int] = Field(
+    exclude_paths: Optional[List[str]] = Field(
+        default=None,
+        description="URL patterns to exclude from the crawl",
+    )
+    include_paths: Optional[List[str]] = Field(
+        default=None,
+        description="URL patterns to include in the crawl",
+    )
+    max_depth: Optional[int] = Field(
         default=2,
-        description="Maximum depth to crawl. Depth 1 is the base URL, depth 2 includes the base URL and its direct children and so on.",
+        description="Maximum depth to crawl relative to the entered URL",
+    )
+    ignore_sitemap: Optional[bool] = Field(
+        default=False,
+        description="Ignore the website sitemap when crawling",
+    )
+    ignore_query_parameters: Optional[bool] = Field(
+        default=False,
+        description="Do not re-scrape the same path with different (or none) query parameters",
     )
     limit: Optional[int] = Field(
-        default=100, description="Maximum number of pages to crawl."
+        default=10000,
+        description="Maximum number of pages to crawl",
     )
-    allowExternalLinks: Optional[bool] = Field(
+    allow_backward_links: Optional[bool] = Field(
         default=False,
-        description="Allows the crawler to follow links that point to external domains.",
+        description="Enables the crawler to navigate from a specific URL to previously linked pages",
     )
-    formats: Optional[list[str]] = Field(
-        default=["markdown", "screenshot", "links"],
-        description="Formats for the page's content to be returned (eg. markdown, html, screenshot, links).",
+    allow_external_links: Optional[bool] = Field(
+        default=False,
+        description="Allows the crawler to follow links to external websites",
     )
-    timeout: Optional[int] = Field(
-        default=30000,
-        description="Timeout in milliseconds for the crawling operation. The default value is 30000.",
+    webhook: Optional[Union[str, Dict[str, Any]]] = Field(
+        default=None,
+        description="Webhook configuration for crawl notifications",
+    )
+    scrape_options: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Options for scraping pages during crawl",
     )
 
 
@@ -76,38 +97,30 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
     def _run(
         self,
         url: str,
-        maxDepth: Optional[int] = 2,
-        limit: Optional[int] = 100,
-        allowExternalLinks: Optional[bool] = False,
-        formats: Optional[list[str]] = ["markdown", "screenshot", "links"],
-        timeout: Optional[int] = 30000,
+        exclude_paths: Optional[List[str]] = None,
+        include_paths: Optional[List[str]] = None,
+        max_depth: Optional[int] = 2,
+        ignore_sitemap: Optional[bool] = False,
+        ignore_query_parameters: Optional[bool] = False,
+        limit: Optional[int] = 10000,
+        allow_backward_links: Optional[bool] = False,
+        allow_external_links: Optional[bool] = False,
+        webhook: Optional[Union[str, Dict[str, Any]]] = None,
+        scrape_options: Optional[Dict[str, Any]] = None
     ):
-        # Default options for timeout and crawling
-        DEFAULT_TIMEOUT = 30000
-        DEFAULT_CRAWLING_OPTIONS = {
-            "maxDepth": 2,
-            "ignoreSitemap": True,
-            "limit": 100,
-            "allowBackwardLinks": False,
-            "allowExternalLinks": False,
-            "scrapeOptions": {
-                "formats": ["markdown", "screenshot", "links"],
-                "onlyMainContent": True,
-                "timeout": DEFAULT_TIMEOUT,
-            },
+        options = {
+            "excludePaths": exclude_paths or [],
+            "includePaths": include_paths or [],
+            "maxDepth": max_depth,
+            "ignoreSitemap": ignore_sitemap,
+            "ignoreQueryParameters": ignore_query_parameters,
+            "limit": limit,
+            "allowBackwardLinks": allow_backward_links,
+            "allowExternalLinks": allow_external_links,
+            "webhook": webhook,
+            "scrapeOptions": scrape_options or {},
         }
-
-        # Add default options not present as parameters
-        crawling_options = DEFAULT_CRAWLING_OPTIONS
-
-        # Update the values of parameters present
-        crawling_options["maxDepth"] = maxDepth
-        crawling_options["limit"] = limit
-        crawling_options["allowExternalLinks"] = allowExternalLinks
-        crawling_options["scrapeOptions"]["formats"] = formats
-        crawling_options["scrapeOptions"]["timeout"] = timeout
-
-        return self._firecrawl.crawl_url(url, crawling_options)
+        return self._firecrawl.crawl_url(url, options)
 
 
 try:
