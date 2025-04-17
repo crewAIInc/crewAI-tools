@@ -156,3 +156,38 @@ def test_file_read_tool_chunk_error_handling():
 
     # Clean up
     os.remove(test_file)
+
+
+def test_file_read_tool_zero_or_negative_start_line():
+    """Test that start_line values of 0 or negative read from the start of the file."""
+    # Create a test file with multiple lines
+    test_file = "/tmp/negative_test.txt"
+    lines = ["Line 1\n", "Line 2\n", "Line 3\n", "Line 4\n", "Line 5\n"]
+
+    with open(test_file, "w") as f:
+        f.writelines(lines)
+
+    tool = FileReadTool()
+
+    # Test with start_line = 0
+    result = tool._run(file_path=test_file, start_line=0)
+    expected = "".join(lines)  # Should read the entire file
+    assert result == expected
+
+    # Test with start_line = 0 and limited line count
+    result = tool._run(file_path=test_file, start_line=0, line_count=3)
+    expected = "".join(lines[0:3])  # Should read first 3 lines
+    assert result == expected
+
+    # Test with negative start_line
+    result = tool._run(file_path=test_file, start_line=-5)
+    expected = "".join(lines)  # Should read the entire file
+    assert result == expected
+
+    # Test with negative start_line and limited line count
+    result = tool._run(file_path=test_file, start_line=-10, line_count=2)
+    expected = "".join(lines[0:2])  # Should read first 2 lines
+    assert result == expected
+
+    # Clean up
+    os.remove(test_file)

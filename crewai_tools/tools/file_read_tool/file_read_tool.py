@@ -77,20 +77,25 @@ class FileReadTool(BaseTool):
                     return file.read()
 
                 # Convert to 0-indexed for internal processing
-                start_idx = start_line - 1
+                start_idx = max(start_line - 1, 0)
 
-                lines = file.readlines()
+                # Use a single enumeration loop for both cases
+                selected_lines = []
+                for i, line in enumerate(file):
+                    # Skip lines before the start index
+                    if i < start_idx:
+                        continue
 
-                if start_idx >= len(lines):
-                    return f"Error: Start line {start_line} exceeds the number of lines in the file ({len(lines)})."
+                    # Add the line if we're within range or reading to the end
+                    if line_count is None or i < start_idx + line_count:
+                        selected_lines.append(line)
+                    else:
+                        # We've read enough lines
+                        break
 
-                if line_count is None:
-                    # Return from start_line to the end of the file
-                    selected_lines = lines[start_idx:]
-                else:
-                    # Return only the specified number of lines
-                    end_idx = min(start_idx + line_count, len(lines))
-                    selected_lines = lines[start_idx:end_idx]
+                # Check if we found any lines
+                if not selected_lines and start_idx > 0:
+                    return f"Error: Start line {start_line} exceeds the number of lines in the file."
 
                 return "".join(selected_lines)
         except FileNotFoundError:
