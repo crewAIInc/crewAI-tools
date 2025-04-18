@@ -1,9 +1,9 @@
 import os
-from distutils.util import strtobool
 from typing import Any, Optional, Type
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel
+from setuptools._distutils.util import strtobool
 
 
 class FileWriterToolInput(BaseModel):
