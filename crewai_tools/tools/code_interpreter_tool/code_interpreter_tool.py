@@ -91,7 +91,11 @@ class CodeInterpreterTool(BaseTool):
 
     def _init_docker_container(self) -> Container:
         container_name = "code-interpreter"
-        client = docker_from_env()
+        client = (
+            docker_from_env()
+            if self.user_docker_base_url == None
+            else DockerClient(base_url=self.user_docker_base_url)
+        )
         current_path = os.getcwd()
 
         # Check if the container is already running
