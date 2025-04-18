@@ -41,6 +41,7 @@ from .serply_api_tool.serply_scholar_search_tool import SerplyScholarSearchTool
 from .serply_api_tool.serply_web_search_tool import SerplyWebSearchTool
 from .serply_api_tool.serply_webpage_to_markdown_tool import SerplyWebpageToMarkdownTool
 from .spider_tool.spider_tool import SpiderTool
+from .stagehand_tool.stagehand_tool import StagehandTool
 from .txt_search_tool.txt_search_tool import TXTSearchTool
 from .vision_tool.vision_tool import VisionTool
 from .website_search.website_search_tool import WebsiteSearchTool

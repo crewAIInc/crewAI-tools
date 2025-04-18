@@ -34,6 +34,7 @@ from .tools import (
     SerplyWebpageToMarkdownTool,
     SerplyWebSearchTool,
     SpiderTool,
+    StagehandTool,
     TXTSearchTool,
     VisionTool,
     WebsiteSearchTool,
