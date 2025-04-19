@@ -94,16 +94,15 @@ class FirecrawlSearchTool(BaseTool):
         if not self.firecrawl:
             raise RuntimeError("FirecrawlApp not properly initialized")
 
-        options = {
-            "limit": limit,
-            "tbs": tbs,
-            "lang": lang,
-            "country": country,
-            "location": location,
-            "timeout": timeout,
-            "scrapeOptions": scrape_options or {},
-        }
-        return self.firecrawl.search(**options)
+        return self.firecrawl.search(
+            limit= limit,
+            tbs= tbs,
+            lang= lang,
+            country= country,
+            location= location,
+            timeout= timeout,
+            scrape_ptions= scrape_options or {},
+        )
 
 
 try:
