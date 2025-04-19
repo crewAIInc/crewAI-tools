@@ -84,30 +84,19 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
     ):
         # Default options for timeout and crawling
         DEFAULT_TIMEOUT = 30000
-        DEFAULT_CRAWLING_OPTIONS = {
-            "maxDepth": 2,
-            "ignoreSitemap": True,
-            "limit": 100,
-            "allowBackwardLinks": False,
-            "allowExternalLinks": False,
-            "scrapeOptions": {
-                "formats": ["markdown", "screenshot", "links"],
-                "onlyMainContent": True,
-                "timeout": DEFAULT_TIMEOUT,
-            },
-        }
-
-        # Add default options not present as parameters
-        crawling_options = DEFAULT_CRAWLING_OPTIONS
-
-        # Update the values of parameters present
-        crawling_options["maxDepth"] = maxDepth
-        crawling_options["limit"] = limit
-        crawling_options["allowExternalLinks"] = allowExternalLinks
-        crawling_options["scrapeOptions"]["formats"] = formats
-        crawling_options["scrapeOptions"]["timeout"] = timeout
-
-        return self._firecrawl.crawl_url(url, crawling_options)
+        return self._firecrawl.crawl_url(
+            url,
+            max_depth=maxDepth,
+            ignore_sitemap=True,
+            limit=limit,
+            allow_backward_links=False,
+            allow_external_links"=allowExternalLinks,
+            scrape_ptions= {
+                "formats": formats,
+                "only_main_content": True,
+                "timeout": timeout or DEFAULT_TIMEOUT,
+            }
+        )
 
 
 try:
