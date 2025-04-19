@@ -12,7 +12,7 @@ Stagehand is a powerful browser automation framework built by Browserbase that a
 - Extract data from web pages
 - Perform complex workflows
 
-The StagehandTool wraps the Stagehand Python SDK to provide CrewAI agents with the ability to control a real web browser and interact with websites.
+The StagehandTool wraps the Stagehand Python SDK to provide CrewAI agents with the ability to control a real web browser and interact with websites using natural language commands.
 
 ## Requirements
 
