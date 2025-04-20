@@ -46,15 +46,37 @@ researcher = Agent(
     allow_delegation=False,
     tools=[stagehand_tool],
 )
+pizza_order_form = """
+Customer name: John Doe
+Telephone: 123-456-7890
+E-mail address: john.doe@example.com
+
+Pizza Size:
+[X] Medium
+
+Pizza Toppings:
+[X] Bacon
+[ ] Extra Cheese
+[X] Onion
+[ ] Mushroom
+
+Preferred delivery time: 18:30
+
+Delivery instructions:
+Please call when outside. Gate code is 2468.
+
+Submit order
+"""
+
 
 # Define a research task that demonstrates all three primitives
 research_task = Task(
     description=(
         "Demonstrate Stagehand capabilities by performing the following steps:\n"
-        "1. Go to https://www.example.com (use command_type='act')\n"
+        "1. Go to https://www.stagehand.dev (use command_type='act')\n"
         "2. Extract all the text content from the page (use command_type='extract')\n"
-        "3. Observe what elements are available on the page (use command_type='observe')\n"
-        "4. Go to https://httpbin.org/forms/post and fill out the form (use command_type='act')\n"
+        "3. Go to https://httpbin.org/forms/post and observe what elements are available on the page (use command_type='observe')\n"
+        f"4. Fill out the form (use command_type='act') using these instructions: {pizza_order_form}\n"
         "5. Provide a summary of what you learned about using these different commands"
     ),
     expected_output=(
@@ -68,7 +90,7 @@ research_task = Task(
 web_research_task = Task(
     description=(
         "Research AI in browser automation by:\n"
-        "1. Go to https://stagehand.dev (command_type='act')\n"
+        "1. Go to https://browserbase.com (command_type='act')\n"
         "2. Extract key information about the product (command_type='extract', instruction='Extract key features and benefits')\n"
         "3. Observe navigation elements (command_type='observe', instruction='Find main navigation menu items')\n"
         "4. Navigate to pricing page using act\n"
@@ -85,7 +107,7 @@ web_research_task = Task(
 # Set up the crew
 crew = Crew(
     agents=[researcher],
-    tasks=[research_task],  # You can switch this to web_research_task if you prefer
+    tasks=[web_research_task],  # You can switch this to web_research_task if you prefer
     verbose=True,
     process=Process.sequential
 )

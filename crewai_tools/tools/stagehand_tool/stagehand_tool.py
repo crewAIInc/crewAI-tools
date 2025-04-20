@@ -298,6 +298,7 @@ class StagehandTool(BaseTool):
     
     def close(self):
         """Clean up resources when the tool is no longer needed."""
+        # TODO improve this
         if self._stagehand:
             loop = asyncio.get_event_loop()
             try:
