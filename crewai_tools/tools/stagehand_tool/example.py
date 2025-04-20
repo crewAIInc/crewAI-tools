@@ -64,6 +64,7 @@ researcher = Agent(
         "4. Use 'act' with instruction='Click the first search result link for OpenAI'.\n\n"
         "Always be precise in your instructions and choose the most appropriate command and parameters (`instruction`, `url`, `command_type`, `selector`) for the task at hand."
     ),
+    llm="gpt-4o",
     verbose=True,
     allow_delegation=False,
     tools=[stagehand_tool],
@@ -77,8 +78,7 @@ research_task = Task(
         "1. Go to https://www.stagehand.dev\n"
         "2. Extract all the text content from the page\n"
         "3. Go to https://httpbin.org/forms/post and observe what elements are available on the page\n"
-        "4. Fill out the form\n"
-        "5. Provide a summary of what you learned about using these different commands"
+        "4. Provide a summary of what you learned about using these different commands"
     ),
     expected_output=(
         "A demonstration of all three Stagehand primitives (act, extract, observe) "
@@ -90,8 +90,8 @@ research_task = Task(
 # Alternative task: Real research using the primitives
 web_research_task = Task(
     description=(
-        "Go to https://browserbase.com and find the pricing section.\n"
-        "Then compile all pricing information into a short summary report."
+        "Go to google.com and search for 'Stagehand'.\n"
+        "Then extract the first search result."
     ),
     expected_output=(
         "A summary report about Stagehand's capabilities and pricing, demonstrating how "
