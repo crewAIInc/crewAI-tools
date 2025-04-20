@@ -30,6 +30,7 @@ stagehand_tool = StagehandTool(
     browserbase_api_key=browserbase_api_key,
     browserbase_project_id=browserbase_project_id,
     model_api_key=model_api_key,
+    model_name="gpt-4o",
     # Optional: customize the model
     # model_name="anthropic/claude-3-haiku-20240307"  # Default is claude-3-opus
 )
@@ -67,7 +68,7 @@ research_task = Task(
 crew = Crew(
     agents=[researcher],
     tasks=[research_task],
-    verbose=2,
+    verbose=True,
     process=Process.sequential  # Run tasks sequentially
 )
 
