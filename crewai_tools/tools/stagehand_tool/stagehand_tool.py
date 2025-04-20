@@ -84,10 +84,6 @@ class StagehandToolSchema(BaseModel):
         - 'observe': Identify and analyze elements on the page
         """,
     )
-    selector: Optional[str] = Field(
-        None,
-        description="CSS selector to limit extraction or observation to a specific element. Only used with 'extract' and 'observe' commands. Example: '.product-card' or '#login-form'",
-    )
 
 
 class StagehandTool(BaseTool):
@@ -279,7 +275,6 @@ class StagehandTool(BaseTool):
         instruction: str,
         url: Optional[str] = None,
         command_type: str = "act",
-        selector: Optional[str] = None,
     ) -> StagehandResult:
         """Asynchronous implementation of the tool."""
         try:
@@ -328,7 +323,6 @@ class StagehandTool(BaseTool):
                 extract_options = ExtractOptions(
                     instruction=instruction,
                     model_name=self.model_name,
-                    selector=selector,
                     dom_settle_timeout_ms=self.dom_settle_timeout_ms,
                     use_text_extract=True,
                 )
@@ -357,7 +351,6 @@ class StagehandTool(BaseTool):
                         {
                             "index": i + 1,
                             "description": result.description,
-                            "selector": result.selector,
                             "method": result.method,
                         }
                     )
@@ -382,7 +375,6 @@ class StagehandTool(BaseTool):
         instruction: str,
         url: Optional[str] = None,
         command_type: str = "act",
-        selector: Optional[str] = None,
     ) -> str:
         """
         Run the Stagehand tool with the given instruction.
@@ -391,7 +383,6 @@ class StagehandTool(BaseTool):
             instruction: Natural language instruction for browser automation
             url: Optional URL to navigate to before executing the instruction
             command_type: Type of command to execute ('act', 'extract', or 'observe')
-            selector: Optional CSS selector for extract and observe commands
 
         Returns:
             The result of the browser automation task
@@ -402,12 +393,12 @@ class StagehandTool(BaseTool):
             if loop.is_running():
                 # We're in an existing event loop, use it
                 result = asyncio.run_coroutine_threadsafe(
-                    self._async_run(instruction, url, command_type, selector), loop
+                    self._async_run(instruction, url, command_type), loop
                 ).result()
             else:
                 # We have a loop but it's not running
                 result = loop.run_until_complete(
-                    self._async_run(instruction, url, command_type, selector)
+                    self._async_run(instruction, url, command_type)
                 )
 
             # Format the result for output
@@ -422,7 +413,6 @@ class StagehandTool(BaseTool):
                         formatted_results.append(
                             f"Element {element['index']}: {element['description']}"
                         )
-                        formatted_results.append(f"Selector: {element['selector']}")
                         if element.get("method"):
                             formatted_results.append(
                                 f"Suggested action: {element['method']}"
@@ -436,9 +426,7 @@ class StagehandTool(BaseTool):
 
         except RuntimeError:
             # No event loop exists, create one
-            result = asyncio.run(
-                self._async_run(instruction, url, command_type, selector)
-            )
+            result = asyncio.run(self._async_run(instruction, url, command_type))
 
             if result.success:
                 if isinstance(result.data, dict):

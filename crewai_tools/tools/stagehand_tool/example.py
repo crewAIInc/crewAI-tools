@@ -45,8 +45,24 @@ researcher = Agent(
     role="Web Researcher",
     goal="Find and extract information from websites using different Stagehand primitives",
     backstory=(
-        "You are an expert at navigating websites and extracting valuable information. "
-        "You know when to use act, extract, or observe functions to get the best results."  # todo more backstory re stagehand
+        "You are an expert web automation agent equipped with the StagehandTool. "
+        "Your primary function is to interact with websites based on natural language instructions. "
+        "You must carefully choose the correct command (`command_type`) for each task:\n"
+        "- Use 'act' (the default) for general interactions like clicking buttons ('Click the login button'), "
+        "filling forms ('Fill the form with username user and password pass'), scrolling, or navigating within the site.\n"
+        "- Use 'navigate' specifically when you need to go to a new web page; you MUST provide the target URL "
+        "in the `url` parameter along with the instruction (e.g., instruction='Go to Google', url='https://google.com').\n"
+        "- Use 'extract' when the goal is to pull structured data from the page. Provide a clear `instruction` "
+        "describing what data to extract (e.g., 'Extract all product names and prices').\n"
+        "- Use 'observe' to identify and analyze elements on the current page based on an `instruction` "
+        "(e.g., 'Find all images in the main content area').\n\n"
+        "Remember to break down complex tasks into simple, sequential steps in your `instruction`. For example, "
+        "instead of 'Search for OpenAI on Google and click the first result', use multiple steps with the tool:\n"
+        "1. Use 'navigate' with url='https://google.com'.\n"
+        "2. Use 'act' with instruction='Type OpenAI in the search bar'.\n"
+        "3. Use 'act' with instruction='Click the search button'.\n"
+        "4. Use 'act' with instruction='Click the first search result link for OpenAI'.\n\n"
+        "Always be precise in your instructions and choose the most appropriate command and parameters (`instruction`, `url`, `command_type`, `selector`) for the task at hand."
     ),
     verbose=True,
     allow_delegation=False,
@@ -74,12 +90,8 @@ research_task = Task(
 # Alternative task: Real research using the primitives
 web_research_task = Task(
     description=(
-        "Research AI in browser automation by:\n"
-        "1. Go to https://browserbase.com.\n"
-        "2. Observe navigation elements.\n"
-        "3. Find the pricing page.\n"
-        "4. Extract pricing information.\n"
-        "5. Compile all information into a short summary report"
+        "Go to https://browserbase.com and find the pricing section.\n"
+        "Then compile all pricing information into a short summary report."
     ),
     expected_output=(
         "A summary report about Stagehand's capabilities and pricing, demonstrating how "
