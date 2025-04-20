@@ -2,11 +2,11 @@
 StagehandTool Example
 
 This example demonstrates how to use the StagehandTool in a CrewAI workflow.
-It uses a web researcher agent to search for information on a given topic.
+It shows how to use the three main primitives: act, extract, and observe.
 
 Prerequisites:
 1. A Browserbase account with API key and project ID
-2. An Anthropic API key (or OpenAI API key)
+2. An LLM API key (OpenAI or Anthropic)
 3. Installed dependencies: crewai, crewai-tools, stagehand-py
 
 Usage:
@@ -18,6 +18,7 @@ Usage:
 import os
 from crewai import Agent, Task, Crew, Process
 from crewai_tools import StagehandTool
+from stagehand.schemas import AvailableModel
 
 # Get API keys from environment variables
 # You can set these in your shell or in a .env file
@@ -27,39 +28,56 @@ model_api_key = os.environ.get("ANTHROPIC_API_KEY")  # or OPENAI_API_KEY
 
 # Initialize the StagehandTool with your credentials
 stagehand_tool = StagehandTool(
-    browserbase_api_key=browserbase_api_key,
-    browserbase_project_id=browserbase_project_id,
+    api_key=browserbase_api_key,  # New parameter naming
+    project_id=browserbase_project_id,  # New parameter naming
     model_api_key=model_api_key,
-    model_name="gpt-4o",
-    # Optional: customize the model
-    # model_name="anthropic/claude-3-haiku-20240307"  # Default is claude-3-opus
+    model_name=AvailableModel.GPT_4O,  # Using the enum from schemas
 )
 
 # Create a web researcher agent with the StagehandTool
 researcher = Agent(
     role="Web Researcher",
-    goal="Find accurate and detailed information on specific topics by browsing the web",
+    goal="Find and extract information from websites using different Stagehand primitives",
     backstory=(
         "You are an expert at navigating websites and extracting valuable information. "
-        "You're thorough, precise, and have a knack for finding exactly what the user needs."
+        "You know when to use act, extract, or observe functions to get the best results."
     ),
     verbose=True,
     allow_delegation=False,
     tools=[stagehand_tool],
 )
 
-# Define a research task
+# Define a research task that demonstrates all three primitives
 research_task = Task(
     description=(
-        "Research the latest developments in AI and browser automation. "
-        "1. Go to https://stagehand.dev and read about the tool "
-        "2. Then search on Google for 'browser automation with AI' "
-        "3. Find and visit at least 2 relevant websites "
-        "4. Summarize your findings in a brief report focused on how AI is being used for browser automation"
+        "Demonstrate Stagehand capabilities by performing the following steps:\n"
+        "1. Go to https://www.example.com (use command_type='act')\n"
+        "2. Extract all the text content from the page (use command_type='extract')\n"
+        "3. Observe what elements are available on the page (use command_type='observe')\n"
+        "4. Go to https://httpbin.org/forms/post and fill out the form (use command_type='act')\n"
+        "5. Provide a summary of what you learned about using these different commands"
     ),
     expected_output=(
-        "A summary report on AI browser automation technologies, their capabilities, "
-        "and practical applications based on the websites visited."
+        "A demonstration of all three Stagehand primitives (act, extract, observe) "
+        "with examples of how each was used and what information was gathered."
+    ),
+    agent=researcher
+)
+
+# Alternative task: Real research using the primitives
+web_research_task = Task(
+    description=(
+        "Research AI in browser automation by:\n"
+        "1. Go to https://stagehand.dev (command_type='act')\n"
+        "2. Extract key information about the product (command_type='extract', instruction='Extract key features and benefits')\n"
+        "3. Observe navigation elements (command_type='observe', instruction='Find main navigation menu items')\n"
+        "4. Navigate to pricing page using act\n"
+        "5. Extract pricing information\n"
+        "6. Compile all information into a short summary report"
+    ),
+    expected_output=(
+        "A summary report about Stagehand's capabilities and pricing, demonstrating how "
+        "the different primitives can be used together for effective web research."
     ),
     agent=researcher
 )
@@ -67,15 +85,15 @@ research_task = Task(
 # Set up the crew
 crew = Crew(
     agents=[researcher],
-    tasks=[research_task],
+    tasks=[research_task],  # You can switch this to web_research_task if you prefer
     verbose=True,
-    process=Process.sequential  # Run tasks sequentially
+    process=Process.sequential
 )
 
 # Run the crew and get the result
 result = crew.kickoff()
 
-print("\n==== RESEARCH RESULTS ====\n")
+print("\n==== RESULTS ====\n")
 print(result)
 
 # Make sure to clean up stagehand resources

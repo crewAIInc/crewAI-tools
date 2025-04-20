@@ -10,16 +10,21 @@ Stagehand is a powerful browser automation framework built by Browserbase that a
 - Click buttons, links, and other elements
 - Fill in forms
 - Extract data from web pages
+- Observe and identify elements
 - Perform complex workflows
 
-The StagehandTool wraps the Stagehand Python SDK to provide CrewAI agents with the ability to control a real web browser and interact with websites using natural language commands.
+The StagehandTool wraps the Stagehand Python SDK to provide CrewAI agents with the ability to control a real web browser and interact with websites using three core primitives:
+
+1. **Act**: Perform actions like clicking, typing, or navigating
+2. **Extract**: Extract structured data from web pages
+3. **Observe**: Identify and analyze elements on the page
 
 ## Requirements
 
 Before using this tool, you'll need:
 
 1. A [Browserbase](https://www.browserbase.io/) account with API key and project ID
-2. An API key for an LLM (Anthropic Claude or OpenAI)
+2. An API key for an LLM (OpenAI or Anthropic Claude)
 3. The Stagehand Python SDK installed
 
 Install the dependencies:
@@ -35,12 +40,14 @@ pip install stagehand-py
 ```python
 from crewai import Agent, Task, Crew
 from crewai_tools import StagehandTool
+from stagehand.schemas import AvailableModel
 
 # Initialize the tool with your API keys
 stagehand_tool = StagehandTool(
-    browserbase_api_key="your-browserbase-api-key",
-    browserbase_project_id="your-browserbase-project-id",
-    model_api_key="your-llm-api-key",  # Anthropic or OpenAI API key
+    api_key="your-browserbase-api-key",
+    project_id="your-browserbase-project-id",
+    model_api_key="your-llm-api-key",  # OpenAI or Anthropic API key
+    model_name=AvailableModel.CLAUDE_3_7_SONNET_LATEST,  # Optional: specify which model to use
 )
 
 # Create an agent with the tool
@@ -69,55 +76,101 @@ result = crew.kickoff()
 print(result)
 ```
 
-### Advanced Usage
+### Using Different Primitives
+
+The StagehandTool now supports three different command types:
+
+#### 1. Act - Perform actions on a page
+
+```python
+# Perform an action (default behavior)
+result = stagehand_tool.run(
+    instruction="Click the login button", 
+    url="https://example.com",
+    command_type="act"  # Default, so can be omitted
+)
+```
+
+#### 2. Extract - Extract data from a page
+
+```python
+# Extract data from a page
+result = stagehand_tool.run(
+    instruction="Extract all the product prices and names", 
+    url="https://example.com/products",
+    command_type="extract",
+    selector=".product-container"  # Optional CSS selector to limit extraction scope
+)
+```
+
+#### 3. Observe - Identify elements on a page
+
+```python
+# Observe elements on a page
+result = stagehand_tool.run(
+    instruction="Find all navigation menu items", 
+    url="https://example.com",
+    command_type="observe"
+)
+```
+
+### Advanced Configuration
 
 You can customize the behavior of the StagehandTool by specifying different parameters:
 
 ```python
 stagehand_tool = StagehandTool(
-    browserbase_api_key="your-browserbase-api-key",
-    browserbase_project_id="your-browserbase-project-id",
+    api_key="your-browserbase-api-key",
+    project_id="your-browserbase-project-id",
     model_api_key="your-llm-api-key",
-    model_name="anthropic/claude-3-haiku-20240307",  # Choose a different model
+    model_name=AvailableModel.GPT_4O,
     server_url="https://api.stagehand.dev",  # Default is https://api.stagehand.dev
+    headless=True,  # Run in headless mode
+    dom_settle_timeout_ms=5000,  # Wait longer for DOM to settle
 )
 ```
 
-## Example
+## Complete Example
 
-Here's an example of using StagehandTool to search for information on Google:
+Here's a complete example showing how to use all three primitives:
 
 ```python
 from crewai import Agent, Task, Crew
 from crewai_tools import StagehandTool
+from stagehand.schemas import AvailableModel
 import os
 
 # Get API keys from environment
 browserbase_api_key = os.environ.get("BROWSERBASE_API_KEY")
 browserbase_project_id = os.environ.get("BROWSERBASE_PROJECT_ID")
-model_api_key = os.environ.get("ANTHROPIC_API_KEY")  # or OPENAI_API_KEY
+model_api_key = os.environ.get("OPENAI_API_KEY")  # or ANTHROPIC_API_KEY
 
 # Initialize the tool
 stagehand_tool = StagehandTool(
-    browserbase_api_key=browserbase_api_key,
-    browserbase_project_id=browserbase_project_id,
+    api_key=browserbase_api_key,
+    project_id=browserbase_project_id,
     model_api_key=model_api_key,
+    model_name=AvailableModel.GPT_4O,
 )
 
 # Create an agent
 researcher = Agent(
     role="Web Researcher",
-    goal="Search for information on the web",
-    backstory="I specialize in finding information online.",
+    goal="Gather product information from an e-commerce website",
+    backstory="I specialize in extracting and analyzing web data.",
     verbose=True,
     tools=[stagehand_tool],
 )
 
 # Create a task
-search_task = Task(
+research_task = Task(
     description=(
-        "Go to Google.com, search for 'latest AI developments', and summarize "
-        "the top 3 results. Visit each result page to get more detailed information."
+        "Analyze an e-commerce website by:\n"
+        "1. Go to example.com (command_type='act')\n"
+        "2. Observe the main navigation elements (command_type='observe')\n"
+        "3. Navigate to a product page\n"
+        "4. Extract product details (command_type='extract')\n"
+        "5. Provide a summary of the findings"
     ),
     agent=researcher,
 )
@@ -125,12 +178,15 @@ search_task = Task(
 # Run the crew
 crew = Crew(
     agents=[researcher],
-    tasks=[search_task],
+    tasks=[research_task],
     verbose=True,
 )
 
 result = crew.kickoff()
 print(result)
+
+# Clean up resources
+stagehand_tool.close()
 ```
 
 ## Advanced Tips
@@ -141,12 +197,17 @@ print(result)
 
 3. **Resource Cleanup**: Call the `close()` method when you're done with the tool to properly clean up browser resources.
 
+4. **Chaining Operations**: The most effective workflows often chain the three primitives together:
+   - First, *observe* to identify elements on the page
+   - Then, *act* to interact with those elements
+   - Finally, *extract* to gather structured data
+
 ## How It Works
 
 Under the hood, StagehandTool:
 
 1. Initializes a Stagehand session connected to a remote browser via Browserbase
-2. Executes natural language instructions using the Stagehand agent
+2. Uses the appropriate primitive (act, extract, or observe) based on the command_type
 3. Handles the asynchronous browser control in a way that's compatible with CrewAI's synchronous execution model
 
 ## Documentation

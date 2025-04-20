@@ -1,11 +1,20 @@
 import asyncio
 import json
 import logging
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Optional, Type, Union, List
 
 from pydantic import BaseModel, Field
 
 from stagehand import Stagehand, StagehandConfig, StagehandPage
+from stagehand.schemas import (
+    AvailableModel,
+    ActOptions, 
+    ActResult,
+    ExtractOptions,
+    ExtractResult,
+    ObserveOptions,
+    ObserveResult
+)
 from stagehand.utils import configure_logging
 
 from ..base_tool import BaseTool
@@ -13,6 +22,12 @@ from ..base_tool import BaseTool
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+class StagehandCommandType(str):
+    ACT = "act"
+    EXTRACT = "extract"
+    OBSERVE = "observe"
 
 
 class StagehandToolSchema(BaseModel):
@@ -24,6 +39,14 @@ class StagehandToolSchema(BaseModel):
     url: Optional[str] = Field(
         None,
         description="The URL to navigate to before executing the instruction. If not provided, Stagehand will use the current page."
+    )
+    command_type: Optional[str] = Field(
+        "act",
+        description="The type of command to execute: 'act' (perform an action), 'extract' (extract data), or 'observe' (identify elements). Default is 'act'."
+    )
+    selector: Optional[str] = Field(
+        None,
+        description="CSS selector to limit extraction or observation to a specific element. Only used with extract and observe commands."
     )
 
 
@@ -43,14 +66,13 @@ class StagehandTool(BaseTool):
     api_key: Optional[str] = None
     project_id: Optional[str] = None
     model_api_key: Optional[str] = None
-    model_name: Optional[str] = "claude-3-7-sonnet-20250219"
+    model_name: Optional[AvailableModel] = AvailableModel.CLAUDE_3_7_SONNET_LATEST
     server_url: Optional[str] = "http://api.stagehand.browserbase.com/v1"
     headless: bool = False
     dom_settle_timeout_ms: int = 3000
     self_heal: bool = True
     wait_for_captcha_solves: bool = True
     verbose: int = 1
-    system_prompt: Optional[str] = "You are a browser automation assistant that helps users navigate websites effectively."
     
     # Instance variables
     _stagehand: Optional[Stagehand] = None
@@ -70,7 +92,6 @@ class StagehandTool(BaseTool):
         self_heal: Optional[bool] = None,
         wait_for_captcha_solves: Optional[bool] = None,
         verbose: Optional[int] = None,
-        system_prompt: Optional[str] = None,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -105,8 +126,6 @@ class StagehandTool(BaseTool):
             self.wait_for_captcha_solves = wait_for_captcha_solves
         if verbose is not None:
             self.verbose = verbose
-        if system_prompt:
-            self.system_prompt = system_prompt
             
         self._session_id = session_id
         
@@ -152,7 +171,6 @@ class StagehandTool(BaseTool):
                 model_name=self.model_name,
                 self_heal=self.self_heal,
                 wait_for_captcha_solves=self.wait_for_captcha_solves,
-                system_prompt=self.system_prompt,
                 model_client_options=model_client_options,
                 verbose=self.verbose,
                 session_id=self._session_id,
@@ -171,34 +189,94 @@ class StagehandTool(BaseTool):
             print(f"Session ID: {self._stagehand.session_id}")
             print(f"Browser session: https://www.browserbase.com/sessions/{self._stagehand.session_id}")
     
-    async def _async_run(self, instruction: str, url: Optional[str] = None) -> str:
+    async def _async_run(
+        self, 
+        instruction: str, 
+        url: Optional[str] = None,
+        command_type: str = "act",
+        selector: Optional[str] = None
+    ) -> str:
         """Asynchronous implementation of the tool."""
         try:
             print("Setting up Stagehand...")
             await self._setup_stagehand()
-
-            print(f"Navigating to URL: {url}")
-            
+ 
             # Navigate to the URL if provided
             if url:
+                print(f"Navigating to URL: {url}")
                 await self._page.goto(url)
             
-            # Execute the instruction using the agent
-            result = await self._stagehand.agent.execute(instruction)
-            
-            # Return the agent's response message
-            return result.message
+            print(f"Executing {command_type} with instruction: {instruction}")
+
+            # Process according to command type
+            if command_type.lower() == "act":
+                # Create act options
+                act_options = ActOptions(
+                    action=instruction,
+                    model_name=self.model_name,
+                    dom_settle_timeout_ms=self.dom_settle_timeout_ms
+                )
+                
+                # Execute the act command
+                result = await self._page.act(act_options)
+                return f"Action result: {result.message}"
+                
+            elif command_type.lower() == "extract":
+                # Create extract options
+                extract_options = ExtractOptions(
+                    instruction=instruction,
+                    model_name=self.model_name,
+                    selector=selector,
+                    dom_settle_timeout_ms=self.dom_settle_timeout_ms
+                )
+                
+                # Execute the extract command
+                result = await self._page.extract(extract_options)
+                return f"Extracted data: {json.dumps(result.model_dump(), indent=2)}"
+                
+            elif command_type.lower() == "observe":
+                # Create observe options
+                observe_options = ObserveOptions(
+                    instruction=instruction,
+                    model_name=self.model_name,
+                    only_visible=True,
+                    dom_settle_timeout_ms=self.dom_settle_timeout_ms
+                )
+                
+                # Execute the observe command
+                results = await self._page.observe(observe_options)
+                
+                # Format the observation results
+                formatted_results = []
+                for i, result in enumerate(results):
+                    formatted_results.append(f"Element {i+1}: {result.description}")
+                    formatted_results.append(f"Selector: {result.selector}")
+                    if result.method:
+                        formatted_results.append(f"Suggested action: {result.method}")
+                
+                return "\n".join(formatted_results)
+                
+            else:
+                return f"Unknown command type: {command_type}. Please use 'act', 'extract', or 'observe'."
             
         except Exception as e:
             return f"Error using Stagehand: {str(e)}"
         
-    def _run(self, instruction: str, url: Optional[str] = None) -> str:
+    def _run(
+        self, 
+        instruction: str, 
+        url: Optional[str] = None,
+        command_type: str = "act",
+        selector: Optional[str] = None
+    ) -> str:
         """
         Run the Stagehand tool with the given instruction.
         
         Args:
             instruction: Natural language instruction for browser automation
             url: Optional URL to navigate to before executing the instruction
+            command_type: Type of command to execute ('act', 'extract', or 'observe')
+            selector: Optional CSS selector for extract and observe commands
         
         Returns:
             The result of the browser automation task
@@ -209,14 +287,14 @@ class StagehandTool(BaseTool):
             if loop.is_running():
                 # We're in an existing event loop, use it
                 return asyncio.run_coroutine_threadsafe(
-                    self._async_run(instruction, url), loop
+                    self._async_run(instruction, url, command_type, selector), loop
                 ).result()
             else:
                 # We have a loop but it's not running
-                return loop.run_until_complete(self._async_run(instruction, url))
+                return loop.run_until_complete(self._async_run(instruction, url, command_type, selector))
         except RuntimeError:
             # No event loop exists, create one
-            return asyncio.run(self._async_run(instruction, url))
+            return asyncio.run(self._async_run(instruction, url, command_type, selector))
     
     def close(self):
         """Clean up resources when the tool is no longer needed."""
