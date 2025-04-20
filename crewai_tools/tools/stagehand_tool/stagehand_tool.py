@@ -19,10 +19,6 @@ from stagehand.utils import configure_logging
 
 from ..base_tool import BaseTool
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 class StagehandCommandType(str):
     ACT = "act"
@@ -34,19 +30,23 @@ class StagehandToolSchema(BaseModel):
     """Input for StagehandTool."""
     instruction: str = Field(
         ..., 
-        description="The instruction for Stagehand to automate the web browser. Describe in natural language what you want to do on the website."
+        description="Natural language instruction describing what you want to do on the website. Be specific about the action you want to perform, data to extract, or elements to observe."
     )
     url: Optional[str] = Field(
         None,
-        description="The URL to navigate to before executing the instruction. If not provided, Stagehand will use the current page."
+        description="The URL to navigate to before executing the instruction. If not provided, the current page will be used. Example: 'https://www.example.com'"
     )
     command_type: Optional[str] = Field(
         "act",
-        description="The type of command to execute: 'act' (perform an action), 'extract' (extract data), or 'observe' (identify elements). Default is 'act'."
+        description="""The type of command to execute (choose one): 
+        - 'act': Perform an action like clicking buttons, filling forms, etc. (default)
+        - 'extract': Extract structured data from the page 
+        - 'observe': Identify and analyze elements on the page
+        """
     )
     selector: Optional[str] = Field(
         None,
-        description="CSS selector to limit extraction or observation to a specific element. Only used with extract and observe commands."
+        description="CSS selector to limit extraction or observation to a specific element. Only used with 'extract' and 'observe' commands. Example: '.product-card' or '#login-form'"
     )
 
 
@@ -56,10 +56,37 @@ class StagehandTool(BaseTool):
     
     Stagehand allows AI agents to interact with websites through a browser, 
     performing actions like clicking buttons, filling forms, and extracting data.
+    
+    The tool supports three main command types:
+    1. act - Perform actions like clicking, typing, scrolling, or navigating
+    2. extract - Extract structured data from web pages
+    3. observe - Identify and analyze elements on the page
+    
+    Usage examples:
+    - Navigate to a website: instruction="Go to the homepage", url="https://example.com"
+    - Click a button: instruction="Click the login button"
+    - Fill a form: instruction="Fill the login form with username 'user' and password 'pass'"
+    - Extract data: instruction="Extract all product prices and names", command_type="extract"
+    - Observe elements: instruction="Find all navigation menu items", command_type="observe"
     """
     
     name: str = "Web Automation Tool"
-    description: str = "A tool that can automate web browser interactions using natural language. Use this to navigate websites, click buttons, fill forms, search, and extract information from web pages."
+    description: str = """Use this tool to control a web browser and interact with websites using natural language.
+    
+    Capabilities:
+    - Navigate to websites and follow links
+    - Click buttons, links, and other elements
+    - Fill in forms and input fields
+    - Search within websites
+    - Extract information from web pages
+    - Identify and analyze elements on a page
+    
+    To use this tool, provide a natural language instruction describing what you want to do.
+    For different types of tasks, specify the command_type:
+    - 'act': For performing actions (default)
+    - 'extract': For getting data from the page
+    - 'observe': For finding and analyzing elements
+    """
     args_schema: Type[BaseModel] = StagehandToolSchema
     
     # Stagehand configuration

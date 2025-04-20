@@ -16,9 +16,13 @@ Usage:
 """
 
 import os
+from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process
 from crewai_tools import StagehandTool
 from stagehand.schemas import AvailableModel
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Get API keys from environment variables
 # You can set these in your shell or in a .env file
@@ -40,33 +44,12 @@ researcher = Agent(
     goal="Find and extract information from websites using different Stagehand primitives",
     backstory=(
         "You are an expert at navigating websites and extracting valuable information. "
-        "You know when to use act, extract, or observe functions to get the best results."
+        "You know when to use act, extract, or observe functions to get the best results." # todo more backstory re stagehand
     ),
     verbose=True,
     allow_delegation=False,
     tools=[stagehand_tool],
 )
-pizza_order_form = """
-Customer name: John Doe
-Telephone: 123-456-7890
-E-mail address: john.doe@example.com
-
-Pizza Size:
-[X] Medium
-
-Pizza Toppings:
-[X] Bacon
-[ ] Extra Cheese
-[X] Onion
-[ ] Mushroom
-
-Preferred delivery time: 18:30
-
-Delivery instructions:
-Please call when outside. Gate code is 2468.
-
-Submit order
-"""
 
 
 # Define a research task that demonstrates all three primitives
@@ -76,7 +59,7 @@ research_task = Task(
         "1. Go to https://www.stagehand.dev (use command_type='act')\n"
         "2. Extract all the text content from the page (use command_type='extract')\n"
         "3. Go to https://httpbin.org/forms/post and observe what elements are available on the page (use command_type='observe')\n"
-        f"4. Fill out the form (use command_type='act') using these instructions: {pizza_order_form}\n"
+        f"4. Fill out the form (use command_type='act')\n"
         "5. Provide a summary of what you learned about using these different commands"
     ),
     expected_output=(

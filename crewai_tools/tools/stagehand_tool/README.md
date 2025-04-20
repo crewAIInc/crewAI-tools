@@ -23,7 +23,7 @@ The StagehandTool wraps the Stagehand Python SDK to provide CrewAI agents with t
 
 Before using this tool, you'll need:
 
-1. A [Browserbase](https://www.browserbase.io/) account with API key and project ID
+1. A [Browserbase](https://www.browserbase.com/) account with API key and project ID
 2. An API key for an LLM (OpenAI or Anthropic Claude)
 3. The Stagehand Python SDK installed
 
@@ -76,12 +76,17 @@ result = crew.kickoff()
 print(result)
 ```
 
-### Using Different Primitives
+## Command Types
 
-The StagehandTool now supports three different command types:
+The StagehandTool supports three different command types, each designed for specific web automation tasks:
 
-#### 1. Act - Perform actions on a page
+### 1. Act - Perform Actions on a Page
 
+The `act` command type (default) allows the agent to perform actions on a webpage, such as clicking buttons, filling forms, navigating, and more.
+
+**When to use**: Use `act` when you need to interact with a webpage by performing actions like clicking, typing, scrolling, or navigating.
+
+**Example usage**:
 ```python
 # Perform an action (default behavior)
 result = stagehand_tool.run(
@@ -89,32 +94,84 @@ result = stagehand_tool.run(
     url="https://example.com",
     command_type="act"  # Default, so can be omitted
 )
-```
 
-#### 2. Extract - Extract data from a page
-
-```python
-# Extract data from a page
+# Fill out a form
 result = stagehand_tool.run(
-    instruction="Extract all the product prices and names", 
-    url="https://example.com/products",
-    command_type="extract",
-    selector=".product-container"  # Optional CSS selector to limit extraction scope
+    instruction="Fill the contact form with name 'John Doe', email 'john@example.com', and message 'Hello world'", 
+    url="https://example.com/contact"
+)
+
+# Multiple actions in sequence
+result = stagehand_tool.run(
+    instruction="Search for 'AI tools' in the search box and press Enter", 
+    url="https://example.com"
 )
 ```
 
-#### 3. Observe - Identify elements on a page
+### 2. Extract - Get Data from a Page
 
+The `extract` command type allows the agent to extract structured data from a webpage, such as product information, article text, or table data.
+
+**When to use**: Use `extract` when you need to retrieve specific information from a webpage in a structured format.
+
+**Example usage**:
 ```python
-# Observe elements on a page
+# Extract all product information
 result = stagehand_tool.run(
-    instruction="Find all navigation menu items", 
+    instruction="Extract all product names, prices, and descriptions", 
+    url="https://example.com/products",
+    command_type="extract"
+)
+
+# Extract specific information with a selector
+result = stagehand_tool.run(
+    instruction="Extract the main article title and content", 
+    url="https://example.com/blog/article",
+    command_type="extract",
+    selector=".article-container"  # Optional CSS selector to limit extraction scope
+)
+
+# Extract tabular data
+result = stagehand_tool.run(
+    instruction="Extract the data from the pricing table as a structured list of plans with their features and costs", 
+    url="https://example.com/pricing",
+    command_type="extract",
+    selector=".pricing-table"
+)
+```
+
+### 3. Observe - Identify Elements on a Page
+
+The `observe` command type allows the agent to identify and analyze specific elements on a webpage, returning information about their attributes, location, and suggested actions.
+
+**When to use**: Use `observe` when you need to identify UI elements, understand page structure, or determine what actions are possible.
+
+**Example usage**:
+```python
+# Find interactive elements
+result = stagehand_tool.run(
+    instruction="Find all interactive elements in the navigation menu", 
     url="https://example.com",
+    command_type="observe"
+)
+
+# Identify form fields
+result = stagehand_tool.run(
+    instruction="Identify all the input fields in the registration form", 
+    url="https://example.com/register",
+    command_type="observe",
+    selector="#registration-form"
+)
+
+# Analyze page structure
+result = stagehand_tool.run(
+    instruction="Find the main content sections of this page", 
+    url="https://example.com/about",
     command_type="observe"
 )
 ```
 
-### Advanced Configuration
+## Advanced Configuration
 
 You can customize the behavior of the StagehandTool by specifying different parameters:
 
@@ -123,16 +180,18 @@ stagehand_tool = StagehandTool(
     api_key="your-browserbase-api-key",
     project_id="your-browserbase-project-id",
     model_api_key="your-llm-api-key",
-    model_name=AvailableModel.GPT_4O,
-    server_url="https://api.stagehand.dev",  # Default is https://api.stagehand.dev
-    headless=True,  # Run in headless mode
+    model_name=AvailableModel.CLAUDE_3_7_SONNET_LATEST,
     dom_settle_timeout_ms=5000,  # Wait longer for DOM to settle
+    headless=True,  # Run browser in headless mode (no visible window)
+    self_heal=True,  # Attempt to recover from errors
+    wait_for_captcha_solves=True,  # Wait for CAPTCHA solving
+    verbose=1,  # Control logging verbosity (0-3)
 )
 ```
 
-## Complete Example
+## Task Examples for CrewAI Agents
 
-Here's a complete example showing how to use all three primitives:
+Here are some examples of tasks that effectively use the StagehandTool:
 
 ```python
 from crewai import Agent, Task, Crew
@@ -162,17 +221,20 @@ researcher = Agent(
     tools=[stagehand_tool],
 )
 
-# Create a task
-research_task = Task(
-    description=(
-        "Analyze an e-commerce website by:\n"
-        "1. Go to example.com (command_type='act')\n"
-        "2. Observe the main navigation elements (command_type='observe')\n"
-        "3. Navigate to a product page\n"
-        "4. Extract product details (command_type='extract')\n"
-        "5. Provide a summary of the findings"
-    ),
-    agent=researcher,
+# Form submission task
+form_submission_task = Task(
+    description="""
+    Submit a contact form on example.com:
+    1. Go to example.com/contact
+    2. Fill out the contact form with:
+       - Name: John Doe
+       - Email: john@example.com
+       - Subject: Information Request
+       - Message: I would like to learn more about your services
+    3. Submit the form
+    4. Confirm the submission was successful
+    """,
+    agent=form_agent,
 )
 
 # Run the crew
@@ -189,27 +251,30 @@ print(result)
 stagehand_tool.close()
 ```
 
-## Advanced Tips
+## Tips for Effective Use
 
-1. **Session Reuse**: You can reuse a browser session by saving the `_session_id` property and passing it to a new instance of StagehandTool.
+1. **Be specific in instructions**: The more specific your instructions, the better the results. For example, instead of "click the button," use "click the 'Submit' button at the bottom of the contact form."
 
-2. **Error Handling**: The tool includes error handling that returns error messages as strings, making it resilient in agent workflows.
+2. **Use the right command type**: Choose the appropriate command type based on your task:
+   - Use `act` for interactions and navigation
+   - Use `extract` for gathering information
+   - Use `observe` for understanding page structure
 
-3. **Resource Cleanup**: Call the `close()` method when you're done with the tool to properly clean up browser resources.
+3. **Leverage selectors**: When extracting data or observing elements, use CSS selectors to narrow the scope and improve accuracy.
 
-4. **Chaining Operations**: The most effective workflows often chain the three primitives together:
-   - First, *observe* to identify elements on the page
-   - Then, *act* to interact with those elements
-   - Finally, *extract* to gather structured data
+4. **Handle multi-step processes**: For complex workflows, break them down into multiple tool calls, each handling a specific step.
 
-## How It Works
+5. **Error handling**: Implement appropriate error handling in your agent's logic to deal with potential issues like elements not found or pages not loading.
 
-Under the hood, StagehandTool:
+## Troubleshooting
 
-1. Initializes a Stagehand session connected to a remote browser via Browserbase
-2. Uses the appropriate primitive (act, extract, or observe) based on the command_type
-3. Handles the asynchronous browser control in a way that's compatible with CrewAI's synchronous execution model
+- **Session not starting**: Ensure you have valid API keys for both Browserbase and your LLM provider.
+- **Elements not found**: Try increasing the `dom_settle_timeout_ms` parameter to give the page more time to load.
+- **Actions not working**: Make sure your instructions are clear and specific. You may need to use `observe` first to identify the correct elements.
+- **Extract returning incomplete data**: Try refining your instruction or providing a more specific selector.
 
-## Documentation
+## Contact
 
-For more information about Stagehand, visit the [official documentation](https://docs.stagehand.dev/). 
+For more information about Stagehand, visit [the Stagehand documentation](https://docs.stagehand.dev/).
+
+For questions about the CrewAI integration, join our [Discord community](https://discord.com/invite/X4JWnZnxPb) or open an issue in this repository. 
