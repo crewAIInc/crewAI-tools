@@ -1,7 +1,6 @@
 import asyncio
 import json
 import logging
-from functools import lru_cache
 from typing import Dict, List, Optional, Type, Union
 
 from pydantic import BaseModel, Field
@@ -35,7 +34,7 @@ except ImportError:
             "`stagehand-py` package not found, please run `uv add stagehand-py`"
         )
 
-from ..base_tool import BaseTool
+from crewai.tools import BaseTool
 
 
 class StagehandCommandType(str):
@@ -74,7 +73,7 @@ class StagehandToolSchema(BaseModel):
     )
     url: Optional[str] = Field(
         None,
-        description="The URL to navigate to before executing the instruction. Only used with 'navigate' command. ",
+        description="The URL to navigate to before executing the instruction. MUST be used with 'navigate' command. ",
     )
     command_type: Optional[str] = Field(
         "act",
@@ -238,12 +237,11 @@ class StagehandTool(BaseTool):
                 "model_api_key is required (or set OPENAI_API_KEY or ANTHROPIC_API_KEY in env)."
             )
 
-    @lru_cache(maxsize=100)
-    async def _cached_setup_stagehand(self, session_id: Optional[str] = None):
-        """Initialize Stagehand if not already set up (cached version)."""
-        self._logger.debug("Initializing Stagehand (cached setup)")
+    async def _setup_stagehand(self, session_id: Optional[str] = None):
+        """Initialize Stagehand if not already set up."""
 
         if not self._stagehand:
+            self._logger.debug("Initializing Stagehand")
             # Create model client options with the API key
             model_client_options = {"apiKey": self.model_api_key}
 
@@ -274,13 +272,7 @@ class StagehandTool(BaseTool):
                 f"Browser session: https://www.browserbase.com/sessions/{self._stagehand.session_id}"
             )
 
-            return self._stagehand, self._page
-
         return self._stagehand, self._page
-
-    async def _setup_stagehand(self):
-        """Initialize Stagehand if not already set up."""
-        return await self._cached_setup_stagehand(self._session_id)
 
     async def _async_run(
         self,
@@ -291,13 +283,7 @@ class StagehandTool(BaseTool):
     ) -> StagehandResult:
         """Asynchronous implementation of the tool."""
         try:
-            self._logger.info("Setting up Stagehand...")
-            stagehand, page = await self._setup_stagehand()
-
-            # Navigate to the URL if provided
-            if url:
-                self._logger.info(f"Navigating to URL: {url}")
-                await page.goto(url)
+            stagehand, page = await self._setup_stagehand(self._session_id)
 
             self._logger.info(
                 f"Executing {command_type} with instruction: {instruction}"
@@ -344,6 +330,7 @@ class StagehandTool(BaseTool):
                     model_name=self.model_name,
                     selector=selector,
                     dom_settle_timeout_ms=self.dom_settle_timeout_ms,
+                    use_text_extract=True,
                 )
 
                 # Execute the extract command

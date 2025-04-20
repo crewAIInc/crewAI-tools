@@ -58,10 +58,10 @@ researcher = Agent(
 research_task = Task(
     description=(
         "Demonstrate Stagehand capabilities by performing the following steps:\n"
-        "1. Go to https://www.stagehand.dev (use command_type='act')\n"
-        "2. Extract all the text content from the page (use command_type='extract')\n"
-        "3. Go to https://httpbin.org/forms/post and observe what elements are available on the page (use command_type='observe')\n"
-        f"4. Fill out the form (use command_type='act')\n"
+        "1. Go to https://www.stagehand.dev\n"
+        "2. Extract all the text content from the page\n"
+        "3. Go to https://httpbin.org/forms/post and observe what elements are available on the page\n"
+        "4. Fill out the form\n"
         "5. Provide a summary of what you learned about using these different commands"
     ),
     expected_output=(
@@ -75,12 +75,11 @@ research_task = Task(
 web_research_task = Task(
     description=(
         "Research AI in browser automation by:\n"
-        "1. Go to https://browserbase.com (command_type='act')\n"
-        "2. Extract key information about the product (command_type='extract', instruction='Extract key features and benefits')\n"
-        "3. Observe navigation elements (command_type='observe', instruction='Find main navigation menu items')\n"
-        "4. Navigate to pricing page using act\n"
-        "5. Extract pricing information\n"
-        "6. Compile all information into a short summary report"
+        "1. Go to https://browserbase.com.\n"
+        "2. Observe navigation elements.\n"
+        "3. Find the pricing page.\n"
+        "4. Extract pricing information.\n"
+        "5. Compile all information into a short summary report"
     ),
     expected_output=(
         "A summary report about Stagehand's capabilities and pricing, demonstrating how "
