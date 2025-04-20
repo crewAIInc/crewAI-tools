@@ -5,9 +5,35 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Type, Union
 
 from pydantic import BaseModel, Field
-from stagehand import Stagehand, StagehandConfig, StagehandPage
-from stagehand.schemas import ActOptions, AvailableModel, ExtractOptions, ObserveOptions
-from stagehand.utils import configure_logging
+
+try:
+    from stagehand import Stagehand, StagehandConfig, StagehandPage
+    from stagehand.schemas import (
+        ActOptions,
+        AvailableModel,
+        ExtractOptions,
+        ObserveOptions,
+    )
+    from stagehand.utils import configure_logging
+except ImportError:
+    import click
+
+    if click.confirm("`stagehand-py` package not found, would you like to install it?"):
+        import subprocess
+
+        subprocess.run(["uv", "add", "stagehand-py"], check=True)
+        from stagehand import Stagehand, StagehandConfig, StagehandPage
+        from stagehand.schemas import (
+            ActOptions,
+            AvailableModel,
+            ExtractOptions,
+            ObserveOptions,
+        )
+        from stagehand.utils import configure_logging
+    else:
+        raise ImportError(
+            "`stagehand-py` package not found, please run `uv add stagehand-py`"
+        )
 
 from ..base_tool import BaseTool
 

@@ -1,3 +1,10 @@
+from .adapters.mcp_adapter import MCPServerAdapter
+from .aws import (
+    BedrockInvokeAgentTool,
+    BedrockKBRetrieverTool,
+    S3ReaderTool,
+    S3WriterTool,
+)
 from .tools import (
     AIMindTool,
     ApifyActorsTool,
@@ -51,6 +58,7 @@ from .tools import (
     SnowflakeConfig,
     SnowflakeSearchTool,
     SpiderTool,
+    StagehandTool,
     TXTSearchTool,
     VisionTool,
     WeaviateVectorSearchTool,
@@ -58,15 +66,4 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
-)
-
-from .aws import (
-    S3ReaderTool,
-    S3WriterTool,
-    BedrockKBRetrieverTool,
-    BedrockInvokeAgentTool,
-)
-
-from .adapters.mcp_adapter import (
-    MCPServerAdapter,
 )
