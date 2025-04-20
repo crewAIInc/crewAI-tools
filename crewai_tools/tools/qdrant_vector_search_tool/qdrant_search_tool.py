@@ -4,7 +4,7 @@ from typing import Any, Optional, Type
 
 
 try:
-    from qdrant_client import QdrantClient
+    from qdrant_client import QdrantClient, AsyncQdrantClient
     from qdrant_client.http.models import Filter, FieldCondition, MatchValue
 
     QDRANT_AVAILABLE = True
@@ -53,8 +53,13 @@ class QdrantVectorSearchTool(BaseTool):
 
     model_config = {"arbitrary_types_allowed": True}
     client: QdrantClient = None
+    async_client: AsyncQdrantClient = None
+    openai_client: Any = None  # Added for lazy initialization
+    openai_async_client: Any = None  # Added for lazy initialization
     name: str = "QdrantVectorSearchTool"
-    description: str = "A tool to search the Qdrant database for relevant information on internal documents."
+    description: str = (
+        "A tool to search the Qdrant database for relevant information on internal documents."
+    )
     args_schema: Type[BaseModel] = QdrantToolSchema
     query: Optional[str] = None
     filter_by: Optional[str] = None
@@ -79,6 +84,10 @@ class QdrantVectorSearchTool(BaseTool):
         super().__init__(**kwargs)
         if QDRANT_AVAILABLE:
             self.client = QdrantClient(
+                url=self.qdrant_url,
+                api_key=self.qdrant_api_key if self.qdrant_api_key else None,
+            )
+            self.async_client = AsyncQdrantClient(
                 url=self.qdrant_url,
                 api_key=self.qdrant_api_key if self.qdrant_api_key else None,
             )
@@ -133,7 +142,7 @@ class QdrantVectorSearchTool(BaseTool):
 
         # Search in Qdrant using the built-in query method
         query_vector = (
-            self._vectorize_query(query, embedding_model="text-embedding-3-large")
+            self._vectorize_query_sync(query, embedding_model="text-embedding-3-large")
             if not self.custom_embedding_fn
             else self.custom_embedding_fn(query)
         )
@@ -158,8 +167,8 @@ class QdrantVectorSearchTool(BaseTool):
 
         return json.dumps(results, indent=2)
 
-    def _vectorize_query(self, query: str, embedding_model: str) -> list[float]:
-        """Default vectorization function with openai.
+    def _vectorize_query_sync(self, query: str, embedding_model: str) -> list[float]:
+        """Default sync vectorization function with openai.
 
         Args:
             query (str): The query to vectorize
@@ -168,11 +177,110 @@ class QdrantVectorSearchTool(BaseTool):
         Returns:
             list[float]: The vectorized query
         """
-        import openai
+        from openai import Client
 
-        client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
+        # Lazy initialization of the sync client
+        if not self.openai_client:
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                raise ValueError("OPENAI_API_KEY environment variable is not set.")
+            self.openai_client = Client(api_key=api_key)
+
         embedding = (
-            client.embeddings.create(
+            self.openai_client.embeddings.create(
+                input=[query],
+                model=embedding_model,
+            )
+            .data[0]
+            .embedding
+        )
+        return embedding
+
+    async def _arun(
+        self,
+        query: str,
+        filter_by: Optional[str] = None,
+        filter_value: Optional[str] = None,
+    ) -> str:
+        """Execute vector similarity search on Qdrant.
+
+        Args:
+            query: Search query to vectorize and match
+            filter_by: Optional metadata field to filter on
+            filter_value: Optional value to filter by
+
+        Returns:
+            JSON string containing search results with metadata and scores
+
+        Raises:
+            ImportError: If qdrant-client is not installed
+            ValueError: If Qdrant credentials are missing
+        """
+
+        if not self.qdrant_url:
+            raise ValueError("QDRANT_URL is not set")
+
+        # Create filter if filter parameters are provided
+        search_filter = None
+        if filter_by and filter_value:
+            search_filter = Filter(
+                must=[
+                    FieldCondition(key=filter_by, match=MatchValue(value=filter_value))
+                ]
+            )
+
+        # Search in Qdrant using the built-in query method
+        query_vector = (
+            await self._vectorize_query_async(
+                query, embedding_model="text-embedding-3-large"
+            )
+            if not self.custom_embedding_fn
+            else self.custom_embedding_fn(query)
+        )
+        search_results = await self.async_client.query_points(
+            collection_name=self.collection_name,
+            query=query_vector,
+            query_filter=search_filter,
+            limit=self.limit,
+            score_threshold=self.score_threshold,
+        )
+
+        # Format results similar to storage implementation
+        results = []
+        # Extract the list of ScoredPoint objects from the tuple
+        for point in search_results:
+            result = {
+                "metadata": point[1][0].payload.get("metadata", {}),
+                "context": point[1][0].payload.get("text", ""),
+                "distance": point[1][0].score,
+            }
+            results.append(result)
+
+        return json.dumps(results, indent=2)
+
+    async def _vectorize_query_async(
+        self, query: str, embedding_model: str
+    ) -> list[float]:
+        """Default async vectorization function with openai.
+
+        Args:
+            query (str): The query to vectorize
+            embedding_model (str): The embedding model to use
+
+        Returns:
+            list[float]: The vectorized query
+        """
+        from openai import AsyncClient
+
+        # Lazy initialization of the async client
+        if not self.openai_async_client:
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                raise ValueError("OPENAI_API_KEY environment variable is not set.")
+            self.openai_async_client = AsyncClient(api_key=api_key)
+
+        embedding = (
+            await self.openai_async_client.embeddings.create(
                 input=[query],
                 model=embedding_model,
             )
