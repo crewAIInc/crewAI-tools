@@ -21,7 +21,7 @@ The StagehandTool wraps the Stagehand Python SDK to provide CrewAI agents with t
 
 ## Requirements
 
-Before using this tool, you'll need:
+Before using this tool, you will need:
 
 1. A [Browserbase](https://www.browserbase.com/) account with API key and project ID
 2. An API key for an LLM (OpenAI or Anthropic Claude)
