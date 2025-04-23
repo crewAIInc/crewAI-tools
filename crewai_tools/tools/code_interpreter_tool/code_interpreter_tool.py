@@ -74,8 +74,8 @@ class SandboxPython:
     @staticmethod
     def restricted_import(
         name: str,
-        globals: Optional[Dict[str, Any]] = None,
-        locals: Optional[Dict[str, Any]] = None,
+        custom_globals: Optional[Dict[str, Any]] = None,
+        custom_locals: Optional[Dict[str, Any]] = None,
         fromlist: Optional[List[str]] = None,
         level: int = 0,
     ) -> ModuleType:
@@ -83,8 +83,8 @@ class SandboxPython:
 
         Args:
             name: The name of the module to import.
-            globals: Global namespace to use.
-            locals: Local namespace to use.
+            custom_globals: Global namespace to use.
+            custom_locals: Local namespace to use.
             fromlist: List of items to import from the module.
             level: The level value passed to __import__.
 
@@ -96,7 +96,7 @@ class SandboxPython:
         """
         if name in SandboxPython.BLOCKED_MODULES:
             raise ImportError(f"Importing '{name}' is not allowed.")
-        return __import__(name, globals, locals, fromlist or (), level)
+        return __import__(name, custom_globals, custom_locals, fromlist or (), level)
 
     @staticmethod
     def safe_builtins() -> Dict[str, Any]:
