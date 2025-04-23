@@ -1,11 +1,11 @@
 import importlib.util
 import os
-from typing import List, Optional, Type
+from types import ModuleType
+from typing import Any, List, Optional, Type
 
 from crewai.tools import BaseTool
-from docker import from_env as docker_from_env
 from docker import DockerClient
-from docker.models.containers import Container
+from docker import from_env as docker_from_env
 from docker.errors import ImageNotFound, NotFound
 from docker.models.containers import Container
 from pydantic import BaseModel, Field
@@ -23,6 +23,58 @@ class CodeInterpreterSchema(BaseModel):
         ...,
         description="List of libraries used in the code with proper installing names separated by commas. Example: numpy,pandas,beautifulsoup4",
     )
+
+
+class SandboxPython:
+    BLOCKED_MODULES = {
+        "os",
+        "sys",
+        "subprocess",
+        "shutil",
+        "importlib",
+        "inspect",
+        "tempfile",
+        "sysconfig",
+        "builtins",
+    }
+
+    UNSAFE_BUILTINS = {
+        "exec",
+        "eval",
+        "open",
+        "compile",
+        "__import__",
+        "input",
+        "globals",
+        "locals",
+        "vars",
+        "help",
+        "dir",
+    }
+
+    @staticmethod
+    def restricted_import(
+        name, globals=None, locals=None, fromlist=None, level=0
+    ) -> ModuleType:
+        if name in SandboxPython.BLOCKED_MODULES:
+            raise ImportError(f"Importing '{name}' is not allowed.")
+        return __import__(name, globals, locals, fromlist or (), level)
+
+    @staticmethod
+    def safe_builtins() -> dict[str, Any]:
+        import builtins
+
+        safe_builtins = {
+            k: v
+            for k, v in builtins.__dict__.items()
+            if k not in SandboxPython.UNSAFE_BUILTINS
+        }
+        safe_builtins["__import__"] = SandboxPython.restricted_import
+        return safe_builtins
+
+    @staticmethod
+    def exec(code: str, locals: dict[str, Any]) -> None:
+        exec(code, {"__builtins__": SandboxPython.safe_builtins()}, locals)
 
 
 class CodeInterpreterTool(BaseTool):
@@ -47,7 +99,7 @@ class CodeInterpreterTool(BaseTool):
 
         client = (
             docker_from_env()
-            if self.user_docker_base_url == None
+            if self.user_docker_base_url is None
             else DockerClient(base_url=self.user_docker_base_url)
         )
 
@@ -80,7 +132,7 @@ class CodeInterpreterTool(BaseTool):
         if self.unsafe_mode:
             return self.run_code_unsafe(code, libraries_used)
         else:
-            return self.run_code_in_docker(code, libraries_used)
+            return self.run_code_safety(code, libraries_used)
 
     def _install_libraries(self, container: Container, libraries: List[str]) -> None:
         """
@@ -111,6 +163,21 @@ class CodeInterpreterTool(BaseTool):
             volumes={current_path: {"bind": "/workspace", "mode": "rw"}},  # type: ignore
         )
 
+    def _check_docker_available(self) -> bool:
+        import subprocess
+
+        try:
+            subprocess.run(["docker", "--version"], check=True)
+            return True
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            return False
+
+    def run_code_safety(self, code: str, libraries_used: List[str]) -> str:
+        if self._check_docker_available():
+            return self.run_code_in_docker(code, libraries_used)
+        else:
+            return self.run_code_in_restricted_sandboxed(code)
+
     def run_code_in_docker(self, code: str, libraries_used: List[str]) -> str:
         self._verify_docker_image()
         container = self._init_docker_container()
@@ -124,6 +191,14 @@ class CodeInterpreterTool(BaseTool):
         if exec_result.exit_code != 0:
             return f"Something went wrong while running the code: \n{exec_result.output.decode('utf-8')}"
         return exec_result.output.decode("utf-8")
+
+    def run_code_in_restricted_sandboxed(self, code: str) -> str:
+        exec_locals = {}
+        try:
+            SandboxPython.exec(code=code, locals=exec_locals)
+            return exec_locals.get("result", "No result variable found.")
+        except Exception as e:
+            return f"An error occurred: {str(e)}"
 
     def run_code_unsafe(self, code: str, libraries_used: List[str]) -> str:
         """
