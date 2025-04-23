@@ -45,7 +45,6 @@ class SandboxPython:
         "eval",
         "open",
         "compile",
-        "__import__",
         "input",
         "globals",
         "locals",
@@ -194,7 +193,7 @@ class CodeInterpreterTool(BaseTool):
             return self.run_code_in_restricted_sandbox(code)
 
     def run_code_in_docker(self, code: str, libraries_used: List[str]) -> str:
-        Printer.print("Running code in docker", color="bold_blue")
+        Printer.print("Running code in Docker environment", color="bold_blue")
         self._verify_docker_image()
         container = self._init_docker_container()
         self._install_libraries(container, libraries_used)
