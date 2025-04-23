@@ -10,6 +10,8 @@ from docker.errors import ImageNotFound, NotFound
 from docker.models.containers import Container
 from pydantic import BaseModel, Field
 
+from crewai_tools.printer import Printer
+
 
 class CodeInterpreterSchema(BaseModel):
     """Input for CodeInterpreterTool."""
@@ -167,18 +169,32 @@ class CodeInterpreterTool(BaseTool):
         import subprocess
 
         try:
-            subprocess.run(["docker", "--version"], check=True)
+            subprocess.run(
+                ["docker", "info"],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=1,
+            )
             return True
-        except (subprocess.CalledProcessError, FileNotFoundError):
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            Printer.print(
+                "Docker is installed but not running or inaccessible.",
+                color="bold_purple",
+            )
+            return False
+        except FileNotFoundError:
+            Printer.print("Docker is not installed", color="bold_purple")
             return False
 
     def run_code_safety(self, code: str, libraries_used: List[str]) -> str:
         if self._check_docker_available():
             return self.run_code_in_docker(code, libraries_used)
         else:
-            return self.run_code_in_restricted_sandboxed(code)
+            return self.run_code_in_restricted_sandbox(code)
 
     def run_code_in_docker(self, code: str, libraries_used: List[str]) -> str:
+        Printer.print("Running code in docker", color="bold_blue")
         self._verify_docker_image()
         container = self._init_docker_container()
         self._install_libraries(container, libraries_used)
@@ -192,7 +208,8 @@ class CodeInterpreterTool(BaseTool):
             return f"Something went wrong while running the code: \n{exec_result.output.decode('utf-8')}"
         return exec_result.output.decode("utf-8")
 
-    def run_code_in_restricted_sandboxed(self, code: str) -> str:
+    def run_code_in_restricted_sandbox(self, code: str) -> str:
+        Printer.print("Running code in restricted sandbox", color="yellow")
         exec_locals = {}
         try:
             SandboxPython.exec(code=code, locals=exec_locals)
@@ -204,6 +221,8 @@ class CodeInterpreterTool(BaseTool):
         """
         Run the code directly on the host machine (unsafe mode).
         """
+
+        Printer.print("WARNING: Running code in unsafe mode", color="bold_magenta")
         # Install libraries on the host machine
         for library in libraries_used:
             os.system(f"pip install {library}")
