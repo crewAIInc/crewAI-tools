@@ -37,24 +37,11 @@ class DirectorySearchTool(RagTool):
             self.args_schema = FixedDirectorySearchToolSchema
             self._generate_description()
 
-    def add(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        super().add(*args, **kwargs)
-
-    def _before_run(
-        self,
-        query: str,
-        **kwargs: Any,
-    ) -> Any:
-        if "directory" in kwargs:
-            self.add(kwargs["directory"])
-
     def _run(
         self,
         search_query: str,
-        **kwargs: Any,
+        directory: Optional[str] = None,
     ) -> Any:
-        return super()._run(query=search_query, **kwargs)
+        if directory is not None:
+            self.add(directory)
+        return super()._run(query=search_query)

@@ -37,24 +37,11 @@ class XMLSearchTool(RagTool):
             self.args_schema = FixedXMLSearchToolSchema
             self._generate_description()
 
-    def add(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        super().add(*args, **kwargs)
-
-    def _before_run(
-        self,
-        query: str,
-        **kwargs: Any,
-    ) -> Any:
-        if "xml" in kwargs:
-            self.add(kwargs["xml"])
-
     def _run(
         self,
         search_query: str,
-        **kwargs: Any,
-    ) -> Any:
-        return super()._run(query=search_query, **kwargs)
+        xml: Optional[str] = None,
+    ) -> str:
+        if xml is not None:
+            self.add(xml)
+        return super()._run(query=search_query)

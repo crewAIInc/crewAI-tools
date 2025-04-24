@@ -43,30 +43,11 @@ class DOCXSearchTool(RagTool):
             self.args_schema = FixedDOCXSearchToolSchema
             self._generate_description()
 
-    def add(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        super().add(*args, **kwargs)
-
-    def _before_run(
-        self,
-        query: str,
-        **kwargs: Any,
-    ) -> Any:
-        if "docx" in kwargs:
-            self.add(kwargs["docx"])
-
     def _run(
         self,
-        **kwargs: Any,
+        search_query: str,
+        docx: Optional[str] = None,
     ) -> Any:
-        search_query = kwargs.get("search_query")
-        if search_query is None:
-            search_query = kwargs.get("query")
-
-        docx = kwargs.get("docx")
         if docx is not None:
             self.add(docx)
-        return super()._run(query=search_query, **kwargs)
+        return super()._run(query=search_query)

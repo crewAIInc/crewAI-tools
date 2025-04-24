@@ -37,24 +37,11 @@ class MDXSearchTool(RagTool):
             self.args_schema = FixedMDXSearchToolSchema
             self._generate_description()
 
-    def add(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        super().add(*args, **kwargs)
-
-    def _before_run(
-        self,
-        query: str,
-        **kwargs: Any,
-    ) -> Any:
-        if "mdx" in kwargs:
-            self.add(kwargs["mdx"])
-
     def _run(
         self,
         search_query: str,
-        **kwargs: Any,
-    ) -> Any:
-        return super()._run(query=search_query, **kwargs)
+        mdx: Optional[str] = None,
+    ) -> str:
+        if mdx is not None:
+            self.add(mdx)
+        return super()._run(query=search_query)

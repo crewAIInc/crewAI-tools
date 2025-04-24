@@ -37,24 +37,11 @@ class TXTSearchTool(RagTool):
             self.args_schema = FixedTXTSearchToolSchema
             self._generate_description()
 
-    def add(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        super().add(*args, **kwargs)
-
-    def _before_run(
-        self,
-        query: str,
-        **kwargs: Any,
-    ) -> Any:
-        if "txt" in kwargs:
-            self.add(kwargs["txt"])
-
     def _run(
         self,
         search_query: str,
-        **kwargs: Any,
-    ) -> Any:
-        return super()._run(query=search_query, **kwargs)
+        txt: Optional[str] = None,
+    ) -> str:
+        if txt is not None:
+            self.add(txt)
+        return super()._run(query=search_query)

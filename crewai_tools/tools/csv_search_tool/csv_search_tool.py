@@ -37,24 +37,11 @@ class CSVSearchTool(RagTool):
             self.args_schema = FixedCSVSearchToolSchema
             self._generate_description()
 
-    def add(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        super().add(*args, **kwargs)
-
-    def _before_run(
-        self,
-        query: str,
-        **kwargs: Any,
-    ) -> Any:
-        if "csv" in kwargs:
-            self.add(kwargs["csv"])
-
     def _run(
         self,
         search_query: str,
-        **kwargs: Any,
-    ) -> Any:
-        return super()._run(query=search_query, **kwargs)
+        csv: Optional[str] = None,
+    ) -> str:
+        if csv is not None:
+            self.add(csv)
+        return super()._run(query=search_query)

@@ -52,17 +52,11 @@ class PDFSearchTool(RagTool):
 
         return self
 
-    def add(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        super().add(*args, **kwargs)
-
-    def _before_run(
+    def _run(
         self,
         query: str,
-        **kwargs: Any,
-    ) -> Any:
-        if "pdf" in kwargs:
-            self.add(kwargs["pdf"])
+        pdf: Optional[str] = None,
+    ) -> str:
+        if pdf is not None:
+            self.add(pdf)
+        return super()._run(query=query)

@@ -37,24 +37,11 @@ class CodeDocsSearchTool(RagTool):
             self.args_schema = FixedCodeDocsSearchToolSchema
             self._generate_description()
 
-    def add(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        super().add(*args, **kwargs)
-
-    def _before_run(
-        self,
-        query: str,
-        **kwargs: Any,
-    ) -> Any:
-        if "docs_url" in kwargs:
-            self.add(kwargs["docs_url"])
-
     def _run(
         self,
         search_query: str,
-        **kwargs: Any,
+        docs_url: Optional[str] = None,
     ) -> Any:
-        return super()._run(query=search_query, **kwargs)
+        if docs_url is not None:
+            self.add(docs_url)
+        return super()._run(query=search_query)
