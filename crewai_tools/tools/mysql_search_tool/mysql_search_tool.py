@@ -1,9 +1,17 @@
-from typing import Any, Type
+from typing import Any, Type, Union
 
-from embedchain.loaders.mysql import MySQLLoader
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackMySQLLoader:
+    def __init__(self, **kwargs):
+        pass
+
+try:
+    from embedchain.loaders.mysql import MySQLLoader
+except ImportError:
+    MySQLLoader = FallbackMySQLLoader
 
 
 class MySQLSearchToolSchema(BaseModel):
@@ -23,11 +31,14 @@ class MySQLSearchTool(RagTool):
 
     def __init__(self, table_name: str, **kwargs):
         super().__init__(**kwargs)
-        kwargs["data_type"] = "mysql"
-        kwargs["loader"] = MySQLLoader(config=dict(url=self.db_uri))
-        self.add(table_name)
-        self.description = f"A tool that can be used to semantic search a query the {table_name} database table's content."
-        self._generate_description()
+        try:
+            kwargs["data_type"] = "mysql"
+            kwargs["loader"] = MySQLLoader(config=dict(url=self.db_uri))
+            self.add(table_name)
+            self.description = f"A tool that can be used to semantic search a query the {table_name} database table's content."
+            self._generate_description()
+        except NotImplementedError as e:
+            raise ImportError("Embedchain is required for MySQLSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,

@@ -1,9 +1,16 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDataType:
+    MDX = "mdx"
+
+try:
+    from embedchain.models.data_type import DataType
+except ImportError:
+    DataType = FallbackDataType
 
 
 class FixedMDXSearchToolSchema(BaseModel):
@@ -31,11 +38,14 @@ class MDXSearchTool(RagTool):
     def __init__(self, mdx: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if mdx is not None:
-            kwargs["data_type"] = DataType.MDX
-            self.add(mdx)
-            self.description = f"A tool that can be used to semantic search a query the {mdx} MDX's content."
-            self.args_schema = FixedMDXSearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["data_type"] = DataType.MDX
+                self.add(mdx)
+                self.description = f"A tool that can be used to semantic search a query the {mdx} MDX's content."
+                self.args_schema = FixedMDXSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for MDXSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,
@@ -50,7 +60,10 @@ class MDXSearchTool(RagTool):
         **kwargs: Any,
     ) -> Any:
         if "mdx" in kwargs:
-            self.add(kwargs["mdx"])
+            try:
+                self.add(kwargs["mdx"])
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for MDXSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def _run(
         self,

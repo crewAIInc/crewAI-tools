@@ -1,9 +1,16 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDataType:
+    CSV = "csv"
+
+try:
+    from embedchain.models.data_type import DataType
+except ImportError:
+    DataType = FallbackDataType
 
 
 class FixedCSVSearchToolSchema(BaseModel):
@@ -31,11 +38,14 @@ class CSVSearchTool(RagTool):
     def __init__(self, csv: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if csv is not None:
-            kwargs["data_type"] = DataType.CSV
-            self.add(csv)
-            self.description = f"A tool that can be used to semantic search a query the {csv} CSV's content."
-            self.args_schema = FixedCSVSearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["data_type"] = DataType.CSV
+                self.add(csv)
+                self.description = f"A tool that can be used to semantic search a query the {csv} CSV's content."
+                self.args_schema = FixedCSVSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for CSVSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,
@@ -50,7 +60,10 @@ class CSVSearchTool(RagTool):
         **kwargs: Any,
     ) -> Any:
         if "csv" in kwargs:
-            self.add(kwargs["csv"])
+            try:
+                self.add(kwargs["csv"])
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for CSVSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def _run(
         self,

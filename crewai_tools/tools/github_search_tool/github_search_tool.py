@@ -1,9 +1,17 @@
-from typing import Any, List, Optional, Type
+from typing import Any, List, Optional, Type, Union
 
-from embedchain.loaders.github import GithubLoader
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackGithubLoader:
+    def __init__(self, **kwargs):
+        pass
+
+try:
+    from embedchain.loaders.github import GithubLoader
+except ImportError:
+    GithubLoader = FallbackGithubLoader
 
 
 class FixedGithubSearchToolSchema(BaseModel):
@@ -36,13 +44,16 @@ class GithubSearchTool(RagTool):
     def __init__(self, github_repo: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if github_repo is not None:
-            kwargs["data_type"] = "github"
-            kwargs["loader"] = GithubLoader(config={"token": self.gh_token})
+            try:
+                kwargs["data_type"] = "github"
+                kwargs["loader"] = GithubLoader(config={"token": self.gh_token})
 
-            self.add(repo=github_repo)
-            self.description = f"A tool that can be used to semantic search a query the {github_repo} github repo's content. This is not the GitHub API, but instead a tool that can provide semantic search capabilities."
-            self.args_schema = FixedGithubSearchToolSchema
-            self._generate_description()
+                self.add(repo=github_repo)
+                self.description = f"A tool that can be used to semantic search a query the {github_repo} github repo's content. This is not the GitHub API, but instead a tool that can provide semantic search capabilities."
+                self.args_schema = FixedGithubSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for GithubSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,
@@ -60,9 +71,12 @@ class GithubSearchTool(RagTool):
         **kwargs: Any,
     ) -> Any:
         if "github_repo" in kwargs:
-            self.add(
-                repo=kwargs["github_repo"], content_types=kwargs.get("content_types")
-            )
+            try:
+                self.add(
+                    repo=kwargs["github_repo"], content_types=kwargs.get("content_types")
+                )
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for GithubSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def _run(
         self,

@@ -1,9 +1,16 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field, model_validator
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDataType:
+    PDF_FILE = "pdf_file"
+
+try:
+    from embedchain.models.data_type import DataType
+except ImportError:
+    DataType = FallbackDataType
 
 
 class FixedPDFSearchToolSchema(BaseModel):
@@ -30,25 +37,31 @@ class PDFSearchTool(RagTool):
     def __init__(self, pdf: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if pdf is not None:
-            kwargs["data_type"] = DataType.PDF_FILE
-            self.add(pdf)
-            self.description = f"A tool that can be used to semantic search a query the {pdf} PDF's content."
-            self.args_schema = FixedPDFSearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["data_type"] = DataType.PDF_FILE
+                self.add(pdf)
+                self.description = f"A tool that can be used to semantic search a query the {pdf} PDF's content."
+                self.args_schema = FixedPDFSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for PDFSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     @model_validator(mode="after")
     def _set_default_adapter(self):
         if isinstance(self.adapter, RagTool._AdapterPlaceholder):
-            from embedchain import App
+            try:
+                from embedchain import App
 
-            from crewai_tools.adapters.pdf_embedchain_adapter import (
-                PDFEmbedchainAdapter,
-            )
+                from crewai_tools.adapters.pdf_embedchain_adapter import (
+                    PDFEmbedchainAdapter,
+                )
 
-            app = App.from_config(config=self.config) if self.config else App()
-            self.adapter = PDFEmbedchainAdapter(
-                embedchain_app=app, summarize=self.summarize
-            )
+                app = App.from_config(config=self.config) if self.config else App()
+                self.adapter = PDFEmbedchainAdapter(
+                    embedchain_app=app, summarize=self.summarize
+                )
+            except ImportError:
+                pass
 
         return self
 
@@ -65,4 +78,7 @@ class PDFSearchTool(RagTool):
         **kwargs: Any,
     ) -> Any:
         if "pdf" in kwargs:
-            self.add(kwargs["pdf"])
+            try:
+                self.add(kwargs["pdf"])
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for PDFSearchTool to function. Please install it with 'pip install embedchain'") from e

@@ -1,9 +1,17 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
-from embedchain.loaders.directory_loader import DirectoryLoader
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDirectoryLoader:
+    def __init__(self, **kwargs):
+        pass
+
+try:
+    from embedchain.loaders.directory_loader import DirectoryLoader
+except ImportError:
+    DirectoryLoader = FallbackDirectoryLoader
 
 
 class FixedDirectorySearchToolSchema(BaseModel):
@@ -31,11 +39,14 @@ class DirectorySearchTool(RagTool):
     def __init__(self, directory: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if directory is not None:
-            kwargs["loader"] = DirectoryLoader(config=dict(recursive=True))
-            self.add(directory)
-            self.description = f"A tool that can be used to semantic search a query the {directory} directory's content."
-            self.args_schema = FixedDirectorySearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["loader"] = DirectoryLoader(config=dict(recursive=True))
+                self.add(directory)
+                self.description = f"A tool that can be used to semantic search a query the {directory} directory's content."
+                self.args_schema = FixedDirectorySearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for DirectorySearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,
@@ -50,7 +61,10 @@ class DirectorySearchTool(RagTool):
         **kwargs: Any,
     ) -> Any:
         if "directory" in kwargs:
-            self.add(kwargs["directory"])
+            try:
+                self.add(kwargs["directory"])
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for DirectorySearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def _run(
         self,

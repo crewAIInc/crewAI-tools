@@ -24,10 +24,10 @@ class Adapter(BaseModel, ABC):
 class RagTool(BaseTool):
     class _AdapterPlaceholder(Adapter):
         def query(self, question: str) -> str:
-            raise NotImplementedError
+            raise NotImplementedError("Embedchain is required for this tool to function. Please install it with 'pip install embedchain'")
 
         def add(self, *args: Any, **kwargs: Any) -> None:
-            raise NotImplementedError
+            raise NotImplementedError("Embedchain is required for this tool to function. Please install it with 'pip install embedchain'")
 
     name: str = "Knowledge base"
     description: str = "A knowledge base that can be used to answer questions."
@@ -38,14 +38,16 @@ class RagTool(BaseTool):
     @model_validator(mode="after")
     def _set_default_adapter(self):
         if isinstance(self.adapter, RagTool._AdapterPlaceholder):
-            from embedchain import App
+            try:
+                from embedchain import App
+                from crewai_tools.adapters.embedchain_adapter import EmbedchainAdapter
 
-            from crewai_tools.adapters.embedchain_adapter import EmbedchainAdapter
-
-            app = App.from_config(config=self.config) if self.config else App()
-            self.adapter = EmbedchainAdapter(
-                embedchain_app=app, summarize=self.summarize
-            )
+                app = App.from_config(config=self.config) if self.config else App()
+                self.adapter = EmbedchainAdapter(
+                    embedchain_app=app, summarize=self.summarize
+                )
+            except ImportError:
+                pass
 
         return self
 

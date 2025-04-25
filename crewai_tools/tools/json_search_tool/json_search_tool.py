@@ -1,9 +1,16 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDataType:
+    JSON = "json"
+
+try:
+    from embedchain.models.data_type import DataType
+except ImportError:
+    DataType = FallbackDataType
 
 
 class FixedJSONSearchToolSchema(BaseModel):
@@ -31,11 +38,14 @@ class JSONSearchTool(RagTool):
     def __init__(self, json_path: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if json_path is not None:
-            kwargs["data_type"] = DataType.JSON
-            self.add(json_path)
-            self.description = f"A tool that can be used to semantic search a query the {json_path} JSON's content."
-            self.args_schema = FixedJSONSearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["data_type"] = DataType.JSON
+                self.add(json_path)
+                self.description = f"A tool that can be used to semantic search a query the {json_path} JSON's content."
+                self.args_schema = FixedJSONSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for JSONSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,
@@ -50,7 +60,10 @@ class JSONSearchTool(RagTool):
         **kwargs: Any,
     ) -> Any:
         if "json_path" in kwargs:
-            self.add(kwargs["json_path"])
+            try:
+                self.add(kwargs["json_path"])
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for JSONSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def _run(
         self,

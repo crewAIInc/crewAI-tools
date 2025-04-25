@@ -1,9 +1,16 @@
 from typing import Any, Optional, Type
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDataType:
+    TEXT_FILE = "text_file"
+
+try:
+    from embedchain.models.data_type import DataType
+except ImportError:
+    DataType = FallbackDataType
 
 
 class FixedTXTSearchToolSchema(BaseModel):
@@ -31,11 +38,14 @@ class TXTSearchTool(RagTool):
     def __init__(self, txt: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if txt is not None:
-            kwargs["data_type"] = DataType.TEXT_FILE
-            self.add(txt)
-            self.description = f"A tool that can be used to semantic search a query the {txt} txt's content."
-            self.args_schema = FixedTXTSearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["data_type"] = DataType.TEXT_FILE
+                self.add(txt)
+                self.description = f"A tool that can be used to semantic search a query the {txt} txt's content."
+                self.args_schema = FixedTXTSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for TXTSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,

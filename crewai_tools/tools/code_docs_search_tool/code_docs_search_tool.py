@@ -1,9 +1,16 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDataType:
+    DOCS_SITE = "docs_site"
+
+try:
+    from embedchain.models.data_type import DataType
+except ImportError:
+    DataType = FallbackDataType
 
 
 class FixedCodeDocsSearchToolSchema(BaseModel):
@@ -31,11 +38,14 @@ class CodeDocsSearchTool(RagTool):
     def __init__(self, docs_url: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if docs_url is not None:
-            kwargs["data_type"] = DataType.DOCS_SITE
-            self.add(docs_url)
-            self.description = f"A tool that can be used to semantic search a query the {docs_url} Code Docs content."
-            self.args_schema = FixedCodeDocsSearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["data_type"] = DataType.DOCS_SITE
+                self.add(docs_url)
+                self.description = f"A tool that can be used to semantic search a query the {docs_url} Code Docs content."
+                self.args_schema = FixedCodeDocsSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for CodeDocsSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,
@@ -50,7 +60,10 @@ class CodeDocsSearchTool(RagTool):
         **kwargs: Any,
     ) -> Any:
         if "docs_url" in kwargs:
-            self.add(kwargs["docs_url"])
+            try:
+                self.add(kwargs["docs_url"])
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for CodeDocsSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def _run(
         self,

@@ -1,9 +1,16 @@
 from typing import Any, Optional, Type
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDataType:
+    WEB_PAGE = "web_page"
+
+try:
+    from embedchain.models.data_type import DataType
+except ImportError:
+    DataType = FallbackDataType
 
 
 class FixedWebsiteSearchToolSchema(BaseModel):
@@ -31,11 +38,14 @@ class WebsiteSearchTool(RagTool):
     def __init__(self, website: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if website is not None:
-            kwargs["data_type"] = DataType.WEB_PAGE
-            self.add(website)
-            self.description = f"A tool that can be used to semantic search a query from {website} website content."
-            self.args_schema = FixedWebsiteSearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["data_type"] = DataType.WEB_PAGE
+                self.add(website)
+                self.description = f"A tool that can be used to semantic search a query from {website} website content."
+                self.args_schema = FixedWebsiteSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for WebsiteSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,

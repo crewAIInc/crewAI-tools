@@ -2,9 +2,13 @@ import os
 from typing import Any, Optional, Type
 
 import requests
-from bs4 import BeautifulSoup
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
+
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    BeautifulSoup = None
 
 
 class FixedScrapeElementFromWebsiteToolSchema(BaseModel):
@@ -46,6 +50,9 @@ class ScrapeElementFromWebsiteTool(BaseTool):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        if BeautifulSoup is None:
+            raise ImportError("BeautifulSoup is required for ScrapeElementFromWebsiteTool to function. Please install it with 'pip install beautifulsoup4'")
+        
         if website_url is not None:
             self.website_url = website_url
             self.css_element = css_element

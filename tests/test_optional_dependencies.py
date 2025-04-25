@@ -39,3 +39,6 @@ def test_no_optional_dependencies_in_init(temp_project):
     """
     result = run_command(["uv", "run", "python", "-c", "import crewai_tools"], temp_project)
     assert result.returncode == 0, f"Import failed with error: {result.stderr}" 
+
+    result = run_command(["uv", "run", "python", "-c", "from crewai_tools import FileWriterTool"], temp_project)
+    assert result.returncode == 0, f"FileWriterTool import failed with error: {result.stderr}" 

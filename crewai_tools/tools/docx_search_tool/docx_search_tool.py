@@ -1,9 +1,16 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDataType:
+    DOCX = "docx"
+
+try:
+    from embedchain.models.data_type import DataType
+except ImportError:
+    DataType = FallbackDataType
 
 
 class FixedDOCXSearchToolSchema(BaseModel):
@@ -37,11 +44,14 @@ class DOCXSearchTool(RagTool):
     def __init__(self, docx: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if docx is not None:
-            kwargs["data_type"] = DataType.DOCX
-            self.add(docx)
-            self.description = f"A tool that can be used to semantic search a query the {docx} DOCX's content."
-            self.args_schema = FixedDOCXSearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["data_type"] = DataType.DOCX
+                self.add(docx)
+                self.description = f"A tool that can be used to semantic search a query the {docx} DOCX's content."
+                self.args_schema = FixedDOCXSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for DOCXSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,
@@ -56,7 +66,10 @@ class DOCXSearchTool(RagTool):
         **kwargs: Any,
     ) -> Any:
         if "docx" in kwargs:
-            self.add(kwargs["docx"])
+            try:
+                self.add(kwargs["docx"])
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for DOCXSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def _run(
         self,
@@ -68,5 +81,8 @@ class DOCXSearchTool(RagTool):
 
         docx = kwargs.get("docx")
         if docx is not None:
-            self.add(docx)
+            try:
+                self.add(docx)
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for DOCXSearchTool to function. Please install it with 'pip install embedchain'") from e
         return super()._run(query=search_query, **kwargs)

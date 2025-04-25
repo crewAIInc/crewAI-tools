@@ -1,9 +1,16 @@
 from typing import Any, Optional, Type
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackDataType:
+    YOUTUBE_CHANNEL = "youtube_channel"
+
+try:
+    from embedchain.models.data_type import DataType
+except ImportError:
+    DataType = FallbackDataType
 
 
 class FixedYoutubeChannelSearchToolSchema(BaseModel):
@@ -31,11 +38,14 @@ class YoutubeChannelSearchTool(RagTool):
     def __init__(self, youtube_channel_handle: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if youtube_channel_handle is not None:
-            kwargs["data_type"] = DataType.YOUTUBE_CHANNEL
-            self.add(youtube_channel_handle)
-            self.description = f"A tool that can be used to semantic search a query the {youtube_channel_handle} Youtube Channels content."
-            self.args_schema = FixedYoutubeChannelSearchToolSchema
-            self._generate_description()
+            try:
+                kwargs["data_type"] = DataType.YOUTUBE_CHANNEL
+                self.add(youtube_channel_handle)
+                self.description = f"A tool that can be used to semantic search a query the {youtube_channel_handle} Youtube Channels content."
+                self.args_schema = FixedYoutubeChannelSearchToolSchema
+                self._generate_description()
+            except NotImplementedError as e:
+                raise ImportError("Embedchain is required for YoutubeChannelSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,

@@ -1,9 +1,17 @@
-from typing import Any, Type
+from typing import Any, Type, Union
 
-from embedchain.loaders.postgres import PostgresLoader
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+class FallbackPostgresLoader:
+    def __init__(self, **kwargs):
+        pass
+
+try:
+    from embedchain.loaders.postgres import PostgresLoader
+except ImportError:
+    PostgresLoader = FallbackPostgresLoader
 
 
 class PGSearchToolSchema(BaseModel):
@@ -23,11 +31,14 @@ class PGSearchTool(RagTool):
 
     def __init__(self, table_name: str, **kwargs):
         super().__init__(**kwargs)
-        kwargs["data_type"] = "postgres"
-        kwargs["loader"] = PostgresLoader(config=dict(url=self.db_uri))
-        self.add(table_name)
-        self.description = f"A tool that can be used to semantic search a query the {table_name} database table's content."
-        self._generate_description()
+        try:
+            kwargs["data_type"] = "postgres"
+            kwargs["loader"] = PostgresLoader(config=dict(url=self.db_uri))
+            self.add(table_name)
+            self.description = f"A tool that can be used to semantic search a query the {table_name} database table's content."
+            self._generate_description()
+        except NotImplementedError as e:
+            raise ImportError("Embedchain is required for PGSearchTool to function. Please install it with 'pip install embedchain'") from e
 
     def add(
         self,
