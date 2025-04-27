@@ -43,7 +43,7 @@ class CodeDocsSearchTool(RagTool):
         self,
         search_query: str,
         docs_url: Optional[str] = None,
-    ) -> Any:
+    ) -> str:
         if docs_url is not None:
             self.add(docs_url)
         return super()._run(query=search_query)
