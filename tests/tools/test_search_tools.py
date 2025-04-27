@@ -203,15 +203,15 @@ def test_youtube_video_search_tool(mock_adapter):
 def test_youtube_channel_search_tool(mock_adapter):
     mock_adapter.query.return_value = "channel description"
 
-    youtube_channel = "@crewai"
+    youtube_channel_handle = "@crewai"
     search_query = "what is the channel about?"
     tool = YoutubeChannelSearchTool(
-        youtube_channel=youtube_channel, adapter=mock_adapter
+        youtube_channel_handle=youtube_channel_handle, adapter=mock_adapter
     )
     result = tool._run(search_query=search_query)
     assert "channel description" in result
     mock_adapter.add.assert_called_once_with(
-        youtube_channel, data_type=DataType.YOUTUBE_CHANNEL
+        youtube_channel_handle, data_type=DataType.YOUTUBE_CHANNEL
     )
     mock_adapter.query.assert_called_once_with(search_query)
 
@@ -219,11 +219,13 @@ def test_youtube_channel_search_tool(mock_adapter):
     mock_adapter.add.reset_mock()
 
     tool = YoutubeChannelSearchTool(adapter=mock_adapter)
-    result = tool._run(youtube_channel=youtube_channel, search_query=search_query)
+    result = tool._run(
+        youtube_channel_handle=youtube_channel_handle, search_query=search_query
+    )
     assert "channel description" in result
 
     mock_adapter.add.assert_called_once_with(
-        youtube_channel, data_type=DataType.YOUTUBE_CHANNEL
+        youtube_channel_handle, data_type=DataType.YOUTUBE_CHANNEL
     )
     mock_adapter.query.assert_called_once_with(search_query)
 
