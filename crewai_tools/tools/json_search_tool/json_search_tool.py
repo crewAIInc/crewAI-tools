@@ -31,7 +31,6 @@ class JSONSearchTool(RagTool):
     def __init__(self, json_path: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if json_path is not None:
-            kwargs["data_type"] = DataType.JSON
             self.add(json_path)
             self.description = f"A tool that can be used to semantic search a query the {json_path} JSON's content."
             self.args_schema = FixedJSONSearchToolSchema

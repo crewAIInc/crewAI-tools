@@ -43,7 +43,7 @@ class SerplyJobSearchTool(RagTool):
         self,
         query: Optional[str] = None,
         search_query: Optional[str] = None,
-    ) -> Any:
+    ) -> str:
         query_payload = {}
 
         if query is not None:

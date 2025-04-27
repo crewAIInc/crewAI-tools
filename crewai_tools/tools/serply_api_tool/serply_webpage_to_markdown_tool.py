@@ -42,7 +42,7 @@ class SerplyWebpageToMarkdownTool(RagTool):
     def _run(
         self,
         url: str,
-    ) -> Any:
+    ) -> str:
         data = {"url": url, "method": "GET", "response_type": "markdown"}
         response = requests.request(
             "POST", self.request_url, headers=self.headers, json=data

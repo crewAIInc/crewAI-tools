@@ -31,11 +31,13 @@ class MDXSearchTool(RagTool):
     def __init__(self, mdx: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if mdx is not None:
-            kwargs["data_type"] = DataType.MDX
             self.add(mdx)
             self.description = f"A tool that can be used to semantic search a query the {mdx} MDX's content."
             self.args_schema = FixedMDXSearchToolSchema
             self._generate_description()
+
+    def add(self, mdx: str) -> None:
+        super().add(mdx, data_type=DataType.MDX)
 
     def _run(
         self,

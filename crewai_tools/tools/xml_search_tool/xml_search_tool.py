@@ -31,7 +31,6 @@ class XMLSearchTool(RagTool):
     def __init__(self, xml: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if xml is not None:
-            kwargs["data_type"] = DataType.XML
             self.add(xml)
             self.description = f"A tool that can be used to semantic search a query the {xml} XML's content."
             self.args_schema = FixedXMLSearchToolSchema
