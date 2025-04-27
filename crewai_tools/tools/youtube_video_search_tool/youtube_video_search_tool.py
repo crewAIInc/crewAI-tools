@@ -33,11 +33,13 @@ class YoutubeVideoSearchTool(RagTool):
     def __init__(self, youtube_video_url: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if youtube_video_url is not None:
-            kwargs["data_type"] = DataType.YOUTUBE_VIDEO
             self.add(youtube_video_url)
             self.description = f"A tool that can be used to semantic search a query the {youtube_video_url} Youtube Video content."
             self.args_schema = FixedYoutubeVideoSearchToolSchema
             self._generate_description()
+
+    def add(self, youtube_video_url: str) -> None:
+        super().add(youtube_video_url, data_type=DataType.YOUTUBE_VIDEO)
 
     def _run(
         self,

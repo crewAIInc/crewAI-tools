@@ -59,5 +59,5 @@ class RagTool(BaseTool):
     def _run(
         self,
         query: str,
-    ) -> Any:
+    ) -> str:
         return f"Relevant Content:\n{self.adapter.query(query)}"

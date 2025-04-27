@@ -33,11 +33,13 @@ class WebsiteSearchTool(RagTool):
     def __init__(self, website: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if website is not None:
-            kwargs["data_type"] = DataType.WEB_PAGE
             self.add(website)
             self.description = f"A tool that can be used to semantic search a query from {website} website content."
             self.args_schema = FixedWebsiteSearchToolSchema
             self._generate_description()
+
+    def add(self, website: str) -> None:
+        super().add(website, data_type=DataType.WEB_PAGE)
 
     def _run(
         self,

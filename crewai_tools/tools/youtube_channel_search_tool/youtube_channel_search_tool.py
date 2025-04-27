@@ -18,8 +18,8 @@ class FixedYoutubeChannelSearchToolSchema(BaseModel):
 class YoutubeChannelSearchToolSchema(FixedYoutubeChannelSearchToolSchema):
     """Input for YoutubeChannelSearchTool."""
 
-    youtube_channel_handle: str = Field(
-        ..., description="Mandatory youtube_channel_handle path you want to search"
+    youtube_channel: str = Field(
+        ..., description="Mandatory youtube_channel path you want to search"
     )
 
 
@@ -30,29 +30,27 @@ class YoutubeChannelSearchTool(RagTool):
     )
     args_schema: Type[BaseModel] = YoutubeChannelSearchToolSchema
 
-    def __init__(self, youtube_channel_handle: Optional[str] = None, **kwargs):
+    def __init__(self, youtube_channel: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
-        if youtube_channel_handle is not None:
-            kwargs["data_type"] = DataType.YOUTUBE_CHANNEL
-            self.add(youtube_channel_handle)
-            self.description = f"A tool that can be used to semantic search a query the {youtube_channel_handle} Youtube Channels content."
+        if youtube_channel is not None:
+            self.add(youtube_channel)
+            self.description = f"A tool that can be used to semantic search a query the {youtube_channel} Youtube Channels content."
             self.args_schema = FixedYoutubeChannelSearchToolSchema
             self._generate_description()
 
     def add(
         self,
-        youtube_channel_handle: str,
-        **kwargs: Any,
+        youtube_channel: str,
     ) -> None:
-        if not youtube_channel_handle.startswith("@"):
-            youtube_channel_handle = f"@{youtube_channel_handle}"
-        super().add(youtube_channel_handle, **kwargs)
+        if not youtube_channel.startswith("@"):
+            youtube_channel = f"@{youtube_channel}"
+        super().add(youtube_channel, data_type=DataType.YOUTUBE_CHANNEL)
 
     def _run(
         self,
         search_query: str,
-        youtube_channel_handle: Optional[str] = None,
+        youtube_channel: Optional[str] = None,
     ) -> str:
-        if youtube_channel_handle is not None:
-            self.add(youtube_channel_handle)
+        if youtube_channel is not None:
+            self.add(youtube_channel)
         return super()._run(query=search_query)

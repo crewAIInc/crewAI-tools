@@ -37,11 +37,13 @@ class DOCXSearchTool(RagTool):
     def __init__(self, docx: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         if docx is not None:
-            kwargs["data_type"] = DataType.DOCX
             self.add(docx)
             self.description = f"A tool that can be used to semantic search a query the {docx} DOCX's content."
             self.args_schema = FixedDOCXSearchToolSchema
             self._generate_description()
+
+    def add(self, docx: str) -> None:
+        super().add(docx, data_type=DataType.DOCX)
 
     def _run(
         self,
