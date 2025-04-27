@@ -126,4 +126,5 @@ build-backend = "hatchling.build"
 dev = [
     "pytest-asyncio>=0.25.2",
     "pytest>=8.0.0",
+    "pytest-recording>=0.13.3",
 ]
