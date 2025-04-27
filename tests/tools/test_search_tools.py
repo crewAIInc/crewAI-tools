@@ -1,7 +1,7 @@
 import os
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import ANY, MagicMock
 
 import pytest
 from embedchain.models.data_type import DataType
@@ -11,6 +11,7 @@ from crewai_tools.tools import (
     CSVSearchTool,
     DirectorySearchTool,
     DOCXSearchTool,
+    GithubSearchTool,
     JSONSearchTool,
     MDXSearchTool,
     PDFSearchTool,
@@ -248,7 +249,59 @@ def test_code_docs_search_tool(mock_adapter):
     mock_adapter.query.assert_called_once_with(search_query)
 
 
-    result = tool._run(
-        docs_url="https://crewai.com/any-docs-url", search_query="test documentation"
+def test_github_search_tool(mock_adapter):
+    mock_adapter.query.return_value = "repo description"
+
+    # ensure the provided repo and content types are used after initialization
+    tool = GithubSearchTool(
+        gh_token="test_token",
+        github_repo="crewai/crewai",
+        content_types=["code"],
+        adapter=mock_adapter,
     )
-    assert "test documentation" in result
+    result = tool._run(search_query="tell me about crewai repo")
+    assert "repo description" in result
+    mock_adapter.add.assert_called_once_with(
+        "repo:crewai/crewai type:code", data_type="github", loader=ANY
+    )
+    mock_adapter.query.assert_called_once_with("tell me about crewai repo")
+
+    # ensure content types provided by run call is used
+    mock_adapter.query.reset_mock()
+    mock_adapter.add.reset_mock()
+
+    tool = GithubSearchTool(gh_token="test_token", adapter=mock_adapter)
+    result = tool._run(
+        github_repo="crewai/crewai",
+        content_types=["code", "issue"],
+        search_query="tell me about crewai repo",
+    )
+    assert "repo description" in result
+    mock_adapter.add.assert_called_once_with(
+        "repo:crewai/crewai type:code,issue", data_type="github", loader=ANY
+    )
+    mock_adapter.query.assert_called_once_with("tell me about crewai repo")
+
+    # ensure default content types are used if not provided
+    mock_adapter.query.reset_mock()
+    mock_adapter.add.reset_mock()
+
+    tool = GithubSearchTool(gh_token="test_token", adapter=mock_adapter)
+    result = tool._run(
+        github_repo="crewai/crewai",
+        search_query="tell me about crewai repo",
+    )
+    assert "repo description" in result
+    mock_adapter.add.assert_called_once_with(
+        "repo:crewai/crewai type:code,repo,pr,issue", data_type="github", loader=ANY
+    )
+    mock_adapter.query.assert_called_once_with("tell me about crewai repo")
+
+    # ensure nothing is added if no repo is provided
+    mock_adapter.query.reset_mock()
+    mock_adapter.add.reset_mock()
+
+    tool = GithubSearchTool(gh_token="test_token", adapter=mock_adapter)
+    result = tool._run(search_query="tell me about crewai repo")
+    mock_adapter.add.assert_not_called()
+    mock_adapter.query.assert_called_once_with("tell me about crewai repo")
