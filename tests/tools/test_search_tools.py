@@ -23,6 +23,8 @@ from crewai_tools.tools import (
 )
 from crewai_tools.tools.rag.rag_tool import Adapter
 
+pytestmark = [pytest.mark.vcr(filter_headers=["authorization"])]
+
 
 @pytest.fixture
 def mock_adapter():
@@ -105,16 +107,14 @@ def test_json_search_tool():
         os.unlink(temp_file_path)
 
 
-def test_xml_search_tool():
-    with tempfile.NamedTemporaryFile(suffix=".xml", delete=False) as temp_file:
-        temp_file.write(b"<test>This is a test XML file</test>")
-        temp_file_path = temp_file.name
-    try:
-        tool = XMLSearchTool()
-        result = tool._run(search_query="test XML", xml=temp_file_path)
-        assert "test xml" in result.lower()
-    finally:
-        os.unlink(temp_file_path)
+def test_xml_search_tool(mock_adapter):
+    mock_adapter.query.return_value = "this is a test"
+
+    tool = XMLSearchTool(adapter=mock_adapter)
+    result = tool._run(search_query="test XML", xml="test.xml")
+    assert "this is a test" in result.lower()
+    mock_adapter.add.assert_called_once_with("test.xml")
+    mock_adapter.query.assert_called_once_with("test XML")
 
 
 def test_csv_search_tool():
