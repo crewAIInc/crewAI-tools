@@ -1,9 +1,16 @@
 from typing import Any, Optional, Type
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+try:
+    from embedchain.models.data_type import DataType
+    EMBEDCHAIN_AVAILABLE = True
+except ImportError:
+    class DataType:
+        CSV = "csv"
+    EMBEDCHAIN_AVAILABLE = False
 
 
 class FixedCSVSearchToolSchema(BaseModel):
@@ -30,7 +37,7 @@ class CSVSearchTool(RagTool):
 
     def __init__(self, csv: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
-        if csv is not None:
+        if csv is not None and EMBEDCHAIN_AVAILABLE:
             kwargs["data_type"] = DataType.CSV
             self.add(csv)
             self.description = f"A tool that can be used to semantic search a query the {csv} CSV's content."

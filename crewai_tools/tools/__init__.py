@@ -9,7 +9,10 @@ try:
 except ImportError:
     pass
 from .composio_tool.composio_tool import ComposioTool
-from .csv_search_tool.csv_search_tool import CSVSearchTool
+try:
+    from .csv_search_tool.csv_search_tool import CSVSearchTool
+except ImportError:
+    pass
 from .dalle_tool.dalle_tool import DallETool
 from .databricks_query_tool.databricks_query_tool import DatabricksQueryTool
 from .directory_read_tool.directory_read_tool import DirectoryReadTool
