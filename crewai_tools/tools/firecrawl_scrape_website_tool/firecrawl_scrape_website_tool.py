@@ -18,6 +18,21 @@ class FirecrawlScrapeWebsiteToolSchema(BaseModel):
 
 
 class FirecrawlScrapeWebsiteTool(BaseTool):
+    """
+    Tool for scraping webpages using Firecrawl. To run this tool, you need to have a Firecrawl API key.
+
+    Args:
+        api_key (str): Your Firecrawl API key.
+        config (dict): Optional. It contains Firecrawl API parameters.
+
+    Default configuration options:
+        formats (list[str]): Content formats to return. Default: ["markdown"]
+        only_main_content (bool): Only return main content. Default: True
+        include_tags (list[str]): Tags to include. Default: []
+        exclude_tags (list[str]): Tags to exclude. Default: []
+        headers (dict): Headers to include. Default: {}
+    """
+
     model_config = ConfigDict(
         arbitrary_types_allowed=True, validate_assignment=True, frozen=False
     )
