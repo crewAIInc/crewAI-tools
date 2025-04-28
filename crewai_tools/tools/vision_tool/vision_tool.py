@@ -1,10 +1,10 @@
 import base64
 from pathlib import Path
-from typing import Type, Optional
+from typing import Optional, Type
 
 from crewai import LLM
 from crewai.tools import BaseTool
-from pydantic import BaseModel, field_validator, PrivateAttr
+from pydantic import BaseModel, PrivateAttr, field_validator
 
 
 class ImagePromptSchema(BaseModel):
@@ -76,7 +76,7 @@ class VisionTool(BaseTool):
     def llm(self) -> LLM:
         """Get the LLM instance, creating one if needed."""
         if self._llm is None:
-            self._llm = LLM(model=self._model)
+            self._llm = LLM(model=self._model, stop=["STOP", "END"])
         return self._llm
 
     def _run(self, **kwargs) -> str:
@@ -98,8 +98,17 @@ class VisionTool(BaseTool):
 
             response = self.llm.call(
                 messages=[
-                    {"role": "user", "content": f"What's in this image? {image_data}"}
-                ]
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "What's in this image?"},
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": image_data},
+                            },
+                        ],
+                    },
+                ],
             )
             return response
         except Exception as e:
