@@ -38,14 +38,20 @@ class RagTool(BaseTool):
     @model_validator(mode="after")
     def _set_default_adapter(self):
         if isinstance(self.adapter, RagTool._AdapterPlaceholder):
-            from embedchain import App
-
-            from crewai_tools.adapters.embedchain_adapter import EmbedchainAdapter
-
-            app = App.from_config(config=self.config) if self.config else App()
-            self.adapter = EmbedchainAdapter(
-                embedchain_app=app, summarize=self.summarize
-            )
+            try:
+                import importlib.import_module
+                importlib.import_module('embedchain')
+                
+                from embedchain import App
+                from crewai_tools.adapters.embedchain_adapter import EmbedchainAdapter
+                
+                app = App.from_config(config=self.config) if self.config else App()
+                self.adapter = EmbedchainAdapter(
+                    embedchain_app=app, summarize=self.summarize
+                )
+            except ImportError:
+                from crewai_tools.adapters.custom_adapter import CustomAdapter
+                self.adapter = CustomAdapter(summarize=self.summarize)
 
         return self
 
