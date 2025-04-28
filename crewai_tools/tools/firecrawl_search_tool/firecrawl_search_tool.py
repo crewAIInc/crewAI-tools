@@ -17,23 +17,6 @@ except ImportError:
 
 class FirecrawlSearchToolSchema(BaseModel):
     query: str = Field(description="Search query")
-    limit: Optional[int] = Field(
-        default=5, description="Maximum number of results to return"
-    )
-    tbs: Optional[str] = Field(default=None, description="Time-based search parameter")
-    lang: Optional[str] = Field(
-        default="en", description="Language code for search results"
-    )
-    country: Optional[str] = Field(
-        default="us", description="Country code for search results"
-    )
-    location: Optional[str] = Field(
-        default=None, description="Location parameter for search results"
-    )
-    timeout: Optional[int] = Field(default=60000, description="Timeout in milliseconds")
-    scrape_options: Optional[Dict[str, Any]] = Field(
-        default=None, description="Options for scraping search results"
-    )
 
 
 class FirecrawlSearchTool(BaseTool):
@@ -47,6 +30,16 @@ class FirecrawlSearchTool(BaseTool):
     description: str = "Search webpages using Firecrawl and return the results"
     args_schema: Type[BaseModel] = FirecrawlSearchToolSchema
     api_key: Optional[str] = None
+    config: Optional[dict[str, Any]] = Field(
+        default_factory=lambda: {
+            "limit": 5,
+            "tbs": None,
+            "lang": "en",
+            "country": "us",
+            "location": None,
+            "timeout": 60000,
+        }
+    )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
@@ -82,28 +75,13 @@ class FirecrawlSearchTool(BaseTool):
     def _run(
         self,
         query: str,
-        limit: Optional[int] = 5,
-        tbs: Optional[str] = None,
-        lang: Optional[str] = "en",
-        country: Optional[str] = "us",
-        location: Optional[str] = None,
-        timeout: Optional[int] = 60000,
-        scrape_options: Optional[Dict[str, Any]] = None,
     ) -> Any:
-        from firecrawl import ScrapeOptions
-
         if not self._firecrawl:
             raise RuntimeError("FirecrawlApp not properly initialized")
 
         return self._firecrawl.search(
             query=query,
-            limit=limit,
-            tbs=tbs,
-            lang=lang,
-            country=country,
-            location=location,
-            timeout=timeout,
-            scrape_options=ScrapeOptions(**scrape_options or {}),
+            **self.config,
         )
 
 

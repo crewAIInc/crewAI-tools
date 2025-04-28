@@ -25,6 +25,17 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
     description: str = "Scrape webpages using Firecrawl and return the contents"
     args_schema: Type[BaseModel] = FirecrawlScrapeWebsiteToolSchema
     api_key: Optional[str] = None
+    config: Optional[dict[str, Any]] = Field(
+        default_factory=lambda: {
+            "formats": ["markdown"],
+            "only_main_content": True,
+            "include_tags": [],
+            "exclude_tags": [],
+            "headers": {},
+            "wait_for": 0,
+        }
+    )
+
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
@@ -50,20 +61,8 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
 
         self._firecrawl = FirecrawlApp(api_key=api_key)
 
-    def _run(
-        self,
-        url: str,
-        timeout: Optional[int] = 30000,
-    ):
-        return self._firecrawl.scrape_url(
-            url,
-            formats=["markdown"],
-            only_main_content=True,
-            include_tags=[],
-            exclude_tags=[],
-            wait_for=0,
-            timeout=timeout,
-        )
+    def _run(self, url: str):
+        return self._firecrawl.scrape_url(url, **self.config)
 
 
 try:
