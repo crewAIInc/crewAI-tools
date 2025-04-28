@@ -1,9 +1,16 @@
 from typing import Any, Optional, Type
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+
+try:
+    from embedchain.models.data_type import DataType
+    EMBEDCHAIN_AVAILABLE = True
+except ImportError:
+    class DataType:
+        DOCS_SITE = "docs_site"
+    EMBEDCHAIN_AVAILABLE = False
 
 
 class FixedCodeDocsSearchToolSchema(BaseModel):
@@ -30,7 +37,7 @@ class CodeDocsSearchTool(RagTool):
 
     def __init__(self, docs_url: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
-        if docs_url is not None:
+        if docs_url is not None and EMBEDCHAIN_AVAILABLE:
             kwargs["data_type"] = DataType.DOCS_SITE
             self.add(docs_url)
             self.description = f"A tool that can be used to semantic search a query the {docs_url} Code Docs content."
