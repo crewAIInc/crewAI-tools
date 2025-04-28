@@ -56,10 +56,9 @@ class FirecrawlSearchTool(BaseTool):
 
     def _initialize_firecrawl(self) -> None:
         try:
-            if FIRECRAWL_AVAILABLE:
-                self._firecrawl = FirecrawlApp(api_key=self.api_key)
-            else:
-                raise ImportError
+            from firecrawl import FirecrawlApp  # type: ignore
+
+            self._firecrawl = FirecrawlApp(api_key=self.api_key)
         except ImportError:
             import click
 
@@ -72,7 +71,7 @@ class FirecrawlSearchTool(BaseTool):
                     subprocess.run(["uv", "add", "firecrawl-py"], check=True)
                     from firecrawl import FirecrawlApp
 
-                    self.firecrawl = FirecrawlApp(api_key=self.api_key)
+                    self._firecrawl = FirecrawlApp(api_key=self.api_key)
                 except subprocess.CalledProcessError:
                     raise ImportError("Failed to install firecrawl-py package")
             else:
@@ -91,17 +90,20 @@ class FirecrawlSearchTool(BaseTool):
         timeout: Optional[int] = 60000,
         scrape_options: Optional[Dict[str, Any]] = None,
     ) -> Any:
-        if not self.firecrawl:
+        from firecrawl import ScrapeOptions
+
+        if not self._firecrawl:
             raise RuntimeError("FirecrawlApp not properly initialized")
 
-        return self.firecrawl.search(
-            limit= limit,
-            tbs= tbs,
-            lang= lang,
-            country= country,
-            location= location,
-            timeout= timeout,
-            scrape_ptions= scrape_options or {},
+        return self._firecrawl.search(
+            query=query,
+            limit=limit,
+            tbs=tbs,
+            lang=lang,
+            country=country,
+            location=location,
+            timeout=timeout,
+            scrape_options=ScrapeOptions(**scrape_options or {}),
         )
 
 

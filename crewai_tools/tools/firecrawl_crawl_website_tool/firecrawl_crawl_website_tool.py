@@ -3,7 +3,6 @@ from typing import Any, Optional, Type
 from crewai.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
-
 try:
     from firecrawl import FirecrawlApp
 except ImportError:
@@ -82,20 +81,20 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
         formats: Optional[list[str]] = ["markdown", "screenshot", "links"],
         timeout: Optional[int] = 30000,
     ):
-        # Default options for timeout and crawling
-        DEFAULT_TIMEOUT = 30000
+        from firecrawl import ScrapeOptions
+
         return self._firecrawl.crawl_url(
             url,
             max_depth=maxDepth,
             ignore_sitemap=True,
             limit=limit,
             allow_backward_links=False,
-            allow_external_links"=allowExternalLinks,
-            scrape_ptions= {
-                "formats": formats,
-                "only_main_content": True,
-                "timeout": timeout or DEFAULT_TIMEOUT,
-            }
+            allow_external_links=allowExternalLinks,
+            scrape_options=ScrapeOptions(
+                formats=formats,
+                onlyMainContent=True,
+                timeout=timeout,
+            ),
         )
 
 
