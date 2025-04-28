@@ -1,9 +1,9 @@
 import base64
 from pathlib import Path
-from typing import Optional, Type
+from typing import Type
 
+from crewai import LLM
 from crewai.tools import BaseTool
-from openai import OpenAI
 from pydantic import BaseModel, field_validator
 
 
@@ -37,16 +37,22 @@ class VisionTool(BaseTool):
         "This tool uses OpenAI's Vision API to describe the contents of an image."
     )
     args_schema: Type[BaseModel] = ImagePromptSchema
-    _client: Optional[OpenAI] = None
+
+    def __init__(self, llm: LLM | None = None, **kwargs):
+        super().__init__(**kwargs)
+
+        self._llm = llm
 
     @property
-    def client(self) -> OpenAI:
-        """Cached OpenAI client instance."""
-        if self._client is None:
-            self._client = OpenAI()
-        return self._client
+    def llm(self) -> LLM:
+        """Default LLM instance."""
+        if self._llm is None:
+            self._llm = LLM(
+                model="gpt-4o-mini",
+            )
+        return self._llm
 
-    def _run(self, **kwargs) -> str:
+    def _run(self, **kwargs):
         try:
             image_path_url = kwargs.get("image_path_url")
             if not image_path_url:
@@ -64,25 +70,21 @@ class VisionTool(BaseTool):
                 except Exception as e:
                     return f"Error processing image: {str(e)}"
 
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": "What's in this image?"},
-                            {
-                                "type": "image_url",
-                                "image_url": {"url": image_data},
-                            },
-                        ],
-                    }
-                ],
-                max_tokens=300,
-            )
-
-            return response.choices[0].message.content
-
+                response = self.llm.call(
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": "What's in this image?"},
+                                {
+                                    "type": "image_url",
+                                    "image_url": {"url": image_data},
+                                },
+                            ],
+                        },
+                    ],
+                )
+                return response
         except Exception as e:
             return f"An error occurred: {str(e)}"
 
