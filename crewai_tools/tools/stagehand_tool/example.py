@@ -30,7 +30,7 @@ load_dotenv()
 # You can set these in your shell or in a .env file
 browserbase_api_key = os.environ.get("BROWSERBASE_API_KEY")
 browserbase_project_id = os.environ.get("BROWSERBASE_PROJECT_ID")
-model_api_key = os.environ.get("ANTHROPIC_API_KEY")  # or OPENAI_API_KEY
+model_api_key = os.environ.get("OPENAI_API_KEY")  # or OPENAI_API_KEY
 
 # Initialize the StagehandTool with your credentials
 stagehand_tool = StagehandTool(
@@ -77,8 +77,9 @@ research_task = Task(
         "Demonstrate Stagehand capabilities by performing the following steps:\n"
         "1. Go to https://www.stagehand.dev\n"
         "2. Extract all the text content from the page\n"
-        "3. Go to https://httpbin.org/forms/post and observe what elements are available on the page\n"
-        "4. Provide a summary of what you learned about using these different commands"
+        "3. Find the Docs link and click on it\n"
+        "4. Go to https://httpbin.org/forms/post and observe what elements are available on the page\n"
+        "5. Provide a summary of what you learned about using these different commands"
     ),
     expected_output=(
         "A demonstration of all three Stagehand primitives (act, extract, observe) "
@@ -103,7 +104,7 @@ web_research_task = Task(
 # Set up the crew
 crew = Crew(
     agents=[researcher],
-    tasks=[web_research_task],  # You can switch this to web_research_task if you prefer
+    tasks=[research_task],  # You can switch this to web_research_task if you prefer
     verbose=True,
     process=Process.sequential,
 )
