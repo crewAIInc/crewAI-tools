@@ -32,7 +32,12 @@ class ImagePromptSchema(BaseModel):
 
 
 class VisionTool(BaseTool):
-    """Tool for analyzing images using vision models."""
+    """Tool for analyzing images using vision models.
+
+    Args:
+        llm: Optional LLM instance to use
+        model: Model identifier to use if no LLM is provided
+    """
 
     name: str = "Vision Tool"
     description: str = (
