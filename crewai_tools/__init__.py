@@ -7,6 +7,7 @@ from .tools import (
     CodeInterpreterTool,
     ComposioTool,
     CouchbaseFTSVectorSearchTool,
+    CrewaiEnterpriseTools,
     CSVSearchTool,
     DallETool,
     DatabricksQueryTool,
@@ -66,4 +67,13 @@ from .aws import (
     S3WriterTool,
     BedrockKBRetrieverTool,
     BedrockInvokeAgentTool,
+)
+
+from .adapters.mcp_adapter import (
+    MCPServerAdapter,
+)
+
+
+from .adapters.enterprise_adapter import (
+    EnterpriseActionTool
 )
