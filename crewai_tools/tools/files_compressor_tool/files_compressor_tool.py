@@ -22,6 +22,7 @@ class FileCompressorTool(BaseTool):
     )
     args_schema: Type[BaseModel] = FileCompressorToolInput
 
+    
     def _run(self, input_path: str, output_path: Optional[str] = None, overwrite: bool = False, format: str = "zip") -> str:
             
             if not os.path.exists(input_path):
@@ -29,36 +30,34 @@ class FileCompressorTool(BaseTool):
             
             if not output_path:
                 output_path = self._generate_output_path(input_path, format)
-
-            # Validate file extension based on format
-            if format == "zip" and not output_path.endswith(".zip"):
-                return f"Error: If 'zip' format is chosen, output file must have a '.zip' extension."
-            elif format == "tar" and not output_path.endswith(".tar"):
-                return f"Error: If 'tar' format is chosen, output file must have a '.tar' extension."
-            elif format == "tar.gz" and not output_path.endswith(".tar.gz"):
-                return f"Error: If 'tar.gz' format is chosen, output file must have a '.tar.gz' extension."
-            elif format == "tar.bz2" and not output_path.endswith(".tar.bz2"):
-                return f"Error: If 'tar.bz2' format is chosen, output file must have a '.tar.bz2' extension."
-            elif format == "tar.xz" and not output_path.endswith(".tar.xz"):
-                return f"Error: If 'tar.xz' format is chosen, output file must have a '.tar.xz' extension."
             
-            if format not in ("zip", "tar", "tar.gz", "tar.bz2", "tar.xz"):
-                return f"Compression format '{format}' is not supported. Allowed formats: 'zip', 'tar', 'tar.gz', 'tar.bz2', 'tar.xz'."
-
+            FORMAT_EXTENSION = {
+                    "zip": ".zip",
+                    "tar": ".tar",
+                    "tar.gz": ".tar.gz",
+                    "tar.bz2": ".tar.bz2",
+                    "tar.xz": ".tar.xz"
+                }
+            
+            if format not in FORMAT_EXTENSION:
+                return f"Compression format '{format}' is not supported. Allowed formats: {', '.join(FORMAT_EXTENSION.keys())}"
+            elif not output_path.endswith(FORMAT_EXTENSION[format]):
+                return f"Error: If '{format}' format is chosen, output file must have a '{FORMAT_EXTENSION[format]}' extension."
             if not self._prepare_output(output_path, overwrite):
                 return f"Output '{output_path}' already exists and overwrite is set to False."
 
             try:
+                format_compression = {
+                    "zip": self._compress_zip,
+                    "tar": self._compress_tar,
+                    "tar.gz": self._compress_tar,
+                    "tar.bz2": self._compress_tar,
+                    "tar.xz": self._compress_tar
+                }
                 if format == "zip":
-                    self._compress_zip(input_path, output_path)
-                elif format == "tar":
-                    self._compress_tar(input_path, output_path, "tar")
-                elif format == "tar.gz":
-                    self._compress_tar(input_path, output_path, "tar.gz")
-                elif format == "tar.bz2":
-                    self._compress_tar(input_path, output_path, "tar.bz2")
-                elif format == "tar.xz":
-                    self._compress_tar(input_path, output_path, "tar.xz")
+                    format_compression[format](input_path, output_path) 
+                else:
+                    format_compression[format](input_path, output_path, format)
                 
                 return f"Successfully compressed '{input_path}' into '{output_path}'"
             except FileNotFoundError:
@@ -67,6 +66,7 @@ class FileCompressorTool(BaseTool):
                 return f"Error: Permission denied when accessing '{input_path}' or writing '{output_path}'"
             except Exception as e:
                 return f"An unexpected error occurred during compression: {str(e)}"
+
 
     def _generate_output_path(self, input_path: str, format: str) -> str:
         """Generates output path based on input path and format."""
@@ -98,25 +98,23 @@ class FileCompressorTool(BaseTool):
                         zipf.write(full_path, arcname)
 
 
-    def _compress_tar(self, input_path: str, output_path: str, format: str):
+   def _compress_tar(self, input_path: str, output_path: str, format: str):
         """Compresses input into a tar archive with the given format."""
-        mode = None
-        if format == "tar":
-            mode = 'w'
-        elif format == "tar.gz":
-            mode = 'w:gz'
-        elif format == "tar.bz2":
-            mode = 'w:bz2'
-        elif format == "tar.xz":
-            mode = 'w:xz'
-        else:
+        format_mode = {
+            "tar": "w",
+            "tar.gz": "w:gz",
+            "tar.bz2": "w:bz2",
+            "tar.xz": "w:xz"
+        }
+
+        if format not in format_mode:
             raise ValueError(f"Unsupported tar format: {format}")
+        
+        mode = format_mode[format]
 
         with tarfile.open(output_path, mode) as tarf:
-            if os.path.isfile(input_path):
-                tarf.add(input_path, arcname=os.path.basename(input_path))
-            else:
-                tarf.add(input_path, arcname=os.path.basename(input_path))
+            arcname = os.path.basename(input_path)
+            tarf.add(input_path, arcname=arcname)
                 
 
 
