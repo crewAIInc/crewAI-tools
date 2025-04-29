@@ -98,7 +98,7 @@ class FileCompressorTool(BaseTool):
                         zipf.write(full_path, arcname)
 
 
-   def _compress_tar(self, input_path: str, output_path: str, format: str):
+    def _compress_tar(self, input_path: str, output_path: str, format: str):
         """Compresses input into a tar archive with the given format."""
         format_mode = {
             "tar": "w",
