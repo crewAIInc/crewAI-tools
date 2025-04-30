@@ -23,7 +23,15 @@ from .firecrawl_scrape_website_tool.firecrawl_scrape_website_tool import (
 )
 from .firecrawl_search_tool.firecrawl_search_tool import FirecrawlSearchTool
 from .github_search_tool.github_search_tool import GithubSearchTool
-from .hyperbrowser_load_tool.hyperbrowser_load_tool import HyperbrowserLoadTool
+from .hyperbrowser_tools import (
+    HyperbrowserBrowserUseTool,
+    HyperbrowserClaudeComputerUseTool,
+    HyperbrowserOpenAICuaTool,
+    HyperbrowserCrawlTool,
+    HyperbrowserExtractTool,
+    HyperbrowserLoadTool,
+    HyperbrowserScrapeTool,
+)
 from .json_search_tool.json_search_tool import JSONSearchTool
 from .linkup.linkup_search_tool import LinkupSearchTool
 from .llamaindex_tool.llamaindex_tool import LlamaIndexTool
@@ -71,6 +79,10 @@ from .vision_tool.vision_tool import VisionTool
 from .weaviate_tool.vector_search import WeaviateVectorSearchTool
 from .website_search.website_search_tool import WebsiteSearchTool
 from .xml_search_tool.xml_search_tool import XMLSearchTool
+from .youtube_channel_search_tool.youtube_channel_search_tool import (
+    YoutubeChannelSearchTool,
+)
+from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSearchTool
 from .youtube_channel_search_tool.youtube_channel_search_tool import (
     YoutubeChannelSearchTool,
 )

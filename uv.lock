@@ -555,7 +555,7 @@ name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
 wheels = [
@@ -753,6 +753,7 @@ weaviate-client = [
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
+    { name = "pytest-asyncio" },
 ]
 
 [package.metadata]
@@ -769,7 +770,7 @@ requires-dist = [
     { name = "embedchain", specifier = ">=0.1.114" },
     { name = "exa-py", marker = "extra == 'exa-py'", specifier = ">=1.8.7" },
     { name = "firecrawl-py", marker = "extra == 'firecrawl-py'", specifier = ">=1.8.0" },
-    { name = "hyperbrowser", marker = "extra == 'hyperbrowser'", specifier = ">=0.18.0" },
+    { name = "hyperbrowser", marker = "extra == 'hyperbrowser'", specifier = ">=0.39.0" },
     { name = "lancedb", specifier = ">=0.5.4" },
     { name = "langchain-apify", marker = "extra == 'apify'", specifier = ">=0.1.2,<1.0.0" },
     { name = "linkup-sdk", marker = "extra == 'linkup-sdk'", specifier = ">=0.2.2" },
@@ -795,7 +796,11 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.3.4" }]
+dev = [
+    { name = "pytest", specifier = ">=8.0.0" },
+    { name = "pytest", specifier = ">=8.3.4" },
+    { name = "pytest-asyncio", specifier = ">=0.25.2" },
+]
 
 [[package]]
 name = "cryptography"
@@ -1690,15 +1695,16 @@ wheels = [
 
 [[package]]
 name = "hyperbrowser"
-version = "0.18.0"
+version = "0.39.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
+    { name = "jsonref" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/57/a2/85e701ff43e314f3d3e549df55a35ca76f0cab669e21cf613985fb346bb3/hyperbrowser-0.18.0.tar.gz", hash = "sha256:eca58d247da3123dc0a95ee68ec2c35d7b10067e85322f91347fea44caa101c9", size = 13168 }
+sdist = { url = "https://files.pythonhosted.org/packages/12/1f/f3be824694b662ab478044343db182258c9e60185452918719d7b11ab8f3/hyperbrowser-0.39.0.tar.gz", hash = "sha256:34b1c89ee4b858c93f95b742da643a26bdefccd08f15d56548d3ecd44819cba3", size = 21714 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/3d/431a584503ea88442f18eb4354062ee9ab05c2642f5841846cc87d3b86d0/hyperbrowser-0.18.0-py3-none-any.whl", hash = "sha256:01ea0cf39a3bb96b100e34a3e19b37da4f364d675848bb712bad514979f20aaf", size = 24838 },
+    { url = "https://files.pythonhosted.org/packages/69/cf/48815cfda2a7be66e5e5c5481eb9b662d9f64c12728608a9507f8ef5b6f1/hyperbrowser-0.39.0-py3-none-any.whl", hash = "sha256:e0c851e9a7d90538c99525b6cd4349b1cf71441135c4ca99b0d55bcdfb1aac4b", size = 43639 },
 ]
 
 [[package]]
@@ -3267,7 +3273,7 @@ name = "portalocker"
 version = "2.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pywin32", marker = "platform_system == 'Windows'" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/ed/d3/c6c64067759e87af98cc668c1cc75171347d0f1577fab7ca3749134e3cd4/portalocker-2.10.1.tar.gz", hash = "sha256:ef1bf844e878ab08aee7e40184156e1151f228f103aa5c6bd0724cc330960f8f", size = 40891 }
 wheels = [
@@ -3791,6 +3797,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/05/35/30e0d83068951d90a01852cb1cef56e5d8a09d20c7f511634cc2f7e0372a/pytest-8.3.4.tar.gz", hash = "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761", size = 1445919 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/11/92/76a1c94d3afee238333bc0a42b82935dd8f9cf8ce9e336ff87ee14d9e1cf/pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6", size = 343083 },
+]
+
+[[package]]
+name = "pytest-asyncio"
+version = "0.26.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8e/c4/453c52c659521066969523e87d85d54139bbd17b78f09532fb8eb8cdb58e/pytest_asyncio-0.26.0.tar.gz", hash = "sha256:c4df2a697648241ff39e7f0e4a73050b03f123f760673956cf0d72a4990e312f", size = 54156 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/20/7f/338843f449ace853647ace35870874f69a764d251872ed1b4de9f234822c/pytest_asyncio-0.26.0-py3-none-any.whl", hash = "sha256:7b51ed894f4fbea1340262bdae5135797ebbe21d8638978e35d31c6d19f72fb0", size = 19694 },
 ]
 
 [[package]]
@@ -4712,7 +4730,7 @@ name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [
