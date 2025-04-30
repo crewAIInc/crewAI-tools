@@ -3,6 +3,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
 
+from cachetools import LRUCache
 from crewai.tools.base_tool import BaseTool
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
@@ -25,7 +26,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Cache for query results
-_query_cache = {}
+CACHE_SIZE = 128
+_query_cache = LRUCache(maxsize=CACHE_SIZE)
 
 
 class SnowflakeConfig(BaseModel):

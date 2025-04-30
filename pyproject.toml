@@ -79,6 +79,7 @@ hyperbrowser = [
 ]
 snowflake = [
     "cryptography>=43.0.3",
+    "cachetools>=5.5.1",
     "snowflake-connector-python>=3.12.4",
     "snowflake-sqlalchemy>=1.7.3",
 ]
