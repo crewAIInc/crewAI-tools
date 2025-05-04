@@ -5,7 +5,7 @@ import json
 from crewai.tools import BaseTool
 
 
-ENTERPRISE_ACTION_KIT_PROJECT_ID = "dd525517-df22-49d2-a69e-6a0eed211166"
+ENTERPRISE_ACTION_KIT_PROJECT_ID = "dd525517-df22-49d2-a69e-6a0eed211166"  # DEFAULT
 
 
 class EnterpriseActionTool(BaseTool):
@@ -18,6 +18,9 @@ class EnterpriseActionTool(BaseTool):
     action_schema: Dict[str, Any] = Field(
         default={}, description="The schema of the action"
     )
+    project_id: str = Field(
+        default=ENTERPRISE_ACTION_KIT_PROJECT_ID, description="The project id"
+    )
 
     def __init__(
         self,
@@ -26,6 +29,7 @@ class EnterpriseActionTool(BaseTool):
         enterprise_action_token: str,
         action_name: str,
         action_schema: Dict[str, Any],
+        project_id: str = ENTERPRISE_ACTION_KIT_PROJECT_ID,
     ):
         schema_props = (
             action_schema.get("function", {})
@@ -73,13 +77,14 @@ class EnterpriseActionTool(BaseTool):
         self.enterprise_action_token = enterprise_action_token
         self.action_name = action_name
         self.action_schema = action_schema
+        self.project_id = project_id
 
     def _run(self, **kwargs) -> str:
         """Execute the specific enterprise action with validated parameters."""
         try:
             params = {k: v for k, v in kwargs.items() if v is not None}
 
-            api_url = f"https://worker-actionkit.tools.crewai.com/projects/{ENTERPRISE_ACTION_KIT_PROJECT_ID}/actions"
+            api_url = f"https://worker-actionkit.tools.crewai.com/projects/{self.project_id}/actions"
             headers = {
                 "Authorization": f"Bearer {self.enterprise_action_token}",
                 "Content-Type": "application/json",
@@ -104,7 +109,11 @@ class EnterpriseActionTool(BaseTool):
 class EnterpriseActionKitToolAdapter:
     """Adapter that creates BaseTool instances for enterprise actions."""
 
-    def __init__(self, enterprise_action_token: str):
+    def __init__(
+        self,
+        enterprise_action_token: str,
+        project_id: str = ENTERPRISE_ACTION_KIT_PROJECT_ID,
+    ):
         """Initialize the adapter with an enterprise action token."""
         if not enterprise_action_token:
             raise ValueError("enterprise_action_token is required")
@@ -112,6 +121,7 @@ class EnterpriseActionKitToolAdapter:
         self.enterprise_action_token = enterprise_action_token
         self._actions_schema = {}
         self._tools = None
+        self.project_id = project_id
 
     def tools(self) -> List[BaseTool]:
         """Get the list of tools created from enterprise actions.
@@ -127,7 +137,7 @@ class EnterpriseActionKitToolAdapter:
     def _fetch_actions(self):
         """Fetch available actions from the API."""
         try:
-            actions_url = f"https://worker-actionkit.tools.crewai.com/projects/{ENTERPRISE_ACTION_KIT_PROJECT_ID}/actions"
+            actions_url = f"https://worker-actionkit.tools.crewai.com/projects/{self.project_id}/actions"
             headers = {"Authorization": f"Bearer {self.enterprise_action_token}"}
             params = {"format": "json_schema"}
 
@@ -189,6 +199,7 @@ class EnterpriseActionKitToolAdapter:
                 action_name=action_name,
                 action_schema=action_schema,
                 enterprise_action_token=self.enterprise_action_token,
+                project_id=self.project_id,
             )
 
             tools.append(tool)
