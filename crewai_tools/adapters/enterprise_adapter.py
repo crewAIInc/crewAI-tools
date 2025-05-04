@@ -4,8 +4,9 @@ from typing import List, Any, Dict, Optional
 import json
 from crewai.tools import BaseTool
 
-
-ENTERPRISE_ACTION_KIT_PROJECT_ID = "dd525517-df22-49d2-a69e-6a0eed211166"  # DEFAULT
+# DEFAULTS
+ENTERPRISE_ACTION_KIT_PROJECT_ID = "dd525517-df22-49d2-a69e-6a0eed211166"
+ENTERPRISE_ACTION_KIT_PROJECT_URL = "https://worker-actionkit.tools.crewai.com/projects"
 
 
 class EnterpriseActionTool(BaseTool):
@@ -18,8 +19,11 @@ class EnterpriseActionTool(BaseTool):
     action_schema: Dict[str, Any] = Field(
         default={}, description="The schema of the action"
     )
-    project_id: str = Field(
+    enterprise_action_kit_project_id: str = Field(
         default=ENTERPRISE_ACTION_KIT_PROJECT_ID, description="The project id"
+    )
+    enterprise_action_kit_project_url: str = Field(
+        default=ENTERPRISE_ACTION_KIT_PROJECT_URL, description="The project url"
     )
 
     def __init__(
@@ -29,7 +33,8 @@ class EnterpriseActionTool(BaseTool):
         enterprise_action_token: str,
         action_name: str,
         action_schema: Dict[str, Any],
-        project_id: str = ENTERPRISE_ACTION_KIT_PROJECT_ID,
+        enterprise_action_kit_project_url: str = ENTERPRISE_ACTION_KIT_PROJECT_URL,
+        enterprise_action_kit_project_id: str = ENTERPRISE_ACTION_KIT_PROJECT_ID,
     ):
         schema_props = (
             action_schema.get("function", {})
@@ -77,14 +82,18 @@ class EnterpriseActionTool(BaseTool):
         self.enterprise_action_token = enterprise_action_token
         self.action_name = action_name
         self.action_schema = action_schema
-        self.project_id = project_id
+
+        if enterprise_action_kit_project_id is not None:
+            self.enterprise_action_kit_project_id = enterprise_action_kit_project_id
+        if enterprise_action_kit_project_url is not None:
+            self.enterprise_action_kit_project_url = enterprise_action_kit_project_url
 
     def _run(self, **kwargs) -> str:
         """Execute the specific enterprise action with validated parameters."""
         try:
             params = {k: v for k, v in kwargs.items() if v is not None}
 
-            api_url = f"https://worker-actionkit.tools.crewai.com/projects/{self.project_id}/actions"
+            api_url = f"{self.enterprise_action_kit_project_url}/{self.enterprise_action_kit_project_id}/actions"
             headers = {
                 "Authorization": f"Bearer {self.enterprise_action_token}",
                 "Content-Type": "application/json",
@@ -112,7 +121,8 @@ class EnterpriseActionKitToolAdapter:
     def __init__(
         self,
         enterprise_action_token: str,
-        project_id: str = ENTERPRISE_ACTION_KIT_PROJECT_ID,
+        enterprise_action_kit_project_url: str = ENTERPRISE_ACTION_KIT_PROJECT_URL,
+        enterprise_action_kit_project_id: str = ENTERPRISE_ACTION_KIT_PROJECT_ID,
     ):
         """Initialize the adapter with an enterprise action token."""
         if not enterprise_action_token:
@@ -121,7 +131,8 @@ class EnterpriseActionKitToolAdapter:
         self.enterprise_action_token = enterprise_action_token
         self._actions_schema = {}
         self._tools = None
-        self.project_id = project_id
+        self.enterprise_action_kit_project_id = enterprise_action_kit_project_id
+        self.enterprise_action_kit_project_url = enterprise_action_kit_project_url
 
     def tools(self) -> List[BaseTool]:
         """Get the list of tools created from enterprise actions.
@@ -137,7 +148,7 @@ class EnterpriseActionKitToolAdapter:
     def _fetch_actions(self):
         """Fetch available actions from the API."""
         try:
-            actions_url = f"https://worker-actionkit.tools.crewai.com/projects/{self.project_id}/actions"
+            actions_url = f"{self.enterprise_action_kit_project_url}/{self.enterprise_action_kit_project_id}/actions"
             headers = {"Authorization": f"Bearer {self.enterprise_action_token}"}
             params = {"format": "json_schema"}
 
@@ -199,7 +210,8 @@ class EnterpriseActionKitToolAdapter:
                 action_name=action_name,
                 action_schema=action_schema,
                 enterprise_action_token=self.enterprise_action_token,
-                project_id=self.project_id,
+                enterprise_action_kit_project_id=self.enterprise_action_kit_project_id,
+                enterprise_action_kit_project_url=self.enterprise_action_kit_project_url,
             )
 
             tools.append(tool)
