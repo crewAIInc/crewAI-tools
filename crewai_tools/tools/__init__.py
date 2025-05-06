@@ -18,6 +18,9 @@ from .file_writer_tool.file_writer_tool import FileWriterTool
 from .firecrawl_crawl_website_tool.firecrawl_crawl_website_tool import (
     FirecrawlCrawlWebsiteTool,
 )
+from .firecrawl_extract_tool.firecrawl_extract_tool import (
+  FirecrawlExtractTool,
+)
 from .firecrawl_scrape_website_tool.firecrawl_scrape_website_tool import (
     FirecrawlScrapeWebsiteTool,
 )
