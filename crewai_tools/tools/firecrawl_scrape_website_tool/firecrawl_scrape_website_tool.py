@@ -10,11 +10,6 @@ except ImportError:
 
 class FirecrawlScrapeWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
-    timeout: Optional[int] = Field(
-        default=30000,
-        description="Timeout in milliseconds for the scraping operation. The default value is 30000.",
-    )
-
 
 class FirecrawlScrapeWebsiteTool(BaseTool):
     """
@@ -54,7 +49,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
 
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
-    def __init__(self, api_key: Optional[str] = None, config: Optional[Dict[str, Any]] = None, **kwargs):
+    def __init__(self, api_key: Optional[str] = None, config: Dict[str, Any] = None, **kwargs):
         if config:
             kwargs["config"] = config
         super().__init__(**kwargs)
