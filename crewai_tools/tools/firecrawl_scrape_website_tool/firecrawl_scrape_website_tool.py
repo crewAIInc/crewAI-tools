@@ -72,7 +72,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
 
         self._firecrawl = FirecrawlApp(api_key=api_key)
 
-    def _run(self, url: str, timeout: Optional[int] = 30000):
+    def _run(self, url: str):
         return self._firecrawl.scrape_url(url, **self.config)
 
 
