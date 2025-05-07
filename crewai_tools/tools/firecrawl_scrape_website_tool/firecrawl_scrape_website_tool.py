@@ -1,4 +1,4 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Dict
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -7,7 +7,6 @@ try:
     from firecrawl import FirecrawlApp
 except ImportError:
     FirecrawlApp = Any
-
 
 class FirecrawlScrapeWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
@@ -31,6 +30,8 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
         include_tags (list[str]): Tags to include. Default: []
         exclude_tags (list[str]): Tags to exclude. Default: []
         headers (dict): Headers to include. Default: {}
+        wait_for (int): Time to wait for page to load in ms. Default: 0
+        json_options (dict): Options for JSON extraction. Default: None
     """
 
     model_config = ConfigDict(
@@ -40,7 +41,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
     description: str = "Scrape webpages using Firecrawl and return the contents"
     args_schema: Type[BaseModel] = FirecrawlScrapeWebsiteToolSchema
     api_key: Optional[str] = None
-    config: Optional[dict[str, Any]] = Field(
+    config: Dict[str, Any] = Field(
         default_factory=lambda: {
             "formats": ["markdown"],
             "only_main_content": True,
@@ -53,7 +54,9 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
 
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
-    def __init__(self, api_key: Optional[str] = None, **kwargs):
+    def __init__(self, api_key: Optional[str] = None, config: Optional[Dict[str, Any]] = None, **kwargs):
+        if config:
+            kwargs["config"] = config
         super().__init__(**kwargs)
         try:
             from firecrawl import FirecrawlApp  # type: ignore
@@ -76,7 +79,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
 
         self._firecrawl = FirecrawlApp(api_key=api_key)
 
-    def _run(self, url: str):
+    def _run(self, url: str, timeout: Optional[int] = 30000):
         return self._firecrawl.scrape_url(url, **self.config)
 
 
