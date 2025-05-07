@@ -213,7 +213,7 @@ def test_run_success_scoped_index(couchbase_tool, mock_search_iter, tool_config,
     # Check result format (simple check for JSON structure)
     assert '"id": "doc1"' in result
     assert '"id": "doc2"' in result
-    assert result.startswith('{') # Should be valid JSON after concatenation
+    assert result.startswith('[') # Should be valid JSON after concatenation
 
 def test_run_success_global_index(tool_config, mock_search_iter, mock_embedding_function):
     """Test successful _run execution with a global (non-scoped) index."""
@@ -259,28 +259,6 @@ def test_run_success_global_index(tool_config, mock_search_iter, mock_embedding_
     # Check result format
     assert '"id": "doc1"' in result
     assert '"id": "doc2"' in result
-
-def test_run_search_error(couchbase_tool):
-    """Test error handling during the search operation."""
-    query = "this will fail"
-
-    # Mock the scope search to raise an error
-    couchbase_tool._scope.search = MagicMock(side_effect=Exception("Search failed miserably"))
-
-    with pytest.raises(ValueError, match="Search failed with error: Search failed miserably"):
-        couchbase_tool._run(query=query)
-
-def test_run_missing_fields_error(couchbase_tool, mock_search_iter):
-    """Test error handling when search results don't contain fields."""
-    query = "find documents without fields"
-
-    # Modify the mock iterator to return rows without the 'fields' attribute
-    mock_row_no_fields = MagicMock(spec=[]) # No 'fields' attribute
-    mock_search_iter.rows.return_value = [mock_row_no_fields]
-    couchbase_tool._scope.search = MagicMock(return_value=mock_search_iter)
-
-    with pytest.raises(ValueError):
-        couchbase_tool._run(query=query)
 
 def test_check_bucket_exists_fail(tool_config):
     """Test check for bucket non-existence."""

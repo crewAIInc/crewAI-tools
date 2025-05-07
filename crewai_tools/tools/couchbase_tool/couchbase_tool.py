@@ -130,8 +130,6 @@ class CouchbaseFTSVectorSearchTool(BaseTool):
             ValueError: If required parameters are missing, the Couchbase cluster
                         cannot be reached, or the specified bucket, scope,
                         collection, or index does not exist.
-            ImportError: If the 'couchbase' package is not installed and the user
-                         chooses not to install it.
         """
         super().__init__(**kwargs)
         if COUCHBASE_AVAILABLE:
@@ -198,14 +196,8 @@ class CouchbaseFTSVectorSearchTool(BaseTool):
             A JSON string containing the search results.
 
         Raises:
-            ImportError: If the 'couchbase' package is not installed.
             ValueError: If the search query fails or returns results without fields.
         """
-        if not COUCHBASE_AVAILABLE:
-            raise ImportError(
-                "You are missing the 'couchbase' package. Would you like to install it?"
-            )
-
         query_embedding = self.embedding_function(query)
         fields = ["*"]
 
@@ -239,16 +231,11 @@ class CouchbaseFTSVectorSearchTool(BaseTool):
                     )
                 )
 
-            json_response = ""
+            json_response = []
 
             for row in search_iter.rows():
-                if row.fields:
-                    json_response += json.dumps(row.fields, indent=2)
-                else:
-                    raise ValueError(
-                        "Search results do not contain the fields from the document."
-                    )
+                json_response.append(row.fields)
         except Exception as e:
-            raise ValueError(f"Search failed with error: {e}")
+            return f"Search failed with error: {e}"
 
-        return json_response
+        return json.dumps(json_response, indent=2)
