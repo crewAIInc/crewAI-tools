@@ -737,7 +737,7 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.117.0"
+version = "0.118.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
@@ -764,13 +764,14 @@ dependencies = [
     { name = "tomli-w" },
     { name = "uv" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/c0/71/5321cd921e783288453c441fe4bbe05c0adefbf95ffa0954df3f3bac34cc/crewai-0.118.0.tar.gz", hash = "sha256:7d42b1552006c0b4b60acc9390a05ca16503669e34fd3e30d07996379e66b15b", size = 71688751 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/df/dc/bc8412bcf55d9568e6f2f8314a6dd93a3f9f082afcba6c3742ec4a25c4ee/crewai-0.117.0-py3-none-any.whl", hash = "sha256:dbd5b5302831e6ded8d3972d5af7349705207339448f20865192f590d638607d", size = 300138 },
+    { url = "https://files.pythonhosted.org/packages/3b/92/ed32f1472231be1333b059262dcfc60a4ed192fb7c916cc3fcc5af30d0f4/crewai-0.118.0-py3-none-any.whl", hash = "sha256:c6ffb34169756e565c403cadb709da7d69979f31e1d8d7504e61fe21e3d571f8", size = 305158 },
 ]
 
 [[package]]
 name = "crewai-tools"
-version = "0.42.2"
+version = "0.43.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
@@ -876,7 +877,7 @@ requires-dist = [
     { name = "chromadb", specifier = ">=0.4.22" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
-    { name = "crewai", specifier = ">=0.117.0" },
+    { name = "crewai", specifier = ">=0.118.0" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },
@@ -2587,7 +2588,7 @@ wheels = [
 
 [[package]]
 name = "litellm"
-version = "1.60.2"
+version = "1.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -2602,9 +2603,9 @@ dependencies = [
     { name = "tiktoken" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/94/8f/704cdb0fdbdd49dc5062a39ae5f1a8f308ae0ffd746df6e0137fc1776b8a/litellm-1.60.2.tar.gz", hash = "sha256:a8170584fcfd6f5175201d869e61ccd8a40ffe3264fc5e53c5b805ddf8a6e05a", size = 6447447 }
+sdist = { url = "https://files.pythonhosted.org/packages/54/a4/bb3e9ae59e5a9857443448de7c04752630dc84cddcbd8cee037c0976f44f/litellm-1.67.1.tar.gz", hash = "sha256:78eab1bd3d759ec13aa4a05864356a4a4725634e78501db609d451bf72150ee7", size = 7242044 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8a/ba/0eaec9aee9f99fdf46ef1c0bddcfe7f5720b182f84f6ed27f13145d5ded2/litellm-1.60.2-py3-none-any.whl", hash = "sha256:1cb08cda04bf8c5ef3e690171a779979e4b16a5e3a24cd8dc1f198e7f198d5c4", size = 6746809 },
+    { url = "https://files.pythonhosted.org/packages/88/86/c14d3c24ae13c08296d068e6f79fd4bd17a0a07bddbda94990b87c35d20e/litellm-1.67.1-py3-none-any.whl", hash = "sha256:8fff5b2a16b63bb594b94d6c071ad0f27d3d8cd4348bd5acea2fd40c8e0c11e8", size = 7607266 },
 ]
 
 [[package]]
@@ -3499,7 +3500,7 @@ wheels = [
 
 [[package]]
 name = "openai"
-version = "1.66.3"
+version = "1.77.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -3511,9 +3512,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a3/77/5172104ca1df35ed2ed8fb26dbc787f721c39498fc51d666c4db07756a0c/openai-1.66.3.tar.gz", hash = "sha256:8dde3aebe2d081258d4159c4cb27bdc13b5bb3f7ea2201d9bd940b9a89faf0c9", size = 397244 }
+sdist = { url = "https://files.pythonhosted.org/packages/cc/c0/ea2e9a78bf88404b97e7b708f0823b4699ab2ee3f5564425b8531a890a43/openai-1.77.0.tar.gz", hash = "sha256:897969f927f0068b8091b4b041d1f8175bcf124f7ea31bab418bf720971223bc", size = 435778 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/5a/e20182f7b6171642d759c548daa0ba20a1d3ac10d2bd0a13fd75704a9ac3/openai-1.66.3-py3-none-any.whl", hash = "sha256:a427c920f727711877ab17c11b95f1230b27767ba7a01e5b66102945141ceca9", size = 567400 },
+    { url = "https://files.pythonhosted.org/packages/90/58/37ae3ca75936b824a0a5ca30491c968192007857319d6836764b548b9d9b/openai-1.77.0-py3-none-any.whl", hash = "sha256:07706e91eb71631234996989a8ea991d5ee56f0744ef694c961e0824d4f39218", size = 662031 },
 ]
 
 [[package]]
