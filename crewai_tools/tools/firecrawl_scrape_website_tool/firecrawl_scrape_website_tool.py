@@ -49,9 +49,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
 
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
-    def __init__(self, api_key: Optional[str] = None, config: Dict[str, Any] = None, **kwargs):
-        if config:
-            kwargs["config"] = config
+    def __init__(self, api_key: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         try:
             from firecrawl import FirecrawlApp  # type: ignore
