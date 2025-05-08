@@ -82,3 +82,12 @@ def test_file_not_found_during_zip(mock_zip, _, tool):
 def test_general_exception_during_zip(mock_zip, _, tool):
     result = tool._run(input_path="file.txt", output_path="file.zip", format="zip", overwrite=True)
     assert "unexpected error" in result
+    
+# Test: Output directory is created when missing
+@patch("os.makedirs")
+@patch("os.path.exists", return_value=False)
+def test_prepare_output_makes_dir(mock_exists, mock_makedirs):
+    tool = FileCompressorTool()
+    result = tool._prepare_output("some/missing/path/file.zip", overwrite=True)
+    assert result is True
+    mock_makedirs.assert_called_once()
