@@ -18,6 +18,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
     Args:
         api_key (str): Your Firecrawl API key.
         config (dict): Optional. It contains Firecrawl API parameters.
+        url (str): Optional. The URL to scrape. Can also be provided when calling run().
 
     Default configuration options:
         formats (list[str]): Content formats to return. Default: ["markdown"]
@@ -46,11 +47,14 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
             "wait_for": 0,
         }
     )
+    url: Optional[str] = None
 
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
-    def __init__(self, api_key: Optional[str] = None, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, api_key: Optional[str] = None, url: Optional[str] = None, **kwargs):
+        if url is not None:
+            kwargs["url"] = url
+        super().__init__(api_key=api_key, **kwargs)
         try:
             from firecrawl import FirecrawlApp  # type: ignore
         except ImportError:
@@ -72,8 +76,11 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
 
         self._firecrawl = FirecrawlApp(api_key=api_key)
 
-    def _run(self, url: str):
-        return self._firecrawl.scrape_url(url, **self.config)
+    def _run(self, url: Optional[str] = None, **kwargs):
+        url_to_use = url if url is not None else self.url
+        if url_to_use is None:
+            raise ValueError("URL must be provided either in constructor or run method")
+        return self._firecrawl.scrape_url(url_to_use, **self.config)
 
 
 try:
