@@ -73,7 +73,9 @@ scrapegraph-py = [
 linkup-sdk = [
     "linkup-sdk>=0.2.2",
 ]
-
+tavily-python = [
+    "tavily-python>=0.5.4",
+]
 hyperbrowser = [
     "hyperbrowser>=0.18.0",
 ]
