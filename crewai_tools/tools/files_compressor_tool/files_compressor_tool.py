@@ -115,8 +115,3 @@ class FileCompressorTool(BaseTool):
         with tarfile.open(output_path, mode) as tarf:
             arcname = os.path.basename(input_path)
             tarf.add(input_path, arcname=arcname)
-                
-
-
-
-
