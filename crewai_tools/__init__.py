@@ -22,6 +22,7 @@ from .tools import (
     FirecrawlSearchTool,
     GithubSearchTool,
     HyperbrowserLoadTool,
+    HumanInputTool,
     JSONSearchTool,
     LinkupSearchTool,
     LlamaIndexTool,
