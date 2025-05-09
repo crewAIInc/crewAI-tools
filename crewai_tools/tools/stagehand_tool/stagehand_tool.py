@@ -437,19 +437,17 @@ class StagehandTool(BaseTool):
                 return f"Error: {result.error}"
 
     def close(self):
-        """Clean up resources when the tool is no longer needed."""
+        """Clean up Stagehand resources."""
         if self._stagehand:
-            self._logger.info("Closing Stagehand session...")
-            loop = asyncio.get_event_loop()
-            try:
-                if loop.is_running():
-                    asyncio.create_task(self._stagehand.close())
-                else:
-                    loop.run_until_complete(self._stagehand.close())
-            except RuntimeError:
-                # Create a new event loop if needed
-                asyncio.run(self._stagehand.close())
-
+            self._stagehand.close()
             self._stagehand = None
+        if self._page:
             self._page = None
-            self._logger.info("Stagehand session closed")
+
+    def __enter__(self):
+        """Enter the context manager."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Exit the context manager and clean up resources."""
+        self.close()
