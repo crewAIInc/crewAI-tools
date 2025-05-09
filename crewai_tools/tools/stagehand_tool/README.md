@@ -37,6 +37,49 @@ pip install stagehand-py
 
 ### Basic Usage
 
+The StagehandTool can be used in two ways:
+
+1. **Using a context manager (recommended)**:
+```python
+from crewai import Agent, Task, Crew
+from crewai_tools import StagehandTool
+from stagehand.schemas import AvailableModel
+
+# Initialize the tool with your API keys using a context manager
+with StagehandTool(
+    api_key="your-browserbase-api-key",
+    project_id="your-browserbase-project-id",
+    model_api_key="your-llm-api-key",  # OpenAI or Anthropic API key
+    model_name=AvailableModel.CLAUDE_3_7_SONNET_LATEST,  # Optional: specify which model to use
+) as stagehand_tool:
+    # Create an agent with the tool
+    researcher = Agent(
+        role="Web Researcher",
+        goal="Find and summarize information from websites",
+        backstory="I'm an expert at finding information online.",
+        verbose=True,
+        tools=[stagehand_tool],
+    )
+
+    # Create a task that uses the tool
+    research_task = Task(
+        description="Go to https://www.example.com and tell me what you see on the homepage.",
+        agent=researcher,
+    )
+
+    # Run the crew
+    crew = Crew(
+        agents=[researcher],
+        tasks=[research_task],
+        verbose=True,
+    )
+
+    result = crew.kickoff()
+    print(result)
+    # Resources are automatically cleaned up when exiting the context
+```
+
+2. **Manual resource management**:
 ```python
 from crewai import Agent, Task, Crew
 from crewai_tools import StagehandTool
@@ -46,35 +89,41 @@ from stagehand.schemas import AvailableModel
 stagehand_tool = StagehandTool(
     api_key="your-browserbase-api-key",
     project_id="your-browserbase-project-id",
-    model_api_key="your-llm-api-key",  # OpenAI or Anthropic API key
-    model_name=AvailableModel.CLAUDE_3_7_SONNET_LATEST,  # Optional: specify which model to use
+    model_api_key="your-llm-api-key",
+    model_name=AvailableModel.CLAUDE_3_7_SONNET_LATEST,
 )
 
-# Create an agent with the tool
-researcher = Agent(
-    role="Web Researcher",
-    goal="Find and summarize information from websites",
-    backstory="I'm an expert at finding information online.",
-    verbose=True,
-    tools=[stagehand_tool],
-)
+try:
+    # Create an agent with the tool
+    researcher = Agent(
+        role="Web Researcher",
+        goal="Find and summarize information from websites",
+        backstory="I'm an expert at finding information online.",
+        verbose=True,
+        tools=[stagehand_tool],
+    )
 
-# Create a task that uses the tool
-research_task = Task(
-    description="Go to https://www.example.com and tell me what you see on the homepage.",
-    agent=researcher,
-)
+    # Create a task that uses the tool
+    research_task = Task(
+        description="Go to https://www.example.com and tell me what you see on the homepage.",
+        agent=researcher,
+    )
 
-# Run the crew
-crew = Crew(
-    agents=[researcher],
-    tasks=[research_task],
-    verbose=True,
-)
+    # Run the crew
+    crew = Crew(
+        agents=[researcher],
+        tasks=[research_task],
+        verbose=True,
+    )
 
-result = crew.kickoff()
-print(result)
+    result = crew.kickoff()
+    print(result)
+finally:
+    # Explicitly clean up resources
+    stagehand_tool.close()
 ```
+
+The context manager approach (option 1) is recommended as it ensures proper cleanup of resources even if exceptions occur. However, both approaches are valid and will properly manage the browser session.
 
 ## Command Types
 
@@ -189,68 +238,6 @@ stagehand_tool = StagehandTool(
 )
 ```
 
-## Task Examples for CrewAI Agents
-
-Here are some examples of tasks that effectively use the StagehandTool:
-
-```python
-from crewai import Agent, Task, Crew
-from crewai_tools import StagehandTool
-from stagehand.schemas import AvailableModel
-import os
-
-# Get API keys from environment
-browserbase_api_key = os.environ.get("BROWSERBASE_API_KEY")
-browserbase_project_id = os.environ.get("BROWSERBASE_PROJECT_ID")
-model_api_key = os.environ.get("OPENAI_API_KEY")  # or ANTHROPIC_API_KEY
-
-# Initialize the tool
-stagehand_tool = StagehandTool(
-    api_key=browserbase_api_key,
-    project_id=browserbase_project_id,
-    model_api_key=model_api_key,
-    model_name=AvailableModel.GPT_4O,
-)
-
-# Create an agent
-researcher = Agent(
-    role="Web Researcher",
-    goal="Gather product information from an e-commerce website",
-    backstory="I specialize in extracting and analyzing web data.",
-    verbose=True,
-    tools=[stagehand_tool],
-)
-
-# Form submission task
-form_submission_task = Task(
-    description="""
-    Submit a contact form on example.com:
-    1. Go to example.com/contact
-    2. Fill out the contact form with:
-       - Name: John Doe
-       - Email: john@example.com
-       - Subject: Information Request
-       - Message: I would like to learn more about your services
-    3. Submit the form
-    4. Confirm the submission was successful
-    """,
-    agent=form_agent,
-)
-
-# Run the crew
-crew = Crew(
-    agents=[researcher],
-    tasks=[research_task],
-    verbose=True,
-)
-
-result = crew.kickoff()
-print(result)
-
-# Clean up resources
-stagehand_tool.close()
-```
-
 ## Tips for Effective Use
 
 1. **Be specific in instructions**: The more specific your instructions, the better the results. For example, instead of "click the button," use "click the 'Submit' button at the bottom of the contact form."
@@ -273,8 +260,14 @@ stagehand_tool.close()
 - **Actions not working**: Make sure your instructions are clear and specific. You may need to use `observe` first to identify the correct elements.
 - **Extract returning incomplete data**: Try refining your instruction or providing a more specific selector.
 
+## Resources
+
+- [Stagehand Documentation](https://docs.stagehand.dev/reference/introduction) - Complete reference for the Stagehand framework
+- [Browserbase](https://www.browserbase.com) - Browser automation platform
+- [Join Slack Community](https://stagehand.dev/slack) - Get help and connect with other users of Stagehand
+
 ## Contact
 
 For more information about Stagehand, visit [the Stagehand documentation](https://docs.stagehand.dev/).
 
-For questions about the CrewAI integration, join our [Slack](https://stagehand.dev/slack) or open an issue in this repository. 
+For questions about the CrewAI integration, join our [Slack](https://stagehand.dev/slack) or open an issue in this repository.

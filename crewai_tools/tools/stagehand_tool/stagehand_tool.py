@@ -99,6 +99,24 @@ class StagehandTool(BaseTool):
     3. extract - Extract structured data from web pages
     4. observe - Identify and analyze elements on a page
 
+    Usage patterns:
+    1. Using as a context manager (recommended):
+       ```python
+       with StagehandTool() as tool:
+           agent = Agent(tools=[tool])
+           # ... use the agent
+       ```
+
+    2. Manual resource management:
+       ```python
+       tool = StagehandTool()
+       try:
+           agent = Agent(tools=[tool])
+           # ... use the agent
+       finally:
+           tool.close()
+       ```
+
     Usage examples:
     - Navigate to a website: instruction="Go to the homepage", url="https://example.com"
     - Click a button: instruction="Click the login button"
