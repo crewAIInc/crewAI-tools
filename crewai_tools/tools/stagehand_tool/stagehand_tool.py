@@ -436,10 +436,25 @@ class StagehandTool(BaseTool):
             else:
                 return f"Error: {result.error}"
 
+    async def _async_close(self):
+        """Asynchronously clean up Stagehand resources."""
+        if self._stagehand:
+            await self._stagehand.close()
+            self._stagehand = None
+        if self._page:
+            self._page = None
+
     def close(self):
         """Clean up Stagehand resources."""
         if self._stagehand:
-            self._stagehand.close()
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.run_coroutine_threadsafe(self._async_close(), loop).result()
+                else:
+                    loop.run_until_complete(self._async_close())
+            except RuntimeError:
+                asyncio.run(self._async_close())
             self._stagehand = None
         if self._page:
             self._page = None

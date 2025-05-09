@@ -60,6 +60,7 @@ from .tools import (
     SnowflakeConfig,
     SnowflakeSearchTool,
     SpiderTool,
+    StagehandTool,
     TXTSearchTool,
     VisionTool,
     WeaviateVectorSearchTool,
