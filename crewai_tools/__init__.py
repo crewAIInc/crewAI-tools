@@ -6,6 +6,7 @@ from .tools import (
     CodeDocsSearchTool,
     CodeInterpreterTool,
     ComposioTool,
+    CouchbaseFTSVectorSearchTool,
     CrewaiEnterpriseTools,
     CSVSearchTool,
     DallETool,
