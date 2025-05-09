@@ -29,33 +29,47 @@ pip install minds-sdk
 ## Usage
 
 ```python
-from crewai_tools import AIMindTool
+from crewai_tools import AIMindDataSource, AIMindEnvVar, AIMindTool
 
+
+# Initialize a data source for the AIMindTool.
+datasource = AIMindDataSource(
+    name="demo_datasource",
+    description="house sales data",
+    engine="postgres",
+    connection_data={
+        "user": "demo_user",
+        "password": AIMindEnvVar('POSTGRES_PASSWORD', is_secret=True), # Use an environment variable for the password.
+        "host": "samples.mindsdb.com",
+        "port": 5432,
+        "database": "demo",
+        "schema": "demo_data"
+    },
+    tables=["house_sales"]
+)
+
+# To re-use an existing data source, simply provide the name of the data source without any other parameters.
+# datasource = AIMindDataSource(
+#     name="demo_datasource",
+# )
 
 # Initialize the AIMindTool.
 aimind_tool = AIMindTool(
-    datasources=[
-        {
-            "description": "house sales data",
-            "engine": "postgres",
-            "connection_data": {
-                "user": "demo_user",
-                "password": "demo_password",
-                "host": "samples.mindsdb.com",
-                "port": 5432,
-                "database": "demo",
-                "schema": "demo_data"
-            },
-            "tables": ["house_sales"]
-        }
-    ]
+    name="demo_mind",
+    datasources=[datasource],
 )
+
+# To re-use an existing Mind, simply provide the name of the Mind without any data sources.
+# aimind_tool = AIMindTool(
+#     name="demo_mind",
+# )
 
 aimind_tool.run("How many 3 bedroom houses were sold in 2008?")
 ```
 
-The `datasources` parameter is a list of dictionaries, each containing the following keys:
+Given below is a list of parameters that can be provided to the `AIMindDataSource` class:
 
+- `name`: The name of the datasource. To re-use an existing datasource, provide the name of the datasource without any other parameters.
 - `description`: A description of the data contained in the datasource.
 - `engine`: The engine (or type) of the datasource. Find a list of supported engines in the link below.
 - `connection_data`: A dictionary containing the connection parameters for the datasource. Find a list of connection parameters for each engine in the link below.
