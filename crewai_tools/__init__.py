@@ -60,6 +60,7 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
+    NL2CypherTool
 )
 
 from .aws import (
