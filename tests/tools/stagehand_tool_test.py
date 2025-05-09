@@ -315,7 +315,3 @@ def test_close_method():
     # Verify resources were cleaned up
     assert tool._stagehand is None
     assert tool._page is None
-
-
-if __name__ == "__main__":
-    pytest.main(["-xvs", "stagehand_tool_test.py"])
