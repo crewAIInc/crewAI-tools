@@ -85,6 +85,7 @@ def stagehand_tool():
         api_key="test_api_key",
         project_id="test_project_id",
         model_api_key="test_model_api_key",
+        _testing=True,  # Enable testing mode to bypass dependency check
     )
 
 
@@ -94,6 +95,7 @@ def test_stagehand_tool_initialization():
         api_key="test_api_key",
         project_id="test_project_id",
         model_api_key="test_model_api_key",
+        _testing=True,  # Enable testing mode
     )
 
     assert tool.api_key == "test_api_key"
@@ -268,6 +270,7 @@ def test_initialization_parameters():
         self_heal=False,
         wait_for_captcha_solves=False,
         verbose=3,
+        _testing=True,  # Enable testing mode
     )
 
     # Verify the tool was initialized with the correct parameters
@@ -288,6 +291,7 @@ def test_close_method():
         api_key="test_api_key",
         project_id="test_project_id",
         model_api_key="test_model_api_key",
+        _testing=True,  # Enable testing mode
     )
 
     # Set up a mock for the stagehand instance

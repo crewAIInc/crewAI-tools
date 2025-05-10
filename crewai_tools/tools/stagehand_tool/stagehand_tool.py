@@ -180,12 +180,14 @@ class StagehandTool(BaseTool):
         self_heal: Optional[bool] = None,
         wait_for_captcha_solves: Optional[bool] = None,
         verbose: Optional[int] = None,
+        _testing: bool = False,  # Flag to bypass dependency check in tests
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         # Check if stagehand is available when the tool is being instantiated
-        if not _HAS_STAGEHAND:
+        # Skip the check if we're in testing mode
+        if not _testing and not _HAS_STAGEHAND:
             raise ImportError(
                 "`stagehand-py` package not found, please run `uv add stagehand-py`"
             )
@@ -243,8 +245,8 @@ class StagehandTool(BaseTool):
 
     def _check_required_credentials(self):
         """Validate that required credentials are present."""
-        # Check if stagehand is available
-        if not _HAS_STAGEHAND:
+        # Check if stagehand is available, but only if we're not in testing mode
+        if not getattr(self, "_testing", False) and not _HAS_STAGEHAND:
             raise ImportError(
                 "`stagehand-py` package not found, please run `uv add stagehand-py`"
             )
