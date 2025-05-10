@@ -99,6 +99,9 @@ mcp = [
     "mcp>=1.6.0",
     "mcpadapt>=0.1.3",
 ]
+stagehand = [
+    "stagehand-py>=0.3.6",
+]
 github = [
     "gitpython==3.1.38",
     "PyGithub==1.59.1",
@@ -106,7 +109,6 @@ github = [
 xml = [
     "unstructured[local-inference, all-docs]>=0.17.2"
 ]
-
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
