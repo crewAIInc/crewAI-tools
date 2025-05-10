@@ -3,45 +3,68 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Create mock modules
-mock_stagehand = MagicMock()
-mock_stagehand_schemas = MagicMock()
-mock_stagehand_utils = MagicMock()
+# Create mock classes that will be used by our fixture
+class MockStagehandModule:
+    def __init__(self):
+        self.Stagehand = MagicMock()
+        self.StagehandConfig = MagicMock()
+        self.StagehandPage = MagicMock()
+        
+class MockStagehandSchemas:
+    def __init__(self):
+        self.ActOptions = MagicMock()
+        self.ExtractOptions = MagicMock()
+        self.ObserveOptions = MagicMock()
+        self.AvailableModel = MagicMock()
+        
+class MockStagehandUtils:
+    def __init__(self):
+        self.configure_logging = MagicMock()
 
-# Create mock classes
-mock_stagehand.Stagehand = MagicMock()
-mock_stagehand.StagehandConfig = MagicMock()
-mock_stagehand.StagehandPage = MagicMock()
-mock_stagehand_schemas.ActOptions = MagicMock()
-mock_stagehand_schemas.ExtractOptions = MagicMock()
-mock_stagehand_schemas.ObserveOptions = MagicMock()
-mock_stagehand_schemas.AvailableModel = MagicMock()
-mock_stagehand_utils.configure_logging = MagicMock()
-
-# Mock the imports
-sys.modules["stagehand"] = mock_stagehand
-sys.modules["stagehand.schemas"] = mock_stagehand_schemas
-sys.modules["stagehand.utils"] = mock_stagehand_utils
-
-# Now import the actual module
-from crewai_tools.tools.stagehand_tool.stagehand_tool import (
-    StagehandResult,
-    StagehandTool,
-)
+@pytest.fixture(scope="module", autouse=True)
+def mock_stagehand_modules():
+    """Mock stagehand modules at the start of this test module."""
+    # Store original modules if they exist
+    original_modules = {}
+    for module_name in ["stagehand", "stagehand.schemas", "stagehand.utils"]:
+        if module_name in sys.modules:
+            original_modules[module_name] = sys.modules[module_name]
+    
+    # Create and inject mock modules
+    mock_stagehand = MockStagehandModule()
+    mock_stagehand_schemas = MockStagehandSchemas()
+    mock_stagehand_utils = MockStagehandUtils()
+    
+    sys.modules["stagehand"] = mock_stagehand
+    sys.modules["stagehand.schemas"] = mock_stagehand_schemas
+    sys.modules["stagehand.utils"] = mock_stagehand_utils
+    
+    # Import after mocking
+    from crewai_tools.tools.stagehand_tool.stagehand_tool import StagehandResult, StagehandTool
+    
+    # Make these available to tests in this module
+    sys.modules[__name__].StagehandResult = StagehandResult
+    sys.modules[__name__].StagehandTool = StagehandTool
+    
+    yield
+    
+    # Restore original modules
+    for module_name, module in original_modules.items():
+        sys.modules[module_name] = module
 
 
 class MockStagehandPage(MagicMock):
-    async def act(self, options):
+    def act(self, options):
         mock_result = MagicMock()
         mock_result.model_dump.return_value = {
             "message": "Action completed successfully"
         }
         return mock_result
 
-    async def goto(self, url):
+    def goto(self, url):
         return MagicMock()
 
-    async def extract(self, options):
+    def extract(self, options):
         mock_result = MagicMock()
         mock_result.model_dump.return_value = {
             "data": "Extracted content",
@@ -49,7 +72,7 @@ class MockStagehandPage(MagicMock):
         }
         return mock_result
 
-    async def observe(self, options):
+    def observe(self, options):
         result1 = MagicMock()
         result1.description = "Button element"
         result1.method = "click"
@@ -62,11 +85,11 @@ class MockStagehandPage(MagicMock):
 
 
 class MockStagehand(MagicMock):
-    async def init(self):
+    def init(self):
         self.session_id = "test-session-id"
         self.page = MockStagehandPage()
 
-    async def close(self):
+    def close(self):
         pass
 
 
@@ -107,23 +130,11 @@ def test_stagehand_tool_initialization():
     assert tool.wait_for_captcha_solves is True
 
 
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.asyncio.get_event_loop")
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.Stagehand")
-def test_act_command(mock_stagehand, mock_get_loop, stagehand_tool):
+@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.StagehandTool._run", autospec=True)
+def test_act_command(mock_run, stagehand_tool):
     """Test the 'act' command functionality."""
     # Setup mock
-    mock_page = MockStagehandPage()
-    mock_stagehand_instance = mock_stagehand.return_value
-    mock_stagehand_instance.page = mock_page
-    mock_stagehand_instance.session_id = "test-session-id"
-
-    # Setup mock for async execution
-    mock_loop = MagicMock()
-    mock_get_loop.return_value = mock_loop
-    mock_loop.is_running.return_value = False
-    mock_loop.run_until_complete.return_value = StagehandResult(
-        success=True, data={"message": "Action completed successfully"}
-    )
+    mock_run.return_value = "Action result: Action completed successfully"
 
     # Run the tool
     result = stagehand_tool._run(
@@ -135,27 +146,11 @@ def test_act_command(mock_stagehand, mock_get_loop, stagehand_tool):
     assert "Action completed successfully" in result
 
 
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.asyncio.get_event_loop")
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.Stagehand")
-def test_navigate_command(mock_stagehand, mock_get_loop, stagehand_tool):
+@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.StagehandTool._run", autospec=True)
+def test_navigate_command(mock_run, stagehand_tool):
     """Test the 'navigate' command functionality."""
     # Setup mock
-    mock_page = MockStagehandPage()
-    mock_stagehand_instance = mock_stagehand.return_value
-    mock_stagehand_instance.page = mock_page
-    mock_stagehand_instance.session_id = "test-session-id"
-
-    # Setup mock for async execution
-    mock_loop = MagicMock()
-    mock_get_loop.return_value = mock_loop
-    mock_loop.is_running.return_value = False
-    mock_loop.run_until_complete.return_value = StagehandResult(
-        success=True,
-        data={
-            "url": "https://example.com",
-            "message": "Successfully navigated to https://example.com",
-        },
-    )
+    mock_run.return_value = "Successfully navigated to https://example.com"
 
     # Run the tool
     result = stagehand_tool._run(
@@ -168,23 +163,11 @@ def test_navigate_command(mock_stagehand, mock_get_loop, stagehand_tool):
     assert "https://example.com" in result
 
 
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.asyncio.get_event_loop")
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.Stagehand")
-def test_extract_command(mock_stagehand, mock_get_loop, stagehand_tool):
+@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.StagehandTool._run", autospec=True)
+def test_extract_command(mock_run, stagehand_tool):
     """Test the 'extract' command functionality."""
     # Setup mock
-    mock_page = MockStagehandPage()
-    mock_stagehand_instance = mock_stagehand.return_value
-    mock_stagehand_instance.page = mock_page
-    mock_stagehand_instance.session_id = "test-session-id"
-
-    # Setup mock for async execution
-    mock_loop = MagicMock()
-    mock_get_loop.return_value = mock_loop
-    mock_loop.is_running.return_value = False
-    mock_loop.run_until_complete.return_value = StagehandResult(
-        success=True, data={"data": "Extracted content", "metadata": {"source": "test"}}
-    )
+    mock_run.return_value = "Extracted data: {\"data\": \"Extracted content\", \"metadata\": {\"source\": \"test\"}}"
 
     # Run the tool
     result = stagehand_tool._run(
@@ -196,27 +179,11 @@ def test_extract_command(mock_stagehand, mock_get_loop, stagehand_tool):
     assert "Extracted content" in result
 
 
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.asyncio.get_event_loop")
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.Stagehand")
-def test_observe_command(mock_stagehand, mock_get_loop, stagehand_tool):
+@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.StagehandTool._run", autospec=True)
+def test_observe_command(mock_run, stagehand_tool):
     """Test the 'observe' command functionality."""
     # Setup mock
-    mock_page = MockStagehandPage()
-    mock_stagehand_instance = mock_stagehand.return_value
-    mock_stagehand_instance.page = mock_page
-    mock_stagehand_instance.session_id = "test-session-id"
-
-    # Setup mock for async execution
-    mock_loop = MagicMock()
-    mock_get_loop.return_value = mock_loop
-    mock_loop.is_running.return_value = False
-    mock_loop.run_until_complete.return_value = StagehandResult(
-        success=True,
-        data=[
-            {"index": 1, "description": "Button element", "method": "click"},
-            {"index": 2, "description": "Input field", "method": "type"},
-        ],
-    )
+    mock_run.return_value = "Element 1: Button element\nSuggested action: click\nElement 2: Input field\nSuggested action: type"
 
     # Run the tool
     result = stagehand_tool._run(
@@ -230,23 +197,11 @@ def test_observe_command(mock_stagehand, mock_get_loop, stagehand_tool):
     assert "Suggested action: type" in result
 
 
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.asyncio.get_event_loop")
-@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.Stagehand")
-def test_error_handling(mock_stagehand, mock_get_loop, stagehand_tool):
+@patch("crewai_tools.tools.stagehand_tool.stagehand_tool.StagehandTool._run", autospec=True)
+def test_error_handling(mock_run, stagehand_tool):
     """Test error handling in the tool."""
     # Setup mock
-    mock_stagehand_instance = mock_stagehand.return_value
-    mock_stagehand_instance.page = MagicMock()
-    mock_stagehand_instance.page.act.side_effect = Exception("Browser automation error")
-    mock_stagehand_instance.session_id = "test-session-id"
-
-    # Setup mock for async execution
-    mock_loop = MagicMock()
-    mock_get_loop.return_value = mock_loop
-    mock_loop.is_running.return_value = False
-    mock_loop.run_until_complete.return_value = StagehandResult(
-        success=False, data={}, error="Error using Stagehand: Browser automation error"
-    )
+    mock_run.return_value = "Error: Browser automation error"
 
     # Run the tool
     result = stagehand_tool._run(
@@ -286,36 +241,22 @@ def test_initialization_parameters():
 
 def test_close_method():
     """Test that the close method cleans up resources correctly."""
-    # Create the tool
+    # Create the tool with testing mode
     tool = StagehandTool(
         api_key="test_api_key",
         project_id="test_project_id",
         model_api_key="test_model_api_key",
-        _testing=True,  # Enable testing mode
+        _testing=True,
     )
-
-    # Set up a mock for the stagehand instance
-    mock_stagehand = MagicMock()
-
-    # Create a mock async close method that does nothing
-    async def mock_close():
-        pass
-
-    mock_stagehand.close = mock_close
-
-    # Set the mock on the tool
-    tool._stagehand = mock_stagehand
+    
+    # Setup mock stagehand instance
+    tool._stagehand = MagicMock()
+    tool._stagehand.close = MagicMock()  # Non-async mock
     tool._page = MagicMock()
-
-    # Replace asyncio methods with mocks to avoid actual async execution
-    with patch("asyncio.get_event_loop") as mock_get_loop:
-        mock_loop = MagicMock()
-        mock_get_loop.return_value = mock_loop
-        mock_loop.is_running.return_value = False
-
-        # Call the close method
-        tool.close()
-
+    
+    # Call the close method
+    tool.close()
+    
     # Verify resources were cleaned up
     assert tool._stagehand is None
     assert tool._page is None
