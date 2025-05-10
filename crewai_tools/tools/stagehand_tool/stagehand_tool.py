@@ -1,9 +1,12 @@
 import asyncio
 import json
 import logging
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, List, Optional, Type, Union, Any
 
 from pydantic import BaseModel, Field
+
+# Define a flag to track whether stagehand is available
+_HAS_STAGEHAND = False
 
 try:
     from stagehand import Stagehand, StagehandConfig, StagehandPage
@@ -14,25 +17,19 @@ try:
         ObserveOptions,
     )
     from stagehand.utils import configure_logging
+    _HAS_STAGEHAND = True
 except ImportError:
-    import click
-
-    if click.confirm("`stagehand-py` package not found, would you like to install it?"):
-        import subprocess
-
-        subprocess.run(["uv", "add", "stagehand-py"], check=True)
-        from stagehand import Stagehand, StagehandConfig, StagehandPage
-        from stagehand.schemas import (
-            ActOptions,
-            AvailableModel,
-            ExtractOptions,
-            ObserveOptions,
-        )
-        from stagehand.utils import configure_logging
-    else:
-        raise ImportError(
-            "`stagehand-py` package not found, please run `uv add stagehand-py`"
-        )
+    # Define type stubs for when stagehand is not installed
+    Stagehand = Any
+    StagehandPage = Any
+    StagehandConfig = Any
+    ActOptions = Any
+    ExtractOptions = Any
+    ObserveOptions = Any
+    
+    # Define only what's needed for class defaults
+    class AvailableModel:
+        CLAUDE_3_7_SONNET_LATEST = "anthropic.claude-3-7-sonnet-20240607"
 
 from crewai.tools import BaseTool
 
@@ -187,6 +184,12 @@ class StagehandTool(BaseTool):
     ):
         super().__init__(**kwargs)
 
+        # Check if stagehand is available when the tool is being instantiated
+        if not _HAS_STAGEHAND:
+            raise ImportError(
+                "`stagehand-py` package not found, please run `uv add stagehand-py`"
+            )
+
         # Set up logger
         self._logger = logging.getLogger(__name__)
 
@@ -240,6 +243,12 @@ class StagehandTool(BaseTool):
 
     def _check_required_credentials(self):
         """Validate that required credentials are present."""
+        # Check if stagehand is available
+        if not _HAS_STAGEHAND:
+            raise ImportError(
+                "`stagehand-py` package not found, please run `uv add stagehand-py`"
+            )
+            
         if not self.api_key:
             raise ValueError("api_key is required (or set BROWSERBASE_API_KEY in env).")
         if not self.project_id:
