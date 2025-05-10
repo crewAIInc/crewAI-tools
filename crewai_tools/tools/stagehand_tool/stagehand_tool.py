@@ -170,6 +170,7 @@ class StagehandTool(BaseTool):
     _page: Optional[StagehandPage] = None
     _session_id: Optional[str] = None
     _logger: Optional[logging.Logger] = None
+    _testing: bool = False
 
     def __init__(
         self,
@@ -187,14 +188,9 @@ class StagehandTool(BaseTool):
         _testing: bool = False,  # Flag to bypass dependency check in tests
         **kwargs,
     ):
+        # Set testing flag early so that other init logic can rely on it
+        self._testing = _testing
         super().__init__(**kwargs)
-
-        # Check if stagehand is available when the tool is being instantiated
-        # Skip the check if we're in testing mode
-        if not _testing and not _HAS_STAGEHAND:
-            raise ImportError(
-                "`stagehand-py` package not found, please run `uv add stagehand-py`"
-            )
 
         # Set up logger
         self._logger = logging.getLogger(__name__)
@@ -250,7 +246,7 @@ class StagehandTool(BaseTool):
     def _check_required_credentials(self):
         """Validate that required credentials are present."""
         # Check if stagehand is available, but only if we're not in testing mode
-        if not getattr(self, "_testing", False) and not _HAS_STAGEHAND:
+        if not self._testing and not _HAS_STAGEHAND:
             raise ImportError(
                 "`stagehand-py` package not found, please run `uv add stagehand-py`"
             )
@@ -270,7 +266,7 @@ class StagehandTool(BaseTool):
         """Initialize Stagehand if not already set up."""
         
         # If we're in testing mode, return mock objects
-        if getattr(self, "_testing", False):
+        if self._testing:
             if not self._stagehand:
                 # Create a minimal mock for testing with non-async methods
                 class MockPage:
@@ -354,7 +350,7 @@ class StagehandTool(BaseTool):
         """Asynchronous implementation of the tool."""
         try:
             # Special handling for test mode to avoid coroutine issues
-            if getattr(self, "_testing", False):
+            if self._testing:
                 # Return predefined mock results based on command type
                 if command_type.lower() == "act":
                     return StagehandResult(
@@ -550,7 +546,7 @@ class StagehandTool(BaseTool):
     async def _async_close(self):
         """Asynchronously clean up Stagehand resources."""
         # Skip for test mode
-        if getattr(self, "_testing", False):
+        if self._testing:
             self._stagehand = None
             self._page = None
             return
@@ -564,7 +560,7 @@ class StagehandTool(BaseTool):
     def close(self):
         """Clean up Stagehand resources."""
         # Skip actual closing for testing mode
-        if getattr(self, "_testing", False):
+        if self._testing:
             self._stagehand = None
             self._page = None
             return
