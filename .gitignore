@@ -9,4 +9,8 @@ docs_crew/
 chroma.sqlite3
 venv
 .venv/
+
 .cursor/
+
+# chroma db
+db

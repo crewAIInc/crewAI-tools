@@ -1,5 +1,8 @@
+import os
+import tempfile
 from unittest.mock import MagicMock, patch
 
+import pytest
 from bs4 import BeautifulSoup
 
 from crewai_tools.tools.selenium_scraping_tool.selenium_scraping_tool import (
@@ -22,12 +25,16 @@ def mock_driver_with_html(html_content):
 
 def initialize_tool_with(mock_driver):
     tool = SeleniumScrapingTool()
-    tool.driver = MagicMock(return_value=mock_driver)
+    tool.driver = mock_driver
 
     return tool
 
 
-def test_tool_initialization():
+@patch("selenium.webdriver.Chrome")
+def test_tool_initialization(mocked_chrome):
+    temp_dir = tempfile.mkdtemp()
+    mocked_chrome.return_value = MagicMock()
+
     tool = SeleniumScrapingTool()
 
     assert tool.website_url is None
@@ -35,6 +42,11 @@ def test_tool_initialization():
     assert tool.cookie is None
     assert tool.wait_time == 3
     assert tool.return_html is False
+
+    try:
+        os.rmdir(temp_dir)
+    except:
+        pass
 
 
 @patch("selenium.webdriver.Chrome")
@@ -90,4 +102,14 @@ def test_scrape_with_return_html_false(_mocked_chrome_driver):
     assert "HTML content" in result
     mock_driver.get.assert_called_once_with("https://example.com")
     mock_driver.find_element.assert_called_with("tag name", "body")
+    mock_driver.close.assert_called_once()
+
+
+@patch("selenium.webdriver.Chrome")
+def test_scrape_with_driver_error(_mocked_chrome_driver):
+    mock_driver = MagicMock()
+    mock_driver.find_element.side_effect = Exception("WebDriver error occurred")
+    tool = initialize_tool_with(mock_driver)
+    result = tool._run(website_url="https://example.com")
+    assert result == "Error scraping website: WebDriver error occurred"
     mock_driver.close.assert_called_once()

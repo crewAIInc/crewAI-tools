@@ -50,6 +50,22 @@ class FirecrawlSearchToolSchema(BaseModel):
 
 
 class FirecrawlSearchTool(BaseTool):
+    """
+    Tool for searching webpages using Firecrawl. To run this tool, you need to have a Firecrawl API key.
+
+    Args:
+        api_key (str): Your Firecrawl API key.
+        config (dict): Optional. It contains Firecrawl API parameters.
+
+    Default configuration options:
+        limit (int): Maximum number of pages to crawl. Default: 5
+        tbs (str): Time before search. Default: None
+        lang (str): Language. Default: "en"
+        country (str): Country. Default: "us"
+        location (str): Location. Default: None
+        timeout (int): Timeout in milliseconds. Default: 60000
+    """
+
     model_config = ConfigDict(
         arbitrary_types_allowed=True, validate_assignment=True, frozen=False
     )
