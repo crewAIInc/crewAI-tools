@@ -778,6 +778,7 @@ weaviate-client = [
 [package.dev-dependencies]
 dev = [
     { name = "boto3" },
+    { name = "firecrawl-py" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
 ]
@@ -795,7 +796,7 @@ requires-dist = [
     { name = "docker", specifier = ">=7.1.0" },
     { name = "embedchain", specifier = ">=0.1.114" },
     { name = "exa-py", marker = "extra == 'exa-py'", specifier = ">=1.8.7" },
-    { name = "firecrawl-py", marker = "extra == 'firecrawl-py'", specifier = "==1.10.2" },
+    { name = "firecrawl-py", marker = "extra == 'firecrawl-py'", specifier = ">=1.10.2" },
     { name = "hyperbrowser", marker = "extra == 'hyperbrowser'", specifier = ">=0.18.0" },
     { name = "lancedb", specifier = ">=0.5.4" },
     { name = "langchain-apify", marker = "extra == 'apify'", specifier = ">=0.1.2,<1.0.0" },
@@ -822,6 +823,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "boto3", specifier = ">=1.38.13" },
+    { name = "firecrawl-py", specifier = ">=1.10.2" },
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "pytest-asyncio", specifier = ">=0.25.2" },
