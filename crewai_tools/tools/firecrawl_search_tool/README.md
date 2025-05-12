@@ -4,7 +4,7 @@
 
 [Firecrawl](https://firecrawl.dev) is a platform for crawling and convert any website into clean markdown or structured data.
 
-The [search endpoint](https://docs.firecrawl.dev/api-reference/endpoint/search) combines web search (SERP) with Firecrawl’s scraping capabilities to return full page content for any query.
+The [search endpoint](https://docs.firecrawl.dev/api-reference/endpoint/search) combines web search (SERP) with Firecrawl's scraping capabilities to return full page content for any query.
 
 ## Installation
 
@@ -22,13 +22,13 @@ Utilize the FirecrawlSearchTool as follows to allow your agent to load websites:
 ```python
 from crewai_tools import FirecrawlSearchTool
 
-# Initialize the FirecrawlSearchTool with the arguments
-tool = FirecrawlSearchTool(query='what is firecrawl?')
+# Initialize the FirecrawlSearchTool with named parameters
+tool = FirecrawlSearchTool(query='what is firecrawl?', limit=5, lang='en', country='us')
 print(tool.run())
 
-# Or use the `run` method with the arguments
+# Or use the `run` method with named parameters
 tool = FirecrawlSearchTool()
-print(tool.run(query='what is firecrawl?'))
+print(tool.run(query='what is firecrawl?', limit=5, scrapeOptions={'formats': ['markdown', 'html']}))
 ```
 
 ## Output format

@@ -19,7 +19,6 @@ def test_no_query():
 #     assert result['success'] is True
 #     assert result['data'] is not None
 
-
 # def test_query_in_run():
 #     tool = FirecrawlSearchTool()
 #     result = tool.run(query='what is firecrawl?')
@@ -43,13 +42,12 @@ def test_query_in_run_with_limit():
     
 def test_query_in_initialization_with_scrape_options():
     tool = FirecrawlSearchTool(
-        query='what is firecrawl?', 
-        limit=1, 
+        query='what is firecrawl?',
+        limit=1,
         scrapeOptions={
-            'formats': 
-                ['markdown']
-                }
-        )
+            'formats': ['markdown']
+        }
+    )
     result = tool.run()
     assert result is not None
     assert result['success'] is True
@@ -59,19 +57,35 @@ def test_query_in_initialization_with_scrape_options():
 def test_query_in_run_with_scrape_options():
     tool = FirecrawlSearchTool()
     result = tool.run(
-        query='what is firecrawl?', 
-        limit=1, 
+        query='what is firecrawl?',
+        limit=1,
         scrapeOptions={
-            'formats': 
-                ['html']
-                }
-        )
+            'formats': ['html']
+        }
+    )
     assert result is not None
     assert result['success'] is True
     assert result['data'] is not None
     assert result['data'][0]['html'] is not None
 
+def test_query_with_all_parameters():
+    tool = FirecrawlSearchTool(
+        query='what is firecrawl?',
+        limit=1,
+        tbs='qdr:d',
+        lang='en',
+        country='us',
+        location='New York',
+        timeout=30000,
+        scrapeOptions={
+            'formats': ['markdown', 'html']
+        }
+    )
+    result = tool.run()
+    assert result is not None
+    assert result['success'] is True
+    assert result['data'] is not None
+
 if __name__ == '__main__':
     tool = FirecrawlSearchTool()
-
     print(tool.run(query='what is firecrawl?', limit=1, scrapeOptions={'formats': ['markdown', 'html']}))

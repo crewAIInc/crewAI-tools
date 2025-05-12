@@ -86,19 +86,42 @@ class FirecrawlSearchTool(BaseTool):
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
     def __init__(
-        self, 
-        **kwargs: Any,
-        ):
-        super().__init__(**kwargs)
-        self.api_key = kwargs.get("api_key", None)
-        self.query = kwargs.get("query", None)
-        self.limit = kwargs.get("limit", None)
-        self.tbs = kwargs.get("tbs", None)
-        self.lang = kwargs.get("lang", None)
-        self.country = kwargs.get("country", None)
-        self.location = kwargs.get("location", None)
-        self.timeout = kwargs.get("timeout", None)
-        self.scrapeOptions = kwargs.get("scrapeOptions", None)
+        self,
+        api_key: Optional[str] = None,
+        query: Optional[str] = None,
+        limit: Optional[int] = None,
+        tbs: Optional[str] = None,
+        lang: Optional[str] = None,
+        country: Optional[str] = None,
+        location: Optional[str] = None,
+        timeout: Optional[int] = None,
+        scrapeOptions: Optional[
+            Dict[
+                Literal["formats"],
+                List[
+                    Literal[
+                        "markdown",
+                        "html",
+                        "rawHtml",
+                        "links",
+                        "screenshot",
+                        "screenshot@fullPage",
+                        "extract",
+                    ]
+                ],
+            ]
+        ] = None,
+    ):
+        super().__init__()
+        self.api_key = api_key
+        self.query = query
+        self.limit = limit
+        self.tbs = tbs
+        self.lang = lang
+        self.country = country
+        self.location = location
+        self.timeout = timeout
+        self.scrapeOptions = scrapeOptions
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
@@ -130,36 +153,57 @@ class FirecrawlSearchTool(BaseTool):
 
     def _run(
         self,
-        **kwargs: Any,
+        query: Optional[str] = None,
+        limit: Optional[int] = None,
+        tbs: Optional[str] = None,
+        lang: Optional[str] = None,
+        country: Optional[str] = None,
+        location: Optional[str] = None,
+        timeout: Optional[int] = None,
+        scrapeOptions: Optional[
+            Dict[
+                Literal["formats"],
+                List[
+                    Literal[
+                        "markdown",
+                        "html",
+                        "rawHtml",
+                        "links",
+                        "screenshot",
+                        "screenshot@fullPage",
+                        "extract",
+                    ]
+                ],
+            ]
+        ] = None,
     ) -> Any:
         if not self._firecrawl:
             raise RuntimeError("FirecrawlApp not properly initialized")
         
-        query = kwargs.get("query") or self.query
+        query = query or self.query
         if not query:
             raise ValueError("Query must be provided either during initialization or execution")
         
-        # params (Optional[Union[Dict[str, Any], SearchParams]]): Additional search parameters.
         params = {}
-        limit = kwargs.get("limit", self.limit)
+        limit = limit or self.limit
         if limit:
             params["limit"] = limit
-        tbs = kwargs.get("tbs", self.tbs)
+        tbs = tbs or self.tbs
         if tbs:
             params["tbs"] = tbs
-        lang = kwargs.get("lang", self.lang)
+        lang = lang or self.lang
         if lang:
             params["lang"] = lang
-        country = kwargs.get("country", self.country)
+        country = country or self.country
         if country:
             params["country"] = country
-        location = kwargs.get("location", self.location)
+        location = location or self.location
         if location:
             params["location"] = location
-        timeout = kwargs.get("timeout", self.timeout)
+        timeout = timeout or self.timeout
         if timeout:
             params["timeout"] = timeout
-        scrapeOptions = kwargs.get("scrapeOptions", self.scrapeOptions)
+        scrapeOptions = scrapeOptions or self.scrapeOptions
         if scrapeOptions:
             params["scrapeOptions"] = scrapeOptions
         return self._firecrawl.search(query=query, params=params)
