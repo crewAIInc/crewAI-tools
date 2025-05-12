@@ -20,9 +20,6 @@ dependencies = [
     "crewai>=0.105.0",
     "click>=8.1.8",
     "lancedb>=0.5.4",
-    "boto3>=1.37.16",
-    "snowflake>=1.1.0",
-    "firecrawl-py>=1.10.2",
 ]
 
 [project.urls]
@@ -44,7 +41,7 @@ multion = [
     "multion>=1.1.0",
 ]
 firecrawl-py = [
-    "firecrawl-py>=1.8.0",
+    "firecrawl-py==1.10.2",
 ]
 composio-core = [
     "composio-core>=0.6.11.post1",
@@ -117,4 +114,5 @@ build-backend = "hatchling.build"
 dev = [
     "pytest-asyncio>=0.25.2",
     "pytest>=8.0.0",
+    "boto3>=1.38.13",
 ]
