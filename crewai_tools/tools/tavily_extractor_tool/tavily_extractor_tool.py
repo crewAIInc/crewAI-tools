@@ -46,9 +46,7 @@ class TavilyExtractorTool(BaseTool):
     client: Optional[TavilyClient] = None
     async_client: Optional[AsyncTavilyClient] = None
     name: str = "TavilyExtractorTool"
-    description: str = (
-        "Extracts content from one or more web pages using the Tavily API. Returns structured data."
-    )
+    description: str = "Extracts content from one or more web pages using the Tavily API. Returns structured data."
     args_schema: Type[BaseModel] = TavilyExtractorToolSchema
     api_key: Optional[str] = Field(
         default_factory=lambda: os.getenv("TAVILY_API_KEY"),
@@ -91,7 +89,7 @@ class TavilyExtractorTool(BaseTool):
             except ImportError:
                 raise ImportError(
                     "The 'tavily-python' package is required. 'click' and 'subprocess' are also needed to assist with installation if the package is missing. "
-                    "Please install 'tavily-python' manually (e.g., 'pip install tavily-python') and ensure 'click' and 'subprocess' are available."
+                    "Please install 'tavily-python' manually (e.g., 'uv add tavily-python') and ensure 'click' and 'subprocess' are available."
                 )
 
             if click.confirm(
@@ -110,7 +108,7 @@ class TavilyExtractorTool(BaseTool):
             else:
                 raise ImportError(
                     "The 'tavily-python' package is required to use the TavilyExtractorTool. "
-                    "Please install it with: pip install tavily-python"
+                    "Please install it with: uv add tavily-python"
                 )
 
     def _run(

@@ -123,7 +123,7 @@ class TavilySearchTool(BaseTool):
                 "You are missing the 'tavily-python' package, which is required for TavilySearchTool. Would you like to install it?"
             ):
                 try:
-                    subprocess.run(["pip", "install", "tavily-python"], check=True)
+                    subprocess.run(["uv", "add", "tavily-python"], check=True)
                     raise ImportError(
                         "'tavily-python' has been installed. Please restart your Python application to use the TavilySearchTool."
                     )
@@ -135,7 +135,7 @@ class TavilySearchTool(BaseTool):
             else:
                 raise ImportError(
                     "The 'tavily-python' package is required to use the TavilySearchTool. "
-                    "Please install it with: pip install tavily-python"
+                    "Please install it with: uv add tavily-python"
                 )
 
     def _run(
