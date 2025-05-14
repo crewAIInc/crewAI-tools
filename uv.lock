@@ -4138,6 +4138,19 @@ dependencies = [
     { name = "pyee" },
 ]
 wheels = [
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3c/a6/bc1012356d8ece4d66dd75c4b9fc6c1f6650ddd5991e421177d9f8f671be/platformdirs-4.3.6-py3-none-any.whl", hash = "sha256:73e575e1408ab8103900836b97580d5307456908a03e92031bab39e4554cc3fb", size = 18439, upload-time = "2024-09-17T19:06:49.212Z" },
+]
+
+[[package]]
+name = "playwright"
+version = "1.52.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "greenlet" },
+    { name = "pyee" },
+]
+wheels = [
     { url = "https://files.pythonhosted.org/packages/1e/62/a20240605485ca99365a8b72ed95e0b4c5739a13fb986353f72d8d3f1d27/playwright-1.52.0-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:19b2cb9d4794062008a635a99bd135b03ebb782d460f96534a91cb583f549512", size = 39611246, upload-time = "2025-04-30T09:28:32.386Z" },
     { url = "https://files.pythonhosted.org/packages/dc/23/57ff081663b3061a2a3f0e111713046f705da2595f2f384488a76e4db732/playwright-1.52.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:0797c0479cbdc99607412a3c486a3a2ec9ddc77ac461259fd2878c975bcbb94a", size = 37962977, upload-time = "2025-04-30T09:28:37.719Z" },
     { url = "https://files.pythonhosted.org/packages/a2/ff/eee8532cff4b3d768768152e8c4f30d3caa80f2969bf3143f4371d377b74/playwright-1.52.0-py3-none-macosx_11_0_universal2.whl", hash = "sha256:7223960b7dd7ddeec1ba378c302d1d09733b8dac438f492e9854c85d3ca7144f", size = 39611247, upload-time = "2025-04-30T09:28:41.082Z" },
@@ -4546,6 +4559,19 @@ dependencies = [
     { name = "python-dotenv" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/73/7b/c58a586cd7d9ac66d2ee4ba60ca2d241fa837c02bca9bea80a9a8c3d22a9/pydantic_settings-2.7.1.tar.gz", hash = "sha256:10c9caad35e64bfb3c2fbf70a078c0e25cc92499782e5200747f942a065dec93", size = 79920, upload-time = "2024-12-31T11:27:44.632Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b4/46/93416fdae86d40879714f72956ac14df9c7b76f7d41a4d68aa9f71a0028b/pydantic_settings-2.7.1-py3-none-any.whl", hash = "sha256:590be9e6e24d06db33a4262829edef682500ef008565a969c73d39d5f8bfb3fd", size = 29718, upload-time = "2024-12-31T11:27:43.201Z" },
+]
+
+[[package]]
+name = "pyee"
+version = "13.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/95/03/1fd98d5841cd7964a27d729ccf2199602fe05eb7a405c1462eb7277945ed/pyee-13.0.0.tar.gz", hash = "sha256:b391e3c5a434d1f5118a25615001dbc8f669cf410ab67d04c4d4e07c55481c37", size = 31250, upload-time = "2025-03-17T18:53:15.955Z" }
+wheels = [
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b4/46/93416fdae86d40879714f72956ac14df9c7b76f7d41a4d68aa9f71a0028b/pydantic_settings-2.7.1-py3-none-any.whl", hash = "sha256:590be9e6e24d06db33a4262829edef682500ef008565a969c73d39d5f8bfb3fd", size = 29718, upload-time = "2024-12-31T11:27:43.201Z" },
 ]
@@ -6926,4 +6952,3 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/3f/50/bad581df71744867e9468ebd0bcd6505de3b275e06f202c2cb016e3ff56f/zipp-3.21.0.tar.gz", hash = "sha256:2c9958f6430a2040341a52eb608ed6dd93ef4392e02ffe219417c1b28b5dd1f4", size = 24545, upload-time = "2024-11-10T15:05:20.202Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b7/1a/7e4798e9339adc931158c9d69ecc34f5e6791489d469f5e50ec15e35f458/zipp-3.21.0-py3-none-any.whl", hash = "sha256:ac1bbe05fd2991f160ebce24ffbac5f6d11d83dc90891255885223d42b3cd931", size = 9630, upload-time = "2024-11-10T15:05:19.275Z" },
-]

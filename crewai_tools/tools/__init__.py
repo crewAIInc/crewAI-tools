@@ -19,6 +19,7 @@ from .file_writer_tool.file_writer_tool import FileWriterTool
 from .firecrawl_crawl_website_tool.firecrawl_crawl_website_tool import (
     FirecrawlCrawlWebsiteTool,
 )
+from .files_compressor_tool.files_compressor_tool import FileCompressorTool
 from .firecrawl_scrape_website_tool.firecrawl_scrape_website_tool import (
     FirecrawlScrapeWebsiteTool,
 )
@@ -67,6 +68,7 @@ from .snowflake_search_tool import (
     SnowflakeSearchToolInput,
 )
 from .spider_tool.spider_tool import SpiderTool
+from .stagehand_tool.stagehand_tool import StagehandTool
 from .txt_search_tool.txt_search_tool import TXTSearchTool
 from .vision_tool.vision_tool import VisionTool
 from .weaviate_tool.vector_search import WeaviateVectorSearchTool
