@@ -904,7 +904,7 @@ requires-dist = [
     { name = "chromadb", specifier = ">=0.4.22" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
-    { name = "crewai", specifier = ">=0.118.0" },
+    { name = "crewai", specifier = ">=0.119.0" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },
