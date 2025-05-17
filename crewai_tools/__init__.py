@@ -7,6 +7,7 @@ from .aws import (
     S3WriterTool,
 )
 from .tools import (
+    AgentQLQueryDataTool,
     AIMindTool,
     ApifyActorsTool,
     BraveSearchTool,
