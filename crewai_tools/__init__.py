@@ -7,7 +7,7 @@ from .aws import (
     S3WriterTool,
 )
 from .tools import (
-    AIMindTool,
+    AIMindDataSource, AIMindEnvVar, AIMindTool,
     ApifyActorsTool,
     BraveSearchTool,
     BrowserbaseLoadTool,
