@@ -111,6 +111,9 @@ github = [
 xml = [
     "unstructured[local-inference, all-docs]>=0.17.2"
 ]
+oxylabs = [
+    "oxylabs==2.0.0"
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
