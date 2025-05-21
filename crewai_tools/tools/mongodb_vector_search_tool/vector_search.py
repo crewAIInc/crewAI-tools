@@ -3,8 +3,7 @@ from importlib.metadata import version
 from typing import Any, Optional, Type
 
 try:
-    from pymongo import MongoClient
-    from pymongo.driver_info import DriverInfo
+    pass
 
     MONGODB_AVAILABLE = True
 except ImportError:
@@ -22,10 +21,11 @@ class MongoDBVectorSearchConfig(BaseModel):
         default=4, description="number of documents to return."
     )
     pre_filter: Optional[dict[str, Any]] = Field(
-        ..., description="List of MQL match expressions comparing an indexed field"
+        default=None,
+        description="List of MQL match expressions comparing an indexed field",
     )
     post_filter_pipeline: Optional[list[dict]] = Field(
-        ...,
+        default=None,
         description="Pipeline of MongoDB aggregation stages to filter/process results after $vectorSearch.",
     )
     oversampling_factor: int = Field(
@@ -96,11 +96,15 @@ class MongoDBVectorSearchTool(BaseTool):
                     "You are missing the 'pymongo' package. Would you like to install it?"
                 )
 
+        from pymongo import MongoClient
+        from pymongo.driver_info import DriverInfo
+
         openai_api_key = os.environ.get("OPENAI_API_KEY")
         if not openai_api_key:
             raise ValueError(
                 "OPENAI_API_KEY environment variable is required for MongoDBVectorSearchTool and it is mandatory to use the tool."
             )
+
         self._client = MongoClient(
             self.connection_string,
             driver=DriverInfo(name="CrewAI", version=version("crewai-tools")),
@@ -110,22 +114,23 @@ class MongoDBVectorSearchTool(BaseTool):
 
     def _run(self, **kwargs) -> list[dict[str, Any]]:
         # Get the inputs.
+        query_config = self.query_config or MongoDBVectorSearchConfig()
         query = kwargs["query"]
-        limit = kwargs.get("limit", self.query_config.limit)
+        limit = kwargs.get("limit", query_config.limit)
         oversampling_factor = kwargs.get(
-            "oversampling_factor", self.query_config.oversampling_factor
+            "oversampling_factor", query_config.oversampling_factor
         )
-        pre_filter = kwargs.get("pre_filter", self.query_config.pre_filter)
+        pre_filter = kwargs.get("pre_filter", query_config.pre_filter)
         include_embeddings = kwargs.get(
-            "include_embeddings", self.query_config.include_embeddings
+            "include_embeddings", query_config.include_embeddings
         )
         post_filter_pipeline = kwargs.get(
-            "post_filter_pipeline", self.query_config.post_filter_pipeline
+            "post_filter_pipeline", query_config.post_filter_pipeline
         )
 
         # Create the embedding for the query.
         embedding = (
-            self._openai_clientclient.embeddings.create(
+            self._openai_client.embeddings.create(
                 input=[query],
                 model=self.embedding_model,
             )
@@ -135,8 +140,8 @@ class MongoDBVectorSearchTool(BaseTool):
 
         # Create the vector search pipeline.
         search = {
-            "index": self._index_name,
-            "path": self._embedding_key,
+            "index": self.index_name,
+            "path": self.embedding_key,
             "queryVector": embedding,
             "numCandidates": limit * oversampling_factor,
             "limit": limit,
@@ -151,7 +156,7 @@ class MongoDBVectorSearchTool(BaseTool):
 
         # Remove embeddings unless requested.
         if not include_embeddings:
-            pipeline.append({"$project": {self._embedding_key: 0}})
+            pipeline.append({"$project": {self.embedding_key: 0}})
 
         # Post-processing.
         if post_filter_pipeline is not None:
@@ -163,9 +168,9 @@ class MongoDBVectorSearchTool(BaseTool):
 
         # Format.
         for res in cursor:
-            if self._text_key not in res:
+            if self.text_key not in res:
                 continue
-            text = res.pop(self._text_key)
+            text = res.pop(self.text_key)
             score = res.pop("score")
             docs.append(dict(context=text, metadata=res, id=res["_id"], score=score))
         return docs

@@ -2,65 +2,79 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from crewai_tools import MongoDBVectorSearchTool
+from crewai_tools import MongoDBVectorSearchConfig, MongoDBVectorSearchTool
 
 
 # Unit Test Fixtures
 @pytest.fixture
-def mock_mongodb_client():
-    mock_conn = MagicMock()
-    mock_cursor = MagicMock()
-    mock_cursor.description = [("col1",), ("col2",)]
-    mock_cursor.fetchall.return_value = [(1, "value1"), (2, "value2")]
-    mock_cursor.execute.return_value = None
-    mock_conn.cursor.return_value = mock_cursor
-    return mock_conn
-
-
-@pytest.fixture
 def mongodb_vector_search_tool():
-    with patch("snowflake.connector.connect") as mock_connect:
-        tool = MongoDBVectorSearchTool(
-            connection_string="foo", database_name="bar", collection_name="test"
-        )
-        yield tool
+    tool = MongoDBVectorSearchTool(
+        connection_string="foo", database_name="bar", collection_name="test"
+    )
+    yield tool
+
+
+class MockEmbeddingData:
+    @property
+    def embedding(self):
+        return [[0.1]]
 
 
 # Unit Tests
-@pytest.mark.asyncio
-async def test_successful_query_execution(
-    mongodb_vector_search_tool, mock_mongodb_client
-):
+def test_successful_query_execution(mongodb_vector_search_tool):
     with patch.object(
-        mongodb_vector_search_tool, "_create_connection"
-    ) as mock_create_conn:
-        mock_create_conn.return_value = mock_snowflake_connection
+        mongodb_vector_search_tool._openai_client.embeddings, "create"
+    ) as mock_create_embedding, patch.object(
+        mongodb_vector_search_tool._collection, "aggregate"
+    ) as mock_aggregate:
+        mock_result = MagicMock()
+        mock_result.data = [MockEmbeddingData()]
+        mock_create_embedding.return_value = mock_result
+        mock_aggregate.return_value = [dict(text="foo", score=0.1, _id=1)]
 
-        results = await snowflake_tool._run(
-            query="SELECT * FROM test_table", timeout=300
-        )
+        results = mongodb_vector_search_tool._run(query="sandwiches")
 
-        assert len(results) == 2
-        assert results[0]["col1"] == 1
-        assert results[0]["col2"] == "value1"
-        mock_snowflake_connection.cursor.assert_called_once()
+        assert len(results) == 1
+        assert results[0]["context"] == "foo"
+        assert results[0]["id"] == 1
 
 
-@pytest.mark.asyncio
-async def test_cleanup_on_deletion(mongodb_vector_search_tool, mock_mongodb_client):
+def test_provide_config():
+    query_config = MongoDBVectorSearchConfig(limit=10)
+    tool = MongoDBVectorSearchTool(
+        connection_string="foo",
+        database_name="bar",
+        collection_name="test",
+        query_config=query_config,
+        index_name="foo",
+        embedding_model="bar",
+    )
     with patch.object(
-        mongodb_vector_search_tool, "_create_connection"
-    ) as mock_create_conn:
-        mock_create_conn.return_value = mock_snowflake_connection
+        tool._openai_client.embeddings, "create"
+    ) as mock_create_embedding, patch.object(
+        tool._collection, "aggregate"
+    ) as mock_aggregate:
+        mock_result = MagicMock()
+        mock_result.data = [MockEmbeddingData()]
+        mock_create_embedding.return_value = mock_result
+        mock_aggregate.return_value = [dict(text="foo", score=0.1, _id=1)]
 
-        # Add connection to pool
-        await mongodb_vector_search_tool._get_connection()
+        tool._run(query="sandwiches")
+        assert mock_aggregate.mock_calls[-1].args[0][0]["$vectorSearch"]["limit"] == 10
 
-        # Return connection to pool
-        async with mongodb_vector_search_tool._pool_lock:
-            mongodb_vector_search_tool._connection_pool.append(mock_mongodb_client)
+        mock_aggregate.return_value = [dict(text="foo", score=0.1, _id=1)]
+        tool._run(query="sandwiches", limit=5)
+        assert mock_aggregate.mock_calls[-1].args[0][0]["$vectorSearch"]["limit"] == 5
 
+
+def test_cleanup_on_deletion(mongodb_vector_search_tool):
+    with patch.object(
+        mongodb_vector_search_tool, "_client"
+    ) as mock_client, patch.object(
+        mongodb_vector_search_tool, "_openai_client"
+    ) as mock_openai_client:
         # Trigger cleanup
         mongodb_vector_search_tool.__del__()
 
-        mock_mongodb_client.close.assert_called_once()
+        mock_client.close.assert_called_once()
+        mock_openai_client.close.assert_called_once()
