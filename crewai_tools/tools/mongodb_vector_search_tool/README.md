@@ -70,6 +70,7 @@ from crewai_tools import MongoDBVectorSearchTool
 # Use before hooks to generate the documents and add them to the MongoDB database
 test_docs = client.collections.get("example_collections")
 
+# TODO: update this example
 docs_to_load = os.listdir("knowledge")
 with test_docs.batch.dynamic() as batch:
     for d in docs_to_load:
