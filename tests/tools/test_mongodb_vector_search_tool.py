@@ -20,7 +20,9 @@ def mock_mongodb_client():
 @pytest.fixture
 def mongodb_vector_search_tool():
     with patch("snowflake.connector.connect") as mock_connect:
-        tool = MongoDBVectorSearchTool()
+        tool = MongoDBVectorSearchTool(
+            connection_string="foo", database_name="bar", collection_name="test"
+        )
         yield tool
 
 

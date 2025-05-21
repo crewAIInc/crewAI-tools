@@ -54,8 +54,8 @@ class MongoDBVectorSearchTool(BaseTool):
     description: str = "A tool to perfrom a vector search on a MongoDB database for relevant information on internal documents."
 
     args_schema: Type[BaseModel] = MongoDBToolSchema
-    query_config: MongoDBVectorSearchConfig = Field(
-        ..., description="MongoDB Vector Search query configuration"
+    query_config: Optional[MongoDBVectorSearchConfig] = Field(
+        default=None, description="MongoDB Vector Search query configuration"
     )
     embedding_model: str = Field(
         default="text-embedding-3-large",
@@ -106,7 +106,7 @@ class MongoDBVectorSearchTool(BaseTool):
             driver=DriverInfo(name="CrewAI", version=version("crewai-tools")),
         )
         self._collection = self._client[self.database_name][self.collection_name]
-        self._openai_client = openai.Client(openai_api_key)
+        self._openai_client = openai.Client(api_key=openai_api_key)
 
     def _run(self, **kwargs) -> list[dict[str, Any]]:
         # Get the inputs.
