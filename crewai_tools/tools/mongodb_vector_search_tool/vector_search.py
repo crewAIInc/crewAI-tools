@@ -1,4 +1,3 @@
-
 import os
 from importlib.metadata import version
 from typing import Any, Optional, Type
@@ -11,23 +10,41 @@ try:
 except ImportError:
     MONGODB_AVAILABLE = False
 
+import openai
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-import openai
 
 
-class MongoDBToolSchema(BaseModel):
+class MongoDBVectorSearchConfig(BaseModel):
+    """Configuration for MongoDB vector search queries."""
+
+    limit: Optional[int] = Field(
+        default=4, description="number of documents to return."
+    )
+    pre_filter: Optional[dict[str, Any]] = Field(
+        ..., description="List of MQL match expressions comparing an indexed field"
+    )
+    post_filter_pipeline: Optional[list[dict]] = Field(
+        ...,
+        description="Pipeline of MongoDB aggregation stages to filter/process results after $vectorSearch.",
+    )
+    oversampling_factor: int = Field(
+        default=10,
+        description="Multiple of limit used when generating number of candidates at each step in the HNSW Vector Search",
+    )
+    include_embeddings: bool = Field(
+        default=False,
+        description="Whether to include the embedding vector of each result in metadata.",
+    )
+
+
+class MongoDBToolSchema(MongoDBVectorSearchConfig):
     """Input for MongoDBTool."""
 
     query: str = Field(
         ...,
         description="The query to search retrieve relevant information from the MongoDB database. Pass only the query, not the question.",
     )
-    limit: Optional[int] = Field(default=4, description="number of documents to return.")
-    pre_filter: Optional[dict[str, Any]] = Field(..., description="List of MQL match expressions comparing an indexed field")
-    post_filter_pipeline: Optional[list[dict]] = Field(..., description="Pipeline of MongoDB aggregation stages to filter/process results after $vectorSearch.")
-    oversampling_factor: int = Field(default=10, description="Multiple of limit used when generating number of candidates at each step in the HNSW Vector Search")
-    include_embeddings: bool = Field(default=False, description="Whether to include the embedding vector of each result in metadata.")
 
 
 class MongoDBVectorSearchTool(BaseTool):
@@ -35,15 +52,28 @@ class MongoDBVectorSearchTool(BaseTool):
 
     name: str = "MongoDBVectorSearchTool"
     description: str = "A tool to perfrom a vector search on a MongoDB database for relevant information on internal documents."
-    
+
     args_schema: Type[BaseModel] = MongoDBToolSchema
-    embedding_model: str = Field(default="text-embedding-3-large", description="Text OpenAI embedding model to use")
-    index_name: str = Field(default="vector_index", description=" Name of the Atlas Search index")
-    text_key: str =Field(default= "text", description="MongoDB field that will contain the text for each document")
-    embedding_key: str = Field(default="embedding", description="Field that will contain the embedding for each document")
-    relevance_score_fn: str = Field(default="cosine", description="he similarity score used for the index.  Currently supported: 'euclidean', 'cosine', and 'dotProduct'")
+    query_config: MongoDBVectorSearchConfig = Field(
+        ..., description="MongoDB Vector Search query configuration"
+    )
+    embedding_model: str = Field(
+        default="text-embedding-3-large",
+        description="Text OpenAI embedding model to use",
+    )
+    index_name: str = Field(
+        default="vector_index", description=" Name of the Atlas Search index"
+    )
+    text_key: str = Field(
+        default="text",
+        description="MongoDB field that will contain the text for each document",
+    )
+    embedding_key: str = Field(
+        default="embedding",
+        description="Field that will contain the embedding for each document",
+    )
     database_name: str = Field(..., description="The name of the MongoDB database")
-    collection_name: str = Field(...,  description="The name of the MongoDB collection")
+    collection_name: str = Field(..., description="The name of the MongoDB collection")
     connection_string: str = Field(
         ...,
         description="The connection string of the MongoDB cluster",
@@ -65,24 +95,35 @@ class MongoDBVectorSearchTool(BaseTool):
                 raise ImportError(
                     "You are missing the 'pymongo' package. Would you like to install it?"
                 )
-        
+
         openai_api_key = os.environ.get("OPENAI_API_KEY")
         if not openai_api_key:
             raise ValueError(
                 "OPENAI_API_KEY environment variable is required for MongoDBVectorSearchTool and it is mandatory to use the tool."
             )
-        self._client = MongoClient(self.connection_string,
-                driver=DriverInfo(name="CrewAI", version=version("crewai-tools"))
+        self._client = MongoClient(
+            self.connection_string,
+            driver=DriverInfo(name="CrewAI", version=version("crewai-tools")),
         )
         self._collection = self._client[self.database_name][self.collection_name]
         self._openai_client = openai.Client(openai_api_key)
 
-    def _run(self, query: str, 
-            limit: Optional[int] = 4,
-            pre_filter: Optional[dict[str, Any]] = None,
-            post_filter_pipeline: Optional[list[dict]] = None,
-            oversampling_factor: int = 10,
-            include_embeddings: bool = False) -> list[dict[str, Any]]:
+    def _run(self, **kwargs) -> list[dict[str, Any]]:
+        # Get the inputs.
+        query = kwargs["query"]
+        limit = kwargs.get("limit", self.query_config.limit)
+        oversampling_factor = kwargs.get(
+            "oversampling_factor", self.query_config.oversampling_factor
+        )
+        pre_filter = kwargs.get("pre_filter", self.query_config.pre_filter)
+        include_embeddings = kwargs.get(
+            "include_embeddings", self.query_config.include_embeddings
+        )
+        post_filter_pipeline = kwargs.get(
+            "post_filter_pipeline", self.query_config.post_filter_pipeline
+        )
+
+        # Create the embedding for the query.
         embedding = (
             self._openai_clientclient.embeddings.create(
                 input=[query],
@@ -126,7 +167,10 @@ class MongoDBVectorSearchTool(BaseTool):
                 continue
             text = res.pop(self._text_key)
             score = res.pop("score")
-            docs.append(
-                dict(context=text, metadata=res, id=res["_id"], score=score)
-            )
+            docs.append(dict(context=text, metadata=res, id=res["_id"], score=score))
         return docs
+
+    def __del__(self):
+        """Cleanup clients on deletion."""
+        self._client.close()
+        self._openai_client.close()
