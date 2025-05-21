@@ -1,0 +1,132 @@
+
+import os
+from importlib.metadata import version
+from typing import Any, Optional, Type
+
+try:
+    from pymongo import MongoClient
+    from pymongo.driver_info import DriverInfo
+
+    MONGODB_AVAILABLE = True
+except ImportError:
+    MONGODB_AVAILABLE = False
+
+from crewai.tools import BaseTool
+from pydantic import BaseModel, Field
+import openai
+
+
+class MongoDBToolSchema(BaseModel):
+    """Input for MongoDBTool."""
+
+    query: str = Field(
+        ...,
+        description="The query to search retrieve relevant information from the MongoDB database. Pass only the query, not the question.",
+    )
+    limit: Optional[int] = Field(default=4, description="number of documents to return.")
+    pre_filter: Optional[dict[str, Any]] = Field(..., description="List of MQL match expressions comparing an indexed field")
+    post_filter_pipeline: Optional[list[dict]] = Field(..., description="Pipeline of MongoDB aggregation stages to filter/process results after $vectorSearch.")
+    oversampling_factor: int = Field(default=10, description="Multiple of limit used when generating number of candidates at each step in the HNSW Vector Search")
+    include_embeddings: bool = Field(default=False, description="Whether to include the embedding vector of each result in metadata.")
+
+
+class MongoDBVectorSearchTool(BaseTool):
+    """Tool to perfrom a vector search the MongoDB database"""
+
+    name: str = "MongoDBVectorSearchTool"
+    description: str = "A tool to perfrom a vector search on a MongoDB database for relevant information on internal documents."
+    
+    args_schema: Type[BaseModel] = MongoDBToolSchema
+    embedding_model: str = Field(default="text-embedding-3-large", description="Text OpenAI embedding model to use")
+    index_name: str = Field(default="vector_index", description=" Name of the Atlas Search index")
+    text_key: str =Field(default= "text", description="MongoDB field that will contain the text for each document")
+    embedding_key: str = Field(default="embedding", description="Field that will contain the embedding for each document")
+    relevance_score_fn: str = Field(default="cosine", description="he similarity score used for the index.  Currently supported: 'euclidean', 'cosine', and 'dotProduct'")
+    database_name: str = Field(..., description="The name of the MongoDB database")
+    collection_name: str = Field(...,  description="The name of the MongoDB collection")
+    connection_string: str = Field(
+        ...,
+        description="The connection string of the MongoDB cluster",
+    )
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if not MONGODB_AVAILABLE:
+            import click
+
+            if click.confirm(
+                "You are missing the 'pymongo' package. Would you like to install it?"
+            ):
+                import subprocess
+
+                subprocess.run(["uv", "pip", "install", "pymongo"], check=True)
+
+            else:
+                raise ImportError(
+                    "You are missing the 'pymongo' package. Would you like to install it?"
+                )
+        
+        openai_api_key = os.environ.get("OPENAI_API_KEY")
+        if not openai_api_key:
+            raise ValueError(
+                "OPENAI_API_KEY environment variable is required for MongoDBVectorSearchTool and it is mandatory to use the tool."
+            )
+        self._client = MongoClient(self.connection_string,
+                driver=DriverInfo(name="CrewAI", version=version("crewai-tools"))
+        )
+        self._collection = self._client[self.database_name][self.collection_name]
+        self._openai_client = openai.Client(openai_api_key)
+
+    def _run(self, query: str, 
+            limit: Optional[int] = 4,
+            pre_filter: Optional[dict[str, Any]] = None,
+            post_filter_pipeline: Optional[list[dict]] = None,
+            oversampling_factor: int = 10,
+            include_embeddings: bool = False) -> list[dict[str, Any]]:
+        embedding = (
+            self._openai_clientclient.embeddings.create(
+                input=[query],
+                model=self.embedding_model,
+            )
+            .data[0]
+            .embedding
+        )
+
+        # Create the vector search pipeline.
+        search = {
+            "index": self._index_name,
+            "path": self._embedding_key,
+            "queryVector": embedding,
+            "numCandidates": limit * oversampling_factor,
+            "limit": limit,
+        }
+        if pre_filter:
+            search["filter"] = pre_filter
+
+        pipeline = [
+            {"$vectorSearch": search},
+            {"$set": {"score": {"$meta": "vectorSearchScore"}}},
+        ]
+
+        # Remove embeddings unless requested.
+        if not include_embeddings:
+            pipeline.append({"$project": {self._embedding_key: 0}})
+
+        # Post-processing.
+        if post_filter_pipeline is not None:
+            pipeline.extend(post_filter_pipeline)
+
+        # Execution.
+        cursor = self._collection.aggregate(pipeline)  # type: ignore[arg-type]
+        docs = []
+
+        # Format.
+        for res in cursor:
+            if self._text_key not in res:
+                continue
+            text = res.pop(self._text_key)
+            score = res.pop("score")
+            docs.append(
+                dict(context=text, metadata=res, id=res["_id"], score=score)
+            )
+        return docs
