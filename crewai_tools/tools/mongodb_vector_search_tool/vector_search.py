@@ -1,6 +1,5 @@
-import os
 from importlib.metadata import version
-from typing import Any, Optional, Type
+from typing import Any, Dict, Iterable, List, Optional, Type
 
 try:
     pass
@@ -9,7 +8,6 @@ try:
 except ImportError:
     MONGODB_AVAILABLE = False
 
-import openai
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
@@ -96,21 +94,84 @@ class MongoDBVectorSearchTool(BaseTool):
                     "You are missing the 'pymongo' package. Would you like to install it?"
                 )
 
+        from langchain_mongodb import MongoDBAtlasVectorSearch
+        from langchain_openai import OpenAIEmbeddings
         from pymongo import MongoClient
         from pymongo.driver_info import DriverInfo
 
-        openai_api_key = os.environ.get("OPENAI_API_KEY")
-        if not openai_api_key:
-            raise ValueError(
-                "OPENAI_API_KEY environment variable is required for MongoDBVectorSearchTool and it is mandatory to use the tool."
-            )
-
-        self._client = MongoClient(
+        client = MongoClient(
             self.connection_string,
             driver=DriverInfo(name="CrewAI", version=version("crewai-tools")),
         )
-        self._collection = self._client[self.database_name][self.collection_name]
-        self._openai_client = openai.Client(api_key=openai_api_key)
+        self._coll = client[self.database_name][self.collection_name]
+        embeddings = OpenAIEmbeddings(model=self.embedding_model)
+        self._client = MongoDBAtlasVectorSearch(
+            collection=self._coll,
+            embeddings=embeddings,
+            index_name=self.index_name,
+            text_key=self.text_key,
+            embedding_key=self.embedding_key,
+            embedding=embeddings,
+        )
+
+    def create_vector_search_index(
+        self,
+        *,
+        dimensions: int,
+        relevance_score_fn: str = "cosine",
+        auto_index_timeout: int = 15,
+    ) -> None:
+        """Convenience function to create a vector search index.
+
+        Args:
+            dimensions: Number of dimensions in embedding.  If the value is set and
+                the index does not exist, an index will be created.
+            relevance_score_fn: The similarity score used for the index
+                Currently supported: 'euclidean', 'cosine', and 'dotProduct'
+            auto_index_timeout: Timeout in seconds to wait for an auto-created index
+               to be ready.
+        """
+        from langchain_mongodb.index import create_vector_search_index
+
+        create_vector_search_index(
+            collection=self._coll,
+            index_name=self.index_name,
+            dimensions=dimensions,
+            path=self.embedding_key,
+            similarity=relevance_score_fn,
+            wait_until_complete=auto_index_timeout,
+        )
+
+    def add_texts(
+        self,
+        texts: Iterable[str],
+        metadatas: Optional[List[Dict[str, Any]]] = None,
+        ids: Optional[List[str]] = None,
+        batch_size: int = 100,
+        **kwargs: Any,
+    ) -> List[str]:
+        """Add texts, create embeddings, and add to the Collection and index.
+
+        Important notes on ids:
+            - If _id or id is a key in the metadatas dicts, one must
+                pop them and provide as separate list.
+            - They must be unique.
+            - If they are not provided, the VectorStore will create unique ones,
+                stored as bson.ObjectIds internally, and strings in Langchain.
+                These will appear in Document.metadata with key, '_id'.
+
+        Args:
+            texts: Iterable of strings to add to the vectorstore.
+            metadatas: Optional list of metadatas associated with the texts.
+            ids: Optional list of unique ids that will be used as index in VectorStore.
+                See note on ids.
+            batch_size: Number of documents to insert at a time.
+                Tuning this may help with performance and sidestep MongoDB limits.
+
+        Returns:
+            List of ids added to the vectorstore.
+        """
+        return self._client.add_texts(texts, metadatas, ids, batch_size, **kwargs)
 
     def _run(self, **kwargs) -> list[dict[str, Any]]:
         # Get the inputs.
@@ -128,54 +189,30 @@ class MongoDBVectorSearchTool(BaseTool):
             "post_filter_pipeline", query_config.post_filter_pipeline
         )
 
-        # Create the embedding for the query.
-        embedding = (
-            self._openai_client.embeddings.create(
-                input=[query],
-                model=self.embedding_model,
-            )
-            .data[0]
-            .embedding
+        docs = self._client.similarity_search(
+            query,
+            k=limit,
+            pre_filter=pre_filter,
+            post_filter_pipeline=post_filter_pipeline,
+            oversampling_factor=oversampling_factor,
+            include_scores=True,
+            include_embeddings=include_embeddings,
         )
 
-        # Create the vector search pipeline.
-        search = {
-            "index": self.index_name,
-            "path": self.embedding_key,
-            "queryVector": embedding,
-            "numCandidates": limit * oversampling_factor,
-            "limit": limit,
-        }
-        if pre_filter:
-            search["filter"] = pre_filter
+        res = []
+        for doc in docs:
+            score = doc.metadata.pop("score")
+            res.append(
+                dict(
+                    context=doc.page_content,
+                    id=doc.id,
+                    metadata=doc.metadata,
+                    score=score,
+                )
+            )
 
-        pipeline = [
-            {"$vectorSearch": search},
-            {"$set": {"score": {"$meta": "vectorSearchScore"}}},
-        ]
-
-        # Remove embeddings unless requested.
-        if not include_embeddings:
-            pipeline.append({"$project": {self.embedding_key: 0}})
-
-        # Post-processing.
-        if post_filter_pipeline is not None:
-            pipeline.extend(post_filter_pipeline)
-
-        # Execution.
-        cursor = self._collection.aggregate(pipeline)  # type: ignore[arg-type]
-        docs = []
-
-        # Format.
-        for res in cursor:
-            if self.text_key not in res:
-                continue
-            text = res.pop(self.text_key)
-            score = res.pop("score")
-            docs.append(dict(context=text, metadata=res, id=res["_id"], score=score))
-        return docs
+        return res
 
     def __del__(self):
         """Cleanup clients on deletion."""
         self._client.close()
-        self._openai_client.close()

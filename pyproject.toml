@@ -112,7 +112,7 @@ xml = [
     "unstructured[local-inference, all-docs]>=0.17.2"
 ]
 mongodb = [
-    "pymongo>=4.12,<5.0"
+    "pymongo>=4.12,<5.0", "langchain-mongodb"
 ]
 
 [tool.pytest.ini_options]
