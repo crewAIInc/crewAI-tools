@@ -2,7 +2,8 @@ from importlib.metadata import version
 from typing import Any, Dict, Iterable, List, Optional, Type
 
 try:
-    pass
+    # Import for testing
+    from langchain_mongodb.index import create_vector_search_index  # noqa: F403
 
     MONGODB_AVAILABLE = True
 except ImportError:
@@ -83,16 +84,16 @@ class MongoDBVectorSearchTool(BaseTool):
             import click
 
             if click.confirm(
-                "You are missing the 'pymongo' package. Would you like to install it?"
+                "You are missing the 'mongodb' crewai tool. Would you like to install it?"
             ):
                 import subprocess
 
-                subprocess.run(["uv", "pip", "install", "pymongo"], check=True)
+                subprocess.run(
+                    ["uv", "pip", "install", "crewai-tools[mongodb]"], check=True
+                )
 
             else:
-                raise ImportError(
-                    "You are missing the 'pymongo' package. Would you like to install it?"
-                )
+                raise ImportError("You are missing the 'mongodb' crewai tool.")
 
         from langchain_mongodb import MongoDBAtlasVectorSearch
         from langchain_openai import OpenAIEmbeddings
@@ -104,14 +105,13 @@ class MongoDBVectorSearchTool(BaseTool):
             driver=DriverInfo(name="CrewAI", version=version("crewai-tools")),
         )
         self._coll = client[self.database_name][self.collection_name]
-        embeddings = OpenAIEmbeddings(model=self.embedding_model)
+        self._embeddings = OpenAIEmbeddings(model=self.embedding_model)
         self._client = MongoDBAtlasVectorSearch(
             collection=self._coll,
-            embeddings=embeddings,
+            embedding=self._embeddings,
             index_name=self.index_name,
             text_key=self.text_key,
             embedding_key=self.embedding_key,
-            embedding=embeddings,
         )
 
     def create_vector_search_index(
@@ -131,7 +131,6 @@ class MongoDBVectorSearchTool(BaseTool):
             auto_index_timeout: Timeout in seconds to wait for an auto-created index
                to be ready.
         """
-        from langchain_mongodb.index import create_vector_search_index
 
         create_vector_search_index(
             collection=self._coll,

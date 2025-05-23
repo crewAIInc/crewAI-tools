@@ -13,7 +13,7 @@ Install the crewai_tools package with MongoDB support by executing the following
 pip install crewai-tools[mongodb]
 ```
 
-# or
+or
 
 ```
 uv add crewai-tools --extra mongodb
@@ -29,21 +29,24 @@ from crewai_tools import MongoDBVectorSearchTool
 tool = MongoDBVectorSearchTool(
     database_name="example_database',
     collection_name='example_collections',
-    limit=3,
     connection_string="<your_mongodb_connection_string>",
 )
+```
 
-# or 
+or 
 
-# Setup custom embedding model and customize the vector search parameters.
+```python
+from crewai_tools import MongoDBVectorSearchConfig, MongoDBVectorSearchTool
+
+# Setup custom embedding model and customize the parameters.
+query_config = MongoDBVectorSearchConfig(limit=10, oversampling_factor=2)
 tool = MongoDBVectorSearchTool(
     database_name="example_database',
     collection_name='example_collections',
-    limit=3,
-    index_name="my_vector_index",
-    relevance_score_fn="euclidean",
-    generative_model="gpt-4o-mini",
     connection_string="<your_mongodb_connection_string>",
+    query_config=query_config,
+    index_name="my_vector_index",
+    generative_model="gpt-4o-mini"
 )
 
 # Adding the tool to an agent
@@ -55,33 +58,28 @@ rag_agent = Agent(
 )
 ```
 
-## Arguments
-- `database_name`: The name of the database to search within. (Required)
-- `collection_name` : The name of the collection to search within. (Required)
-- `connection_string` : The connection string for the MongoDB clsuter (Required)
-- `limit` : The number of results to return. (Optional)
-- `generative_model` : The name of the generative model to use. (Optional)
-
-Preloading the Weaviate database with documents:
+Preloading the MongoDB database with documents:
 
 ```python
 from crewai_tools import MongoDBVectorSearchTool
 
-# Use before hooks to generate the documents and add them to the MongoDB database
+# Generate the documents and add them to the MongoDB database
 test_docs = client.collections.get("example_collections")
 
-# TODO: update this example
-docs_to_load = os.listdir("knowledge")
-with test_docs.batch.dynamic() as batch:
-    for d in docs_to_load:
-        with open(os.path.join("knowledge", d), "r") as f:
-            content = f.read()
-        batch.add_object(
-            {
-                "content": content,
-                "year": d.split("_")[0],
-            }
-        )
-tool = MongoDBVectorSearchTool(collection_name='example_collections', limit=3)
+# Create the tool.
+tool = MongoDBVectorSearchTool(
+    database_name="example_database',
+    collection_name='example_collections',
+    connection_string="<your_mongodb_connection_string>",
+)
 
+# Add the text from a set of CrewAI knowledge documents.
+texts = []
+for d in os.listdir("knowledge"):
+    with open(os.path.join("knowledge", d), "r") as f:
+        texts.append(f.read())
+tool.add_texts(text)
+
+# Create the vector search index (if it wasn't already created in Atlas).
+tool.create_vector_search_index(dimensions=3072)
 ```
