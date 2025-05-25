@@ -1,20 +1,9 @@
-import datetime
 import os
 from typing import Any, Optional, Type
 
 import requests
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-
-
-def _save_results_to_file(content: str) -> None:
-    """Saves the search results to a file."""
-    filename = (
-        f"search_results_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"
-    )
-    with open(filename, "w", encoding="utf-8") as file:
-        file.write(content)
-    print(f"Results saved to {filename}")
 
 
 class BrightDataUnlockerToolSchema(BaseModel):
@@ -26,16 +15,16 @@ class BrightDataUnlockerToolSchema(BaseModel):
 
     Attributes:
         url (str): The target URL to scrape.
-        save_file (Optional[bool]): Whether to save the response content to a local file. Defaults to False.
-        format (Optional[str]): Format of the response returned by Bright Data. Accepted values are 'json' or 'raw'. Defaults to 'html' (but should be set to 'raw' or 'json' to avoid API errors).
+        format (Optional[str]): Format of the response returned by Bright Data. Default 'raw' format.
+        data_format (Optional[str]): Response data format (html by default). markdown is one more option.
     """
 
     url: str = Field(..., description="URL to perform the web scraping")
-    save_file: Optional[bool] = Field(
-        default=False, description="Whether to save results to a local file"
-    )
     format: Optional[str] = Field(
-        default="html", description="Response format (raw is standard)"
+        default="raw", description="Response format (raw is standard)"
+    )
+    data_format: Optional[str] = Field(
+        default="html", description="Response data format (html by default)"
     )
 
 
@@ -58,7 +47,6 @@ class BrightDataWebUnlockerTool(BaseTool):
     Methods:
         _run(**kwargs: Any) -> Any:
             Sends a scraping request to Bright Data's Web Unlocker API and returns the result.
-            Handles optional file saving and formats response based on input schema.
     """
 
     name: str = "Bright Data Web Unlocker Scraping"
@@ -84,32 +72,27 @@ class BrightDataWebUnlockerTool(BaseTool):
             "format": kwargs.get("format", "raw"),
         }
 
+        data_format = kwargs.get("data_format")
+        valid_data_formats = {"html", "markdown"}
+        if data_format not in valid_data_formats:
+            raise ValueError(
+                f"Unsupported data format: {data_format}. Must be one of {', '.join(valid_data_formats)}."
+            )
+
+        if data_format == "markdown":
+            payload["data_format"] = "markdown"
+
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
 
         try:
-            response = requests.post(
-                self.base_url, json=payload, headers=headers, timeout=20
-            )
+            response = requests.post(self.base_url, json=payload, headers=headers)
             print(f"Status Code: {response.status_code}")
             response.raise_for_status()
 
-            if (
-                kwargs.get("data_format") == "html"
-                or kwargs.get("data_format") == "markdown"
-            ):
-                content = response.text
-            else:
-                content = response.json()
-
-            if kwargs.get("save_file", False):
-                _save_results_to_file(
-                    content if isinstance(content, str) else str(content)
-                )
-
-            return content
+            return response.text
 
         except requests.RequestException as e:
             return f"HTTP Error performing BrightData Web Unlocker Scrape: {e}\nResponse: {getattr(e.response, 'text', '')}"

@@ -1,4 +1,3 @@
-import datetime
 import os
 import urllib.parse
 from typing import Any, Optional, Type
@@ -8,45 +7,24 @@ from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
 
-def _save_results_to_file(content: str) -> None:
-    """
-    Saves the provided search result content to a timestamped text file.
-
-    Args:
-        content (str): The content (raw HTML, JSON, or text) to save to a file.
-
-    Returns:
-        None
-    """
-
-    filename = (
-        f"search_results_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"
-    )
-    with open(filename, "w", encoding="utf-8") as file:
-        file.write(content)
-    print(f"Results saved to {filename}")
-
-
 class BrightDataSearchToolSchema(BaseModel):
     """
     Schema that defines the input arguments for the BrightDataSearchToolSchema.
 
     Attributes:
         query (str): The search query to be executed (e.g., "latest AI news").
-        search_engine (Optional[str]): The search engine to use ("google", "bing"). Default is "google".
+        search_engine (Optional[str]): The search engine to use ("google", "bing", "yandex"). Default is "google".
         country (Optional[str]): Two-letter country code for geo-targeting (e.g., "us", "in"). Default is "us".
         language (Optional[str]): Language code for search results (e.g., "en", "es"). Default is "en".
         search_type (Optional[str]): Type of search, such as "isch" (images), "nws" (news), "jobs", etc.
         device_type (Optional[str]): Device type to simulate ("desktop", "mobile", "ios", "android"). Default is "desktop".
         parse_results (Optional[bool]): If True, results will be returned in structured JSON. If False, raw HTML. Default is True.
-        save_file (Optional[bool]): If True, saves the results to a local file. Default is False.
     """
 
-    query: str = Field(
-        ..., description="Search query to perform (e.g., 'latest AI news')"
-    )
+    query: str = Field(..., description="Search query to perform")
     search_engine: Optional[str] = Field(
-        default="google", description="Search engine domain (e.g., 'google', 'bing')"
+        default="google",
+        description="Search engine domain (e.g., 'google', 'bing', 'yandex')",
     )
     country: Optional[str] = Field(
         default="us",
@@ -68,9 +46,6 @@ class BrightDataSearchToolSchema(BaseModel):
         default=True,
         description="Whether to parse and return JSON (True) or raw HTML/text (False)",
     )
-    save_file: Optional[bool] = Field(
-        default=False, description="Whether to save results to a local file"
-    )
 
 
 class BrightDataSearchTool(BaseTool):
@@ -91,7 +66,7 @@ class BrightDataSearchTool(BaseTool):
     """
 
     name: str = "Bright Data SERP Search"
-    description: str = "Tool to perform web search using Bright Data SERP API"
+    description: str = "Tool to perform web search using Bright Data SERP API."
     args_schema: Type[BaseModel] = BrightDataSearchToolSchema
     base_url: str = "https://api.brightdata.com/request"
     api_key: str = ""
@@ -106,6 +81,13 @@ class BrightDataSearchTool(BaseTool):
         if not self.zone:
             raise ValueError("BRIGHT_DATA_ZONE environment variable is required.")
 
+    def get_search_url(self, engine: str, query: str):
+        if engine == "yandex":
+            return f"https://yandex.com/search/?text=${query}"
+        elif engine == "bing":
+            return f"https://www.bing.com/search?q=${query}"
+        return f"https://www.google.com/search?q=${query}"
+
     def _run(self, **kwargs: Any) -> Any:
         """
         Executes a search query using Bright Data SERP API and returns results.
@@ -118,7 +100,6 @@ class BrightDataSearchTool(BaseTool):
             search_type (str): Optional type of search such as "nws", "isch", "jobs".
             device_type (str): Optional device type to simulate (e.g., "mobile", "ios", "desktop").
             parse_results (bool): If True, returns structured data; else raw page (default: True).
-            save_file (bool): If True, saves the result to a local file (default: False).
             results_count (str or int): Number of search results to fetch (default: "10").
 
         Returns:
@@ -132,12 +113,11 @@ class BrightDataSearchTool(BaseTool):
         search_type = kwargs.get("search_type")
         device_type = kwargs.get("device_type")
         parse_results = kwargs.get("parse_results", True)
-        save_file = kwargs.get("save_file", False)
         results_count = kwargs.get("results_count", "10")
 
         # Build the search URL
         query = urllib.parse.quote(query)
-        url = f"https://www.{search_engine}.com/search?q={query}"
+        url = self.get_search_url(search_engine, query)
 
         # Add parameters to the URL
         params = []
@@ -173,35 +153,24 @@ class BrightDataSearchTool(BaseTool):
             url += "&" + "&".join(params)
 
         # Set up the API request parameters
-        request_params = {
-            "zone": self.zone,
-            "url": url,
-            "format": "raw",
-        }
+        request_params = {"zone": self.zone, "url": url, "format": "raw"}
 
         request_params = {k: v for k, v in request_params.items() if v is not None}
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "User-Agent": "crew-tools-agent",
         }
 
         try:
-            # Clean up None values
             response = requests.post(
-                self.base_url, json=request_params, headers=headers, timeout=15
+                self.base_url, json=request_params, headers=headers
             )
 
             print(f"Status code: {response.status_code}")
             response.raise_for_status()
 
-            data = response.json()
-
-            if save_file:
-                _save_results_to_file(data)
-
-            return data
+            return response.text
 
         except requests.RequestException as e:
             return f"Error performing BrightData search: {str(e)}"
