@@ -1,7 +1,4 @@
 import json
-import os
-import sys
-from pathlib import Path
 from typing import List, Optional
 
 import pytest
@@ -9,7 +6,7 @@ from pydantic import BaseModel, Field
 from unittest import mock
 
 from generate_tool_specs import ToolSpecExtractor
-
+from crewai.tools.base_tool import EnvVar
 
 class MockToolSchema(BaseModel):
     query: str = Field(..., description="The query parameter")
@@ -39,7 +36,10 @@ def create_mock_schema(cls):
             "fields": {
                 "name": {"type": "model-field", "schema": {"type": "default", "schema": {"type": "str"}, "default": cls.name}, "metadata": {}},
                 "description": {"type": "model-field", "schema": {"type": "default", "schema": {"type": "str"}, "default": cls.description}, "metadata": {}},
-                "args_schema": {"type": "model-field", "schema": {"type": "default", "schema": {"type": "is-subclass", "cls": BaseModel}, "default": cls.args_schema}, "metadata": {}}
+                "args_schema": {"type": "model-field", "schema": {"type": "default", "schema": {"type": "is-subclass", "cls": BaseModel}, "default": cls.args_schema}, "metadata": {}},
+                "env_vars": {
+                    "type": "model-field", "schema": {"type": "default", "schema": {"type": "list", "items_schema": {"type": "model", "cls": "INSPECT CLASS", "schema": {"type": "model-fields", "fields": {"name": {"type": "model-field", "schema": {"type": "str"}, "metadata": {}}, "description": {"type": "model-field", "schema": {"type": "str"}, "metadata": {}}, "required": {"type": "model-field", "schema": {"type": "default", "schema": {"type": "bool"}, "default": True}, "metadata": {}}, "default": {"type": "model-field", "schema": {"type": "default", "schema": {"type": "nullable", "schema": {"type": "str"}}, "default": None}, "metadata": {}},}, "model_name": "EnvVar", "computed_fields": []}, "custom_init": False, "root_model": False, "config": {"title": "EnvVar"}, "ref": "crewai.tools.base_tool.EnvVar:4593650640", "metadata": {"pydantic_js_functions": ["INSPECT __get_pydantic_json_schema__"]}}}, "default": [EnvVar(name='SERPER_API_KEY', description='API key for Serper', required=True, default=None), EnvVar(name='API_RATE_LIMIT', description='API rate limit', required=False, default="100")]}, "metadata": {}
+                }
             },
             "model_name": cls.__name__
         }
@@ -123,6 +123,20 @@ def test_extract_tool_info(extractor):
         assert tool_info["class_name"] == "MockTool"
         assert tool_info["name"] == "Mock Search Tool"
         assert tool_info["description"] == "A tool that mocks search functionality"
+
+        assert len(tool_info["env_vars"]) == 2
+        api_key_var, rate_limit_var = tool_info["env_vars"]
+
+        assert api_key_var["name"] == "SERPER_API_KEY"
+        assert api_key_var["description"] == "API key for Serper"
+        assert api_key_var["required"] == True
+        assert api_key_var["default"] == None
+
+        assert rate_limit_var["name"] == "API_RATE_LIMIT"
+        assert rate_limit_var["description"] == "API rate limit"
+        assert rate_limit_var["required"] == False
+        assert rate_limit_var["default"] == "100"
+
         assert len(tool_info["params"]) == 3
 
         params = {p["name"]: p for p in tool_info["params"]}
