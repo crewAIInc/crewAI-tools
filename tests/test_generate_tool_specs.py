@@ -120,8 +120,8 @@ def test_extract_tool_info(extractor):
         assert len(extractor.tools_spec) == 1
         tool_info = extractor.tools_spec[0]
 
-        assert tool_info["class_name"] == "MockTool"
-        assert tool_info["name"] == "Mock Search Tool"
+        assert tool_info["name"] == "MockTool"
+        assert tool_info["verbose_name"] == "Mock Search Tool"
         assert tool_info["description"] == "A tool that mocks search functionality"
 
         assert len(tool_info["env_vars"]) == 2
@@ -137,9 +137,9 @@ def test_extract_tool_info(extractor):
         assert rate_limit_var["required"] == False
         assert rate_limit_var["default"] == "100"
 
-        assert len(tool_info["params"]) == 3
+        assert len(tool_info["run_params"]) == 3
 
-        params = {p["name"]: p for p in tool_info["params"]}
+        params = {p["name"]: p for p in tool_info["run_params"]}
         assert params["query"]["description"] == "The query parameter"
         assert params["query"]["type"] == "str"
 
@@ -152,10 +152,10 @@ def test_extract_tool_info(extractor):
 
 def test_save_to_json(extractor, tmp_path):
     extractor.tools_spec = [{
-        "class_name": "TestTool",
-        "name": "Test Tool",
+        "name": "TestTool",
+        "verbose_name": "Test Tool",
         "description": "A test tool",
-        "params": [
+        "run_params": [
             {"name": "param1", "description": "Test parameter", "type": "str"}
         ]
     }]
@@ -170,8 +170,8 @@ def test_save_to_json(extractor, tmp_path):
 
     assert "tools" in data
     assert len(data["tools"]) == 1
-    assert data["tools"][0]["name"] == "Test Tool"
-    assert data["tools"][0]["params"][0]["name"] == "param1"
+    assert data["tools"][0]["verbose_name"] == "Test Tool"
+    assert data["tools"][0]["run_params"][0]["name"] == "param1"
 
 
 @pytest.mark.integration
@@ -182,9 +182,9 @@ def test_full_extraction_process():
     assert len(specs) > 0
 
     for tool in specs:
-        assert "class_name" in tool
-        assert "name" in tool and tool["name"]
+        assert "name" in tool
+        assert "verbose_name" in tool and tool["verbose_name"]
         assert "description" in tool
-        assert isinstance(tool["params"], list)
-        for param in tool["params"]:
+        assert isinstance(tool["run_params"], list)
+        for param in tool["run_params"]:
             assert "name" in param and param["name"]
