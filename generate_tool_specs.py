@@ -32,10 +32,10 @@ class ToolSpecExtractor:
             schema = self._unwrap_schema(core_schema)
             fields = schema.get("schema", {}).get("fields", {})
             tool_info = {
-                "class_name": tool_class.__name__,
-                "name": self._extract_field_default(fields.get("name"), fallback=tool_class.__name__),
+                "name": tool_class.__name__,
+                "verbose_name": self._extract_field_default(fields.get("name"), fallback=tool_class.__name__),
                 "description": self._extract_field_default(fields.get("description")).strip(),
-                "params": self._extract_params(fields.get("args_schema")),
+                "run_params": self._extract_params(fields.get("args_schema")),
                 "env_vars": self._extract_env_vars(fields.get("env_vars")),
             }
 
