@@ -1,14 +1,20 @@
 name: Generate Tool Specifications
 
 on:
-  release:
-    types: [published]
+  schedule:
+    # Run at midnight UTC every day
+    - cron: '0 0 * * *'
   # Allow manual triggering of the workflow
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   generate-specs:
     runs-on: ubuntu-latest
+    outputs:
+      specs_changed: ${{ steps.check_changes.outputs.specs_changed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,7 +40,30 @@ jobs:
           git remote add upstream https://github.com/crewAIInc/crewAI.git
           git fetch upstream
 
-      - name: Commit and push if changed
+      - name: Check for changes in tool specifications
+        id: check_changes
         run: |
           git add tool.specs.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update tool specifications for $(git describe --tags --abbrev=0)" && git push)
+          if git diff --quiet --staged; then
+            echo "No changes detected in tool.specs.json"
+            echo "specs_changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected in tool.specs.json"
+            echo "specs_changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push if changed
+        if: steps.check_changes.outputs.specs_changed == 'true'
+        run: |
+          git commit -m "Update tool specifications for $(git describe --tags --abbrev=0)"
+          git push
+
+  notify-api:
+    needs: generate-specs
+    if: needs.generate-specs.outputs.specs_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify API about tool specification update
+        run: |
+          curl -X POST https://app.crewai.com/crewai_plus/api/v1/tool_releases \
+            -H "Content-Type: application/json"
