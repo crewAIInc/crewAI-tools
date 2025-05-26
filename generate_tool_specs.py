@@ -2,12 +2,11 @@
 
 import inspect
 import json
-import os
-import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Type
 
 from crewai_tools import tools
+from crewai.tools.base_tool import EnvVar
 
 
 class ToolSpecExtractor:
@@ -37,6 +36,7 @@ class ToolSpecExtractor:
                 "name": self._extract_field_default(fields.get("name"), fallback=tool_class.__name__),
                 "description": self._extract_field_default(fields.get("description")).strip(),
                 "params": self._extract_params(fields.get("args_schema")),
+                "env_vars": self._extract_env_vars(fields.get("env_vars")),
             }
 
             self.tools_spec.append(tool_info)
@@ -88,6 +88,21 @@ class ToolSpecExtractor:
         except Exception as e:
             print(f"Error extracting params from {args_schema_class}: {e}")
             return []
+
+    def _extract_env_vars(self, env_vars_field: Optional[Dict]) -> List[Dict[str, str]]:
+        if not env_vars_field:
+            return []
+
+        env_vars = []
+        for env_var in env_vars_field.get("schema", {}).get("default", []):
+            if isinstance(env_var, EnvVar):
+                env_vars.append({
+                    "name": env_var.name,
+                    "description": env_var.description,
+                    "required": env_var.required,
+                    "default": env_var.default,
+                })
+        return env_vars
     
     def _extract_field_description_from_metadata(self, field: Dict) -> str:
         if metadata := field.get("metadata"):
