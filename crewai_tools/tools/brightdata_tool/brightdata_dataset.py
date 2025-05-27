@@ -394,9 +394,19 @@ class BrightDataDatasetTool(BaseTool):
     name: str = "Bright Data Dataset Tool"
     description: str = "Scrapes structured data using Bright Data Dataset API from a URL and optional input parameters"
     args_schema: Type[BaseModel] = BrightDataDatasetToolSchema
+    dataset_type: Optional[str] = None
+    url: Optional[str] = None
+    format: str = "json"
+    zipcode: Optional[str] = None
+    additional_params: Optional[Dict[str, Any]] = None
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, dataset_type: str = None, url: str = None, format: str = "json", zipcode: str = None, additional_params: Dict[str, Any] = None):
+        super().__init__()
+        self.dataset_type = dataset_type
+        self.url = url
+        self.format = format
+        self.zipcode = zipcode
+        self.additional_params = additional_params
 
     def filter_dataset_by_id(self, target_id):
         return [dataset for dataset in datasets if dataset["id"] == target_id]
@@ -509,12 +519,17 @@ class BrightDataDatasetTool(BaseTool):
 
                 return await snapshot_response.text()
 
-    def _run(self, **kwargs: Any) -> Any:
-        dataset_type = kwargs["dataset_type"]
-        output_format = kwargs.get("format", "json")
-        url = kwargs["url"]
-        zipcode = kwargs.get("zipcode", None)
-        additional_params = kwargs.get("additional_params")
+    def _run(self, url: str = None, dataset_type: str = None, format: str = None, zipcode: str = None, additional_params: Dict[str, Any] = None, **kwargs: Any) -> Any:
+        dataset_type = dataset_type or self.dataset_type
+        output_format = format or self.format
+        url = url or self.url
+        zipcode = zipcode or self.zipcode
+        additional_params = additional_params or self.additional_params
+        
+        if not dataset_type:
+            raise ValueError("dataset_type is required either in constructor or method call")
+        if not url:
+            raise ValueError("url is required either in constructor or method call")
 
         valid_output_formats = {"json", "ndjson", "jsonl", "csv"}
         if output_format not in valid_output_formats:
@@ -525,10 +540,6 @@ class BrightDataDatasetTool(BaseTool):
         api_key = os.getenv("BRIGHT_DATA_API_KEY")
         if not api_key:
             raise ValueError("BRIGHT_DATA_API_KEY environment variable is required.")
-
-        zone = os.getenv("BRIGHT_DATA_ZONE")
-        if not zone:
-            raise ValueError("BRIGHT_DATA_ZONE environment variable is required.")
 
         try:
             return asyncio.run(

@@ -24,7 +24,7 @@ class BrightDataUnlockerToolSchema(BaseModel):
         default="raw", description="Response format (raw is standard)"
     )
     data_format: Optional[str] = Field(
-        default="html", description="Response data format (html by default)"
+        default="markdown", description="Response data format (html by default)"
     )
 
 
@@ -55,9 +55,16 @@ class BrightDataWebUnlockerTool(BaseTool):
     base_url: str = "https://api.brightdata.com/request"
     api_key: str = ""
     zone: str = ""
+    url: Optional[str] = None
+    format: str = "raw"
+    data_format: str = "markdown"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, url: str = None, format: str = "raw", data_format: str = "markdown"):
+        super().__init__()
+        self.url = url
+        self.format = format
+        self.data_format = data_format
+        
         self.api_key = os.getenv("BRIGHT_DATA_API_KEY")
         self.zone = os.getenv("BRIGHT_DATA_ZONE")
         if not self.api_key:
@@ -65,14 +72,19 @@ class BrightDataWebUnlockerTool(BaseTool):
         if not self.zone:
             raise ValueError("BRIGHT_DATA_ZONE environment variable is required.")
 
-    def _run(self, **kwargs: Any) -> Any:
+    def _run(self, url: str = None, format: str = None, data_format: str = None, **kwargs: Any) -> Any:
+        url = url or self.url
+        format = format or self.format
+        data_format = data_format or self.data_format
+        
+        if not url:
+            raise ValueError("url is required either in constructor or method call")
+        
         payload = {
-            "url": kwargs["url"],
+            "url": url,
             "zone": self.zone,
-            "format": kwargs.get("format", "raw"),
+            "format": format,
         }
-
-        data_format = kwargs.get("data_format")
         valid_data_formats = {"html", "markdown"}
         if data_format not in valid_data_formats:
             raise ValueError(

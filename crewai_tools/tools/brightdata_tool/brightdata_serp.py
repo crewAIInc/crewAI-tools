@@ -71,9 +71,24 @@ class BrightDataSearchTool(BaseTool):
     base_url: str = "https://api.brightdata.com/request"
     api_key: str = ""
     zone: str = ""
+    query: Optional[str] = None
+    search_engine: str = "google"
+    country: str = "us"
+    language: str = "en"
+    search_type: Optional[str] = None
+    device_type: str = "desktop"
+    parse_results: bool = True
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, query: str = None, search_engine: str = "google", country: str = "us", language: str = "en", search_type: str = None, device_type: str = "desktop", parse_results: bool = True):
+        super().__init__()
+        self.query = query
+        self.search_engine = search_engine
+        self.country = country
+        self.language = language
+        self.search_type = search_type
+        self.device_type = device_type
+        self.parse_results = parse_results
+        
         self.api_key = os.getenv("BRIGHT_DATA_API_KEY")
         self.zone = os.getenv("BRIGHT_DATA_ZONE")
         if not self.api_key:
@@ -88,7 +103,7 @@ class BrightDataSearchTool(BaseTool):
             return f"https://www.bing.com/search?q=${query}"
         return f"https://www.google.com/search?q=${query}"
 
-    def _run(self, **kwargs: Any) -> Any:
+    def _run(self, query: str = None, search_engine: str = None, country: str = None, language: str = None, search_type: str = None, device_type: str = None, parse_results: bool = None, **kwargs) -> Any:
         """
         Executes a search query using Bright Data SERP API and returns results.
 
@@ -106,14 +121,18 @@ class BrightDataSearchTool(BaseTool):
             dict or str: Parsed JSON data from Bright Data if available, otherwise error message.
         """
 
-        query = kwargs.get("query")
-        search_engine = kwargs.get("search_engine", "google")
-        country = kwargs.get("country", "us")
-        language = kwargs.get("language", "en")
-        search_type = kwargs.get("search_type")
-        device_type = kwargs.get("device_type")
-        parse_results = kwargs.get("parse_results", True)
+        query = query or self.query
+        search_engine = search_engine or self.search_engine
+        country = country or self.country
+        language = language or self.language
+        search_type = search_type or self.search_type
+        device_type = device_type or self.device_type
+        parse_results = parse_results if parse_results is not None else self.parse_results
         results_count = kwargs.get("results_count", "10")
+    
+        # Validate required parameters
+        if not query:
+            raise ValueError("query is required either in constructor or method call")
 
         # Build the search URL
         query = urllib.parse.quote(query)
