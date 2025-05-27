@@ -69,4 +69,7 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
+    BrightDataWebUnlockerTool,
+    BrightDataSearchTool,
+    BrightDataDatasetTool
 )
