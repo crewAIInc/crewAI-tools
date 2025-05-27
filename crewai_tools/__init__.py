@@ -70,4 +70,6 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
+    ZapierActionTools,
 )
+from .adapters.zapier_adapter import ZapierActionTool
