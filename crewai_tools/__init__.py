@@ -6,7 +6,6 @@ from .aws import (
     S3ReaderTool,
     S3WriterTool,
 )
-from .adapters.zapier_adapter import ZapierActionTool
 from .tools import (
     AIMindTool,
     ApifyActorsTool,
@@ -72,3 +71,4 @@ from .tools import (
     YoutubeVideoSearchTool,
     ZapierActionTools,
 )
+from .adapters.zapier_adapter import ZapierActionTool

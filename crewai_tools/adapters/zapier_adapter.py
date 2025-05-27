@@ -1,4 +1,5 @@
 import os
+import logging
 from typing import List
 
 import requests
@@ -6,6 +7,8 @@ from crewai.tools import BaseTool
 from pydantic import Field, create_model
 
 ACTIONS_URL = "https://actions.zapier.com/api/v2/ai-actions"
+
+logger = logging.getLogger(__name__)
 
 
 class ZapierActionTool(BaseTool):
@@ -37,8 +40,6 @@ class ZapierActionTool(BaseTool):
                 }
             action_params = {"instructions": instructions, "params": formatted_params}
 
-        print(f"Executing action {self.action_id} with payload: {action_params}")
-
         execute_url = f"{ACTIONS_URL}/{self.action_id}/execute/"
         response = requests.request(
             "POST", execute_url, headers=headers, json=action_params
@@ -59,6 +60,7 @@ class ZapierActionsAdapter:
     def __init__(self, api_key: str = None):
         self.api_key = api_key or os.getenv("ZAPIER_API_KEY")
         if not self.api_key:
+            logger.error("Zapier Actions API key is required")
             raise ValueError("Zapier Actions API key is required")
 
     def get_zapier_actions(self):
@@ -74,7 +76,6 @@ class ZapierActionsAdapter:
     def tools(self) -> List[BaseTool]:
         """Convert Zapier actions to BaseTool instances"""
         actions_response = self.get_zapier_actions()
-        print("actions_response", actions_response)
         tools = []
 
         for action in actions_response.get("results", []):
