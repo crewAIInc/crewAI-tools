@@ -16,10 +16,10 @@ dependencies = [
     "pytube>=15.0.0",
     "requests>=2.31.0",
     "docker>=7.1.0",
-    "embedchain>=0.1.114",
     "crewai>=0.119.0",
     "click>=8.1.8",
     "lancedb>=0.5.4",
+    "embedchain>=0.1.128",
 ]
 
 [project.urls]
@@ -81,7 +81,7 @@ hyperbrowser = [
 ]
 snowflake = [
     "cryptography>=43.0.3",
-    "snowflake-connector-python>=3.12.4",
+    "snowflake-connector-python>=3.15.0",
     "snowflake-sqlalchemy>=1.7.3",
 ]
 exa-py = [
