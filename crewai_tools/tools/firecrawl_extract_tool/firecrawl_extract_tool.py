@@ -51,11 +51,42 @@ class FirecrawlExtractTool(BaseTool):
     description: str = "Extract structured data from webpages using Firecrawl and LLMs"
     args_schema: Type[BaseModel] = FirecrawlExtractToolSchema
     api_key: Optional[str] = None
+    config: Optional[dict[str, Any]] = Field(
+        default_factory=lambda: {
+            "prompt": None,
+            "schema": None,
+            "enableWebSearch": False,
+            "ignoreSiteMap": False,
+            "includeSubdomains": True,
+            "showSources": False,
+            "scrapeOptions": {},
+        }
+    )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
-    def __init__(self, api_key: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        prompt: Optional[str] = None,
+        schema: Optional[Dict[str, Any]] = None,
+        enable_web_search: Optional[bool] = False,
+        ignore_site_map: Optional[bool] = False,
+        include_subdomains: Optional[bool] = True,
+        show_sources: Optional[bool] = False,
+        scrape_options: Optional[Dict[str, Any]] = None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.api_key = api_key
+        self.config.update({
+            "prompt": prompt,
+            "schema": schema,
+            "enableWebSearch": enable_web_search,
+            "ignoreSiteMap": ignore_site_map,
+            "includeSubdomains": include_subdomains,
+            "showSources": show_sources,
+            "scrapeOptions": scrape_options or {},
+        })
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
@@ -83,26 +114,13 @@ class FirecrawlExtractTool(BaseTool):
                     "`firecrawl-py` package not found, please run `uv add firecrawl-py`"
                 )
 
-    def _run(
-        self,
-        urls: List[str],
-        prompt: Optional[str] = None,
-        schema: Optional[Dict[str, Any]] = None,
-        enable_web_search: Optional[bool] = False,
-        ignore_site_map: Optional[bool] = False,
-        include_subdomains: Optional[bool] = True,
-        show_sources: Optional[bool] = False,
-        scrape_options: Optional[Dict[str, Any]] = None,
-    ) -> Any:
+    def _run(self, urls: List[str]) -> Any:
+        if not self._firecrawl:
+            raise RuntimeError("FirecrawlApp not properly initialized")
+
         options = {
             "urls": urls,
-            "prompt": prompt,
-            "schema": schema,
-            "enableWebSearch": enable_web_search,
-            "ignoreSiteMap": ignore_site_map,
-            "includeSubdomains": include_subdomains,
-            "showSources": show_sources,
-            "scrapeOptions": scrape_options or {},
+            **self.config,
         }
         return self._firecrawl.extract(**options)
 

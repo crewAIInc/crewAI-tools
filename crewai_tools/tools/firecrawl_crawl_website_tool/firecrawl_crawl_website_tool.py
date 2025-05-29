@@ -64,9 +64,31 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
         EnvVar(name="FIRECRAWL_API_KEY", description="API key for Firecrawl services", required=True),
     ]
 
-    def __init__(self, api_key: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        max_depth: Optional[int] = None,
+        ignore_sitemap: Optional[bool] = None,
+        limit: Optional[int] = None,
+        allow_backward_links: Optional[bool] = None,
+        allow_external_links: Optional[bool] = None,
+        scrape_options: Optional[ScrapeOptions] = None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.api_key = api_key
+        if max_depth is not None:
+            self.config["max_depth"] = max_depth
+        if ignore_sitemap is not None:
+            self.config["ignore_sitemap"] = ignore_sitemap
+        if limit is not None:
+            self.config["limit"] = limit
+        if allow_backward_links is not None:
+            self.config["allow_backward_links"] = allow_backward_links
+        if allow_external_links is not None:
+            self.config["allow_external_links"] = allow_external_links
+        if scrape_options is not None:
+            self.config["scrape_options"] = scrape_options
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
@@ -94,11 +116,11 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
                     "`firecrawl-py` package not found, please run `uv add firecrawl-py`"
                 )
 
-    def _run(self, url: str):
+    def _run(self, url: str) -> Any:
         if not self._firecrawl:
             raise RuntimeError("FirecrawlApp not properly initialized")
 
-        return self._firecrawl.crawl_url(url, poll_interval=2, params=self.config)
+        return self._firecrawl.crawl_url(url, **self.config)
 
 try:
     from firecrawl import FirecrawlApp
