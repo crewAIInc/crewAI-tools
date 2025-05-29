@@ -5,7 +5,12 @@ from typing import Any, Optional, Type
 import requests
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings
 
+class BrightDataConfig(BaseSettings):
+    API_URL: str = "https://api.brightdata.com/request"    
+    class Config:
+        env_prefix = "BRIGHTDATA_"
 
 class BrightDataSearchToolSchema(BaseModel):
     """
@@ -68,7 +73,8 @@ class BrightDataSearchTool(BaseTool):
     name: str = "Bright Data SERP Search"
     description: str = "Tool to perform web search using Bright Data SERP API."
     args_schema: Type[BaseModel] = BrightDataSearchToolSchema
-    base_url: str = "https://api.brightdata.com/request"
+    _config = BrightDataConfig() 
+    base_url: str = ""
     api_key: str = ""
     zone: str = ""
     query: Optional[str] = None
@@ -81,6 +87,7 @@ class BrightDataSearchTool(BaseTool):
 
     def __init__(self, query: str = None, search_engine: str = "google", country: str = "us", language: str = "en", search_type: str = None, device_type: str = "desktop", parse_results: bool = True):
         super().__init__()
+        self.base_url = self._config.API_URL
         self.query = query
         self.search_engine = search_engine
         self.country = country

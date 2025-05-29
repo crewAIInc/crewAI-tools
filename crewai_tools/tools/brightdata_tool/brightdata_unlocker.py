@@ -4,7 +4,12 @@ from typing import Any, Optional, Type
 import requests
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings
 
+class BrightDataConfig(BaseSettings):
+    API_URL: str = "https://api.brightdata.com/request"    
+    class Config:
+        env_prefix = "BRIGHTDATA_"
 
 class BrightDataUnlockerToolSchema(BaseModel):
     """
@@ -52,7 +57,8 @@ class BrightDataWebUnlockerTool(BaseTool):
     name: str = "Bright Data Web Unlocker Scraping"
     description: str = "Tool to perform web scraping using Bright Data Web Unlocker"
     args_schema: Type[BaseModel] = BrightDataUnlockerToolSchema
-    base_url: str = "https://api.brightdata.com/request"
+    _config = BrightDataConfig() 
+    base_url: str = ""
     api_key: str = ""
     zone: str = ""
     url: Optional[str] = None
@@ -61,6 +67,7 @@ class BrightDataWebUnlockerTool(BaseTool):
 
     def __init__(self, url: str = None, format: str = "raw", data_format: str = "markdown"):
         super().__init__()
+        self.base_url = self._config.API_URL
         self.url = url
         self.format = format
         self.data_format = data_format

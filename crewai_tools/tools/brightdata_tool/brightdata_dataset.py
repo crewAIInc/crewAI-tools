@@ -5,8 +5,15 @@ from typing import Any, Dict, Optional, Type
 import aiohttp
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings
 
-
+class BrightDataConfig(BaseSettings):
+    API_URL: str = "https://api.brightdata.com"
+    DEFAULT_TIMEOUT: int = 600
+    DEFAULT_POLLING_INTERVAL: int = 1
+    
+    class Config:
+        env_prefix = "BRIGHTDATA_"
 class BrightDataDatasetToolException(Exception):
     """Exception raised for custom error in the application."""
 
@@ -41,10 +48,10 @@ class BrightDataDatasetToolSchema(BaseModel):
         default=None, description="Additional params if any"
     )
 
+config = BrightDataConfig()
 
-# Base API URL for Bright Data
-BRIGHTDATA_API_URL = "https://api.brightdata.com"
-timeout = 600
+BRIGHTDATA_API_URL = config.API_URL  
+timeout = config.DEFAULT_TIMEOUT    
 
 datasets = [
     {
