@@ -1,6 +1,6 @@
 [project]
 name = "crewai-tools"
-version = "0.39.0"
+version = "0.46.0"
 description = "Set of tools for the crewAI framework"
 readme = "README.md"
 authors = [
@@ -17,7 +17,7 @@ dependencies = [
     "requests>=2.31.0",
     "docker>=7.1.0",
     "embedchain>=0.1.114",
-    "crewai>=0.105.0",
+    "crewai>=0.121.1",
     "click>=8.1.8",
     "lancedb>=0.5.4",
 ]
@@ -73,7 +73,9 @@ scrapegraph-py = [
 linkup-sdk = [
     "linkup-sdk>=0.2.2",
 ]
-
+tavily-python = [
+    "tavily-python>=0.5.4",
+]
 hyperbrowser = [
     "hyperbrowser>=0.18.0",
 ]
@@ -95,6 +97,20 @@ apify = [
 databricks-sdk = [
     "databricks-sdk>=0.46.0",
 ]
+mcp = [
+    "mcp>=1.6.0",
+    "mcpadapt>=0.1.3",
+]
+stagehand = [
+    "stagehand-py>=0.3.6",
+]
+github = [
+    "gitpython==3.1.38",
+    "PyGithub==1.59.1",
+]
+xml = [
+    "unstructured[local-inference, all-docs]>=0.17.2"
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
@@ -114,4 +130,5 @@ build-backend = "hatchling.build"
 dev = [
     "pytest-asyncio>=0.25.2",
     "pytest>=8.0.0",
+    "pytest-recording>=0.13.3",
 ]
