@@ -55,9 +55,31 @@ class FirecrawlSearchTool(BaseTool):
     )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
-    def __init__(self, api_key: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        limit: Optional[int] = None,
+        tbs: Optional[str] = None,
+        lang: Optional[str] = None,
+        country: Optional[str] = None,
+        location: Optional[str] = None,
+        timeout: Optional[int] = None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.api_key = api_key
+        if limit is not None:
+            self.config["limit"] = limit
+        if tbs is not None:
+            self.config["tbs"] = tbs
+        if lang is not None:
+            self.config["lang"] = lang
+        if country is not None:
+            self.config["country"] = country
+        if location is not None:
+            self.config["location"] = location
+        if timeout is not None:
+            self.config["timeout"] = timeout
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
@@ -85,17 +107,11 @@ class FirecrawlSearchTool(BaseTool):
                     "`firecrawl-py` package not found, please run `uv add firecrawl-py`"
                 )
 
-    def _run(
-        self,
-        query: str,
-    ) -> Any:
+    def _run(self, query: str) -> Any:
         if not self._firecrawl:
             raise RuntimeError("FirecrawlApp not properly initialized")
 
-        return self._firecrawl.search(
-            query=query,
-            **self.config,
-        )
+        return self._firecrawl.search(query=query, **self.config)
 
 
 try:
