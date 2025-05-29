@@ -758,7 +758,7 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.119.0"
+version = "0.121.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
@@ -785,14 +785,14 @@ dependencies = [
     { name = "tomli-w" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/41/cc/e05b7c1e4c58d47811673aac6f249eb2648b89e8ffdae3e4a9a2f4641ad2/crewai-0.119.0.tar.gz", hash = "sha256:1cba70ad29399d057bb8d75f167cfaa564de561e409c9d0b2dff72e7d127d92c", size = 72059811 }
+sdist = { url = "https://files.pythonhosted.org/packages/cc/c6/4099e6bcfd5e7d1106983ff91e5d69b06039b76f2c3df28a369f3aaeaf01/crewai-0.121.1.tar.gz", hash = "sha256:f56020e12e8bb88cc789c2ce819b43a04fb22347a766144d8810035a0be016c5", size = 104299940 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/0a/eb1af6368b3f8b28805cfbac7acf2815438c3f0a0f0149c5a2edc62c666d/crewai-0.119.0-py3-none-any.whl", hash = "sha256:c6d3a447e97a30924df2151f7219e1721506415e062fa2d6d13e3c3550cfa94e", size = 308724 },
+    { url = "https://files.pythonhosted.org/packages/13/8b/13d04c9153be9509d16489b4b59b74b9271ae8ae512827aa9205ec139529/crewai-0.121.1-py3-none-any.whl", hash = "sha256:8540e97ce53426d833d4b4e32c375cf8115a8a71f0bfa9aac2e940fa92f73b7c", size = 320218 },
 ]
 
 [[package]]
 name = "crewai-tools"
-version = "0.45.0"
+version = "0.46.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
@@ -904,7 +904,7 @@ requires-dist = [
     { name = "chromadb", specifier = ">=0.4.22" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
-    { name = "crewai", specifier = ">=0.119.0" },
+    { name = "crewai", specifier = ">=0.121.1" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },
