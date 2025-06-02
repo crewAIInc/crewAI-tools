@@ -20,6 +20,7 @@ dependencies = [
     "crewai>=0.121.1",
     "click>=8.1.8",
     "lancedb>=0.5.4",
+    "tiktoken>=0.8.0",
 ]
 
 [project.urls]
