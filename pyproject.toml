@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "João Moura", email = "joaomdmoura@gmail.com" },
 ]
-requires-python = ">=3.10,<=3.13"
+requires-python = ">=3.10,<3.14"
 dependencies = [
     "pydantic>=2.6.1",
     "lancedb>=0.5.4",
@@ -20,6 +20,7 @@ dependencies = [
     "crewai>=0.121.1",
     "click>=8.1.8",
     "lancedb>=0.5.4",
+    "tiktoken>=0.8.0",
 ]
 
 [project.urls]
