@@ -19,11 +19,11 @@ class ToolSpecExtractor:
             if name.endswith("Tool") and name not in self.processed_tools:
                 obj = getattr(tools, name, None)
                 if inspect.isclass(obj):
-                    self._extract_tool_info(obj)
+                    self.extract_tool_info(obj)
                     self.processed_tools.add(name)
         return self.tools_spec
 
-    def _extract_tool_info(self, tool_class: Type) -> None:
+    def extract_tool_info(self, tool_class: Type) -> None:
         try:
             core_schema = tool_class.__pydantic_core_schema__
             if not core_schema:

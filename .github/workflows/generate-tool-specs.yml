@@ -67,3 +67,4 @@ jobs:
         run: |
           curl -X POST https://app.crewai.com/crewai_plus/api/v1/tool_releases \
             -H "Content-Type: application/json"
+            -H "Authorization: Bearer ${{ secrets.CREWAI_RELEASE_TOOL_API_KEY }}"
