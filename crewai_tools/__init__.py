@@ -1,5 +1,6 @@
 from .adapters.enterprise_adapter import EnterpriseActionTool
 from .adapters.mcp_adapter import MCPServerAdapter
+from .adapters.zapier_adapter import ZapierActionTool
 from .aws import (
     BedrockInvokeAgentTool,
     BedrockKBRetrieverTool,
@@ -71,4 +72,5 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
+    ZapierActionTools,
 )
