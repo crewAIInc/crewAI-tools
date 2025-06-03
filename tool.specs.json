@@ -3,6 +3,7 @@
     {
       "description": "A wrapper around [AI-Minds](https://mindsdb.com/minds). Useful for when you need answers to questions from your data, stored in data sources including PostgreSQL, MySQL, MariaDB, ClickHouse, Snowflake and Google BigQuery. Input should be a question in natural language.",
       "env_vars": [],
+      "humanized_name": "AIMind Tool",
       "name": "AIMindTool",
       "run_params": [
         {
@@ -10,12 +11,12 @@
           "name": "query",
           "type": "str"
         }
-      ],
-      "verbose_name": "AIMind Tool"
+      ]
     },
     {
       "description": "A tool that can be used to search the internet with a search_query.",
       "env_vars": [],
+      "humanized_name": "Brave Web Search the internet",
       "name": "BraveSearchTool",
       "run_params": [
         {
@@ -23,12 +24,12 @@
           "name": "search_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "Brave Web Search the internet"
+      ]
     },
     {
       "description": "Load webpages url in a headless browser using Browserbase and return the contents",
       "env_vars": [],
+      "humanized_name": "Browserbase web load tool",
       "name": "BrowserbaseLoadTool",
       "run_params": [
         {
@@ -36,12 +37,12 @@
           "name": "url",
           "type": "str"
         }
-      ],
-      "verbose_name": "Browserbase web load tool"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a CSV's content.",
       "env_vars": [],
+      "humanized_name": "Search a CSV's content",
       "name": "CSVSearchTool",
       "run_params": [
         {
@@ -54,12 +55,12 @@
           "name": "csv",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a CSV's content"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a Code Docs content.",
       "env_vars": [],
+      "humanized_name": "Search a Code Docs content",
       "name": "CodeDocsSearchTool",
       "run_params": [
         {
@@ -72,12 +73,12 @@
           "name": "docs_url",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a Code Docs content"
+      ]
     },
     {
       "description": "Interprets Python3 code strings with a final print statement.",
       "env_vars": [],
+      "humanized_name": "Code Interpreter",
       "name": "CodeInterpreterTool",
       "run_params": [
         {
@@ -90,19 +91,19 @@
           "name": "libraries_used",
           "type": "list[str]"
         }
-      ],
-      "verbose_name": "Code Interpreter"
+      ]
     },
     {
       "description": "",
       "env_vars": [],
+      "humanized_name": "ComposioTool",
       "name": "ComposioTool",
-      "run_params": [],
-      "verbose_name": "ComposioTool"
+      "run_params": []
     },
     {
       "description": "A tool that can be used to semantic search a query from a DOCX's content.",
       "env_vars": [],
+      "humanized_name": "Search a DOCX's content",
       "name": "DOCXSearchTool",
       "run_params": [
         {
@@ -115,12 +116,12 @@
           "name": "search_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a DOCX's content"
+      ]
     },
     {
       "description": "Generates images using OpenAI's Dall-E model.",
       "env_vars": [],
+      "humanized_name": "Dall-E Tool",
       "name": "DallETool",
       "run_params": [
         {
@@ -128,12 +129,12 @@
           "name": "image_description",
           "type": "str"
         }
-      ],
-      "verbose_name": "Dall-E Tool"
+      ]
     },
     {
       "description": "Execute SQL queries against Databricks workspace tables and return the results. Provide a 'query' parameter with the SQL query to execute.",
       "env_vars": [],
+      "humanized_name": "Databricks SQL Query",
       "name": "DatabricksQueryTool",
       "run_params": [
         {
@@ -161,12 +162,12 @@
           "name": "row_limit",
           "type": "int"
         }
-      ],
-      "verbose_name": "Databricks SQL Query"
+      ]
     },
     {
       "description": "A tool that can be used to recursively list a directory's content.",
       "env_vars": [],
+      "humanized_name": "List files in directory",
       "name": "DirectoryReadTool",
       "run_params": [
         {
@@ -174,12 +175,12 @@
           "name": "directory",
           "type": "str"
         }
-      ],
-      "verbose_name": "List files in directory"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a directory's content.",
       "env_vars": [],
+      "humanized_name": "Search a directory's content",
       "name": "DirectorySearchTool",
       "run_params": [
         {
@@ -192,12 +193,12 @@
           "name": "directory",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a directory's content"
+      ]
     },
     {
       "description": "Search the internet using Exa",
       "env_vars": [],
+      "humanized_name": "EXASearchTool",
       "name": "EXASearchTool",
       "run_params": [
         {
@@ -220,12 +221,12 @@
           "name": "include_domains",
           "type": "list[str]"
         }
-      ],
-      "verbose_name": "EXASearchTool"
+      ]
     },
     {
       "description": "Compresses a file or directory into an archive (.zip currently supported). Useful for archiving logs, documents, or backups.",
       "env_vars": [],
+      "humanized_name": "File Compressor Tool",
       "name": "FileCompressorTool",
       "run_params": [
         {
@@ -248,12 +249,12 @@
           "name": "format",
           "type": "str"
         }
-      ],
-      "verbose_name": "File Compressor Tool"
+      ]
     },
     {
       "description": "A tool that reads the content of a file. To use this tool, provide a 'file_path' parameter with the path to the file you want to read. Optionally, provide 'start_line' to start reading from a specific line and 'line_count' to limit the number of lines read.",
       "env_vars": [],
+      "humanized_name": "Read a file's content",
       "name": "FileReadTool",
       "run_params": [
         {
@@ -271,12 +272,12 @@
           "name": "line_count",
           "type": "int"
         }
-      ],
-      "verbose_name": "Read a file's content"
+      ]
     },
     {
       "description": "A tool to write content to a specified file. Accepts filename, content, and optionally a directory path and overwrite flag as input.",
       "env_vars": [],
+      "humanized_name": "File Writer Tool",
       "name": "FileWriterTool",
       "run_params": [
         {
@@ -299,12 +300,12 @@
           "name": "content",
           "type": "str"
         }
-      ],
-      "verbose_name": "File Writer Tool"
+      ]
     },
     {
       "description": "Crawl webpages using Firecrawl and return the contents",
       "env_vars": [],
+      "humanized_name": "Firecrawl web crawl tool",
       "name": "FirecrawlCrawlWebsiteTool",
       "run_params": [
         {
@@ -312,12 +313,12 @@
           "name": "url",
           "type": "str"
         }
-      ],
-      "verbose_name": "Firecrawl web crawl tool"
+      ]
     },
     {
       "description": "Scrape webpages using Firecrawl and return the contents",
       "env_vars": [],
+      "humanized_name": "Firecrawl web scrape tool",
       "name": "FirecrawlScrapeWebsiteTool",
       "run_params": [
         {
@@ -325,12 +326,12 @@
           "name": "url",
           "type": "str"
         }
-      ],
-      "verbose_name": "Firecrawl web scrape tool"
+      ]
     },
     {
       "description": "Search webpages using Firecrawl and return the results",
       "env_vars": [],
+      "humanized_name": "Firecrawl web search tool",
       "name": "FirecrawlSearchTool",
       "run_params": [
         {
@@ -338,12 +339,12 @@
           "name": "query",
           "type": "str"
         }
-      ],
-      "verbose_name": "Firecrawl web search tool"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a github repo's content. This is not the GitHub API, but instead a tool that can provide semantic search capabilities.",
       "env_vars": [],
+      "humanized_name": "Search a github repo's content",
       "name": "GithubSearchTool",
       "run_params": [
         {
@@ -361,12 +362,12 @@
           "name": "content_types",
           "type": "list[str]"
         }
-      ],
-      "verbose_name": "Search a github repo's content"
+      ]
     },
     {
       "description": "Scrape or crawl a website using Hyperbrowser and return the contents in properly formatted markdown or html",
       "env_vars": [],
+      "humanized_name": "Hyperbrowser web load tool",
       "name": "HyperbrowserLoadTool",
       "run_params": [
         {
@@ -384,12 +385,12 @@
           "name": "params",
           "type": "dict[any, any]"
         }
-      ],
-      "verbose_name": "Hyperbrowser web load tool"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a JSON's content.",
       "env_vars": [],
+      "humanized_name": "Search a JSON's content",
       "name": "JSONSearchTool",
       "run_params": [
         {
@@ -402,26 +403,26 @@
           "name": "json_path",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a JSON's content"
+      ]
     },
     {
       "description": "Performs an API call to Linkup to retrieve contextual information.",
       "env_vars": [],
+      "humanized_name": "Linkup Search Tool",
       "name": "LinkupSearchTool",
-      "run_params": [],
-      "verbose_name": "Linkup Search Tool"
+      "run_params": []
     },
     {
       "description": "",
       "env_vars": [],
+      "humanized_name": "LlamaIndexTool",
       "name": "LlamaIndexTool",
-      "run_params": [],
-      "verbose_name": "LlamaIndexTool"
+      "run_params": []
     },
     {
       "description": "A tool that can be used to semantic search a query from a MDX's content.",
       "env_vars": [],
+      "humanized_name": "Search a MDX's content",
       "name": "MDXSearchTool",
       "run_params": [
         {
@@ -434,19 +435,19 @@
           "name": "mdx",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a MDX's content"
+      ]
     },
     {
       "description": "Multion gives the ability for LLMs to control web browsers using natural language instructions.\n            If the status is 'CONTINUE', reissue the same instruction to continue execution",
       "env_vars": [],
+      "humanized_name": "Multion Browse Tool",
       "name": "MultiOnTool",
-      "run_params": [],
-      "verbose_name": "Multion Browse Tool"
+      "run_params": []
     },
     {
       "description": "A tool that can be used to semantic search a query from a database table's content.",
       "env_vars": [],
+      "humanized_name": "Search a database's table content",
       "name": "MySQLSearchTool",
       "run_params": [
         {
@@ -454,12 +455,12 @@
           "name": "search_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a database's table content"
+      ]
     },
     {
       "description": "Converts natural language to SQL queries and executes them.",
       "env_vars": [],
+      "humanized_name": "NL2SQLTool",
       "name": "NL2SQLTool",
       "run_params": [
         {
@@ -467,12 +468,12 @@
           "name": "sql_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "NL2SQLTool"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a PDF's content.",
       "env_vars": [],
+      "humanized_name": "Search a PDF's content",
       "name": "PDFSearchTool",
       "run_params": [
         {
@@ -485,12 +486,12 @@
           "name": "pdf",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a PDF's content"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a database table's content.",
       "env_vars": [],
+      "humanized_name": "Search a database's table content",
       "name": "PGSearchTool",
       "run_params": [
         {
@@ -498,19 +499,19 @@
           "name": "search_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a database's table content"
+      ]
     },
     {
       "description": "",
       "env_vars": [],
+      "humanized_name": "Patronus Evaluation Tool",
       "name": "PatronusEvalTool",
-      "run_params": [],
-      "verbose_name": "Patronus Evaluation Tool"
+      "run_params": []
     },
     {
       "description": "This tool calls the Patronus Evaluation API that takes the following arguments:",
       "env_vars": [],
+      "humanized_name": "Call Patronus API tool for evaluation of model inputs and outputs",
       "name": "PatronusPredefinedCriteriaEvalTool",
       "run_params": [
         {
@@ -538,12 +539,12 @@
           "name": "evaluators",
           "type": "list[dict[str, str]]"
         }
-      ],
-      "verbose_name": "Call Patronus API tool for evaluation of model inputs and outputs"
+      ]
     },
     {
       "description": "A tool to search the Qdrant database for relevant information on internal documents.",
       "env_vars": [],
+      "humanized_name": "QdrantVectorSearchTool",
       "name": "QdrantVectorSearchTool",
       "run_params": [
         {
@@ -561,19 +562,19 @@
           "name": "filter_value",
           "type": "str"
         }
-      ],
-      "verbose_name": "QdrantVectorSearchTool"
+      ]
     },
     {
       "description": "A knowledge base that can be used to answer questions.",
       "env_vars": [],
+      "humanized_name": "Knowledge base",
       "name": "RagTool",
-      "run_params": [],
-      "verbose_name": "Knowledge base"
+      "run_params": []
     },
     {
       "description": "A tool that can be used to read a website content.",
       "env_vars": [],
+      "humanized_name": "Read a website content",
       "name": "ScrapeElementFromWebsiteTool",
       "run_params": [
         {
@@ -586,12 +587,12 @@
           "name": "css_element",
           "type": "str"
         }
-      ],
-      "verbose_name": "Read a website content"
+      ]
     },
     {
       "description": "A tool that can be used to read a website content.",
       "env_vars": [],
+      "humanized_name": "Read website content",
       "name": "ScrapeWebsiteTool",
       "run_params": [
         {
@@ -599,12 +600,12 @@
           "name": "website_url",
           "type": "str"
         }
-      ],
-      "verbose_name": "Read website content"
+      ]
     },
     {
       "description": "A tool that uses Scrapegraph AI to intelligently scrape website content.",
       "env_vars": [],
+      "humanized_name": "Scrapegraph website scraper",
       "name": "ScrapegraphScrapeTool",
       "run_params": [
         {
@@ -617,12 +618,12 @@
           "name": "user_prompt",
           "type": "str"
         }
-      ],
-      "verbose_name": "Scrapegraph website scraper"
+      ]
     },
     {
       "description": "Scrape a webpage url using Scrapfly and return its content as markdown or text",
       "env_vars": [],
+      "humanized_name": "Scrapfly web scraping API tool",
       "name": "ScrapflyScrapeWebsiteTool",
       "run_params": [
         {
@@ -645,12 +646,12 @@
           "name": "ignore_scrape_failures",
           "type": "bool"
         }
-      ],
-      "verbose_name": "Scrapfly web scraping API tool"
+      ]
     },
     {
       "description": "A tool that can be used to read a website content.",
       "env_vars": [],
+      "humanized_name": "Read a website content",
       "name": "SeleniumScrapingTool",
       "run_params": [
         {
@@ -663,12 +664,12 @@
           "name": "css_element",
           "type": "str"
         }
-      ],
-      "verbose_name": "Read a website content"
+      ]
     },
     {
       "description": "A tool to perform to perform a Google search with a search_query.",
       "env_vars": [],
+      "humanized_name": "Google Search",
       "name": "SerpApiGoogleSearchTool",
       "run_params": [
         {
@@ -681,12 +682,12 @@
           "name": "location",
           "type": "str"
         }
-      ],
-      "verbose_name": "Google Search"
+      ]
     },
     {
       "description": "A tool to perform search on Google shopping with a search_query.",
       "env_vars": [],
+      "humanized_name": "Google Shopping",
       "name": "SerpApiGoogleShoppingTool",
       "run_params": [
         {
@@ -699,8 +700,7 @@
           "name": "location",
           "type": "str"
         }
-      ],
-      "verbose_name": "Google Shopping"
+      ]
     },
     {
       "description": "A tool that can be used to search the internet with a search_query. Supports different search types: 'search' (default), 'news'",
@@ -712,6 +712,7 @@
           "required": true
         }
       ],
+      "humanized_name": "Search the internet with Serper",
       "name": "SerperDevTool",
       "run_params": [
         {
@@ -719,12 +720,12 @@
           "name": "search_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search the internet with Serper"
+      ]
     },
     {
       "description": "A tool to perform to perform a job search in the US with a search_query.",
       "env_vars": [],
+      "humanized_name": "Job Search",
       "name": "SerplyJobSearchTool",
       "run_params": [
         {
@@ -732,12 +733,12 @@
           "name": "search_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "Job Search"
+      ]
     },
     {
       "description": "A tool to perform News article search with a search_query.",
       "env_vars": [],
+      "humanized_name": "News Search",
       "name": "SerplyNewsSearchTool",
       "run_params": [
         {
@@ -745,12 +746,12 @@
           "name": "search_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "News Search"
+      ]
     },
     {
       "description": "A tool to perform scholarly literature search with a search_query.",
       "env_vars": [],
+      "humanized_name": "Scholar Search",
       "name": "SerplyScholarSearchTool",
       "run_params": [
         {
@@ -758,12 +759,12 @@
           "name": "search_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "Scholar Search"
+      ]
     },
     {
       "description": "A tool to perform Google search with a search_query.",
       "env_vars": [],
+      "humanized_name": "Google Search",
       "name": "SerplyWebSearchTool",
       "run_params": [
         {
@@ -771,12 +772,12 @@
           "name": "search_query",
           "type": "str"
         }
-      ],
-      "verbose_name": "Google Search"
+      ]
     },
     {
       "description": "A tool to perform convert a webpage to markdown to make it easier for LLMs to understand",
       "env_vars": [],
+      "humanized_name": "Webpage to Markdown",
       "name": "SerplyWebpageToMarkdownTool",
       "run_params": [
         {
@@ -784,12 +785,12 @@
           "name": "url",
           "type": "str"
         }
-      ],
-      "verbose_name": "Webpage to Markdown"
+      ]
     },
     {
       "description": "Execute SQL queries or semantic search on Snowflake data warehouse. Supports both raw SQL and natural language queries.",
       "env_vars": [],
+      "humanized_name": "Snowflake Database Search",
       "name": "SnowflakeSearchTool",
       "run_params": [
         {
@@ -812,12 +813,12 @@
           "name": "timeout",
           "type": "int"
         }
-      ],
-      "verbose_name": "Snowflake Database Search"
+      ]
     },
     {
       "description": "A tool to scrape or crawl a website and return LLM-ready content.",
       "env_vars": [],
+      "humanized_name": "SpiderTool",
       "name": "SpiderTool",
       "run_params": [
         {
@@ -830,12 +831,12 @@
           "name": "mode",
           "type": "literal"
         }
-      ],
-      "verbose_name": "SpiderTool"
+      ]
     },
     {
       "description": "Use this tool to control a web browser and interact with websites using natural language.\n    \n    Capabilities:\n    - Navigate to websites and follow links\n    - Click buttons, links, and other elements\n    - Fill in forms and input fields\n    - Search within websites\n    - Extract information from web pages\n    - Identify and analyze elements on a page\n    \n    To use this tool, provide a natural language instruction describing what you want to do.\n    For different types of tasks, specify the command_type:\n    - 'act': For performing actions (default)\n    - 'navigate': For navigating to a URL (shorthand for act with navigation)\n    - 'extract': For getting data from the page\n    - 'observe': For finding and analyzing elements",
       "env_vars": [],
+      "humanized_name": "Web Automation Tool",
       "name": "StagehandTool",
       "run_params": [
         {
@@ -853,12 +854,12 @@
           "name": "command_type",
           "type": "str"
         }
-      ],
-      "verbose_name": "Web Automation Tool"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a txt's content.",
       "env_vars": [],
+      "humanized_name": "Search a txt's content",
       "name": "TXTSearchTool",
       "run_params": [
         {
@@ -871,12 +872,12 @@
           "name": "txt",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a txt's content"
+      ]
     },
     {
       "description": "This tool uses OpenAI's Vision API to describe the contents of an image.",
       "env_vars": [],
+      "humanized_name": "Vision Tool",
       "name": "VisionTool",
       "run_params": [
         {
@@ -884,12 +885,12 @@
           "name": "image_path_url",
           "type": "str"
         }
-      ],
-      "verbose_name": "Vision Tool"
+      ]
     },
     {
       "description": "A tool to search the Weaviate database for relevant information on internal documents.",
       "env_vars": [],
+      "humanized_name": "WeaviateVectorSearchTool",
       "name": "WeaviateVectorSearchTool",
       "run_params": [
         {
@@ -897,12 +898,12 @@
           "name": "query",
           "type": "str"
         }
-      ],
-      "verbose_name": "WeaviateVectorSearchTool"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a specific URL content.",
       "env_vars": [],
+      "humanized_name": "Search in a specific website",
       "name": "WebsiteSearchTool",
       "run_params": [
         {
@@ -915,12 +916,12 @@
           "name": "website",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search in a specific website"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a XML's content.",
       "env_vars": [],
+      "humanized_name": "Search a XML's content",
       "name": "XMLSearchTool",
       "run_params": [
         {
@@ -933,12 +934,12 @@
           "name": "xml",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a XML's content"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a Youtube Channels content.",
       "env_vars": [],
+      "humanized_name": "Search a Youtube Channels content",
       "name": "YoutubeChannelSearchTool",
       "run_params": [
         {
@@ -951,12 +952,12 @@
           "name": "youtube_channel_handle",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a Youtube Channels content"
+      ]
     },
     {
       "description": "A tool that can be used to semantic search a query from a Youtube Video content.",
       "env_vars": [],
+      "humanized_name": "Search a Youtube Video content",
       "name": "YoutubeVideoSearchTool",
       "run_params": [
         {
@@ -969,8 +970,7 @@
           "name": "youtube_video_url",
           "type": "str"
         }
-      ],
-      "verbose_name": "Search a Youtube Video content"
+      ]
     }
   ]
 }

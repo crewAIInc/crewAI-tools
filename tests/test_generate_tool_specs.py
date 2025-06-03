@@ -121,7 +121,7 @@ def test_extract_tool_info(extractor):
         tool_info = extractor.tools_spec[0]
 
         assert tool_info["name"] == "MockTool"
-        assert tool_info["verbose_name"] == "Mock Search Tool"
+        assert tool_info["humanized_name"] == "Mock Search Tool"
         assert tool_info["description"] == "A tool that mocks search functionality"
 
         assert len(tool_info["env_vars"]) == 2
@@ -153,7 +153,7 @@ def test_extract_tool_info(extractor):
 def test_save_to_json(extractor, tmp_path):
     extractor.tools_spec = [{
         "name": "TestTool",
-        "verbose_name": "Test Tool",
+        "humanized_name": "Test Tool",
         "description": "A test tool",
         "run_params": [
             {"name": "param1", "description": "Test parameter", "type": "str"}
@@ -170,7 +170,7 @@ def test_save_to_json(extractor, tmp_path):
 
     assert "tools" in data
     assert len(data["tools"]) == 1
-    assert data["tools"][0]["verbose_name"] == "Test Tool"
+    assert data["tools"][0]["humanized_name"] == "Test Tool"
     assert data["tools"][0]["run_params"][0]["name"] == "param1"
 
 
@@ -183,7 +183,7 @@ def test_full_extraction_process():
 
     for tool in specs:
         assert "name" in tool
-        assert "verbose_name" in tool and tool["verbose_name"]
+        assert "humanized_name" in tool and tool["humanized_name"]
         assert "description" in tool
         assert isinstance(tool["run_params"], list)
         for param in tool["run_params"]:
