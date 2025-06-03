@@ -1,11 +1,9 @@
 name: Generate Tool Specifications
 
 on:
-  schedule:
-    # Run at midnight UTC every day
-    - cron: '0 0 * * *'
-  # Allow manual triggering of the workflow
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -37,7 +35,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote add upstream https://github.com/crewAIInc/crewAI.git
+          git remote add upstream https://github.com/crewAIInc/crewAI-tools.git
           git fetch upstream
 
       - name: Check for changes in tool specifications
@@ -65,6 +63,6 @@ jobs:
     steps:
       - name: Notify API about tool specification update
         run: |
-          curl -X POST https://app.crewai.com/crewai_plus/api/v1/tool_releases \
+          curl -X POST https://app.crewai.com/crewai_plus/api/v1/internal_tool_releases \
             -H "Content-Type: application/json"
             -H "Authorization: Bearer ${{ secrets.CREWAI_RELEASE_TOOL_API_KEY }}"
