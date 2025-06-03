@@ -60,8 +60,8 @@ class MongoDBVectorSearchTool(BaseTool):
         default="text-embedding-3-large",
         description="Text OpenAI embedding model to use",
     )
-    index_name: str = Field(
-        default="vector_index", description=" Name of the Atlas Search index"
+    vector_index_name: str = Field(
+        default="vector_index", description="Name of the Atlas Search vector index"
     )
     text_key: str = Field(
         default="text",
@@ -109,7 +109,7 @@ class MongoDBVectorSearchTool(BaseTool):
         self._client = MongoDBAtlasVectorSearch(
             collection=self._coll,
             embedding=self._embeddings,
-            index_name=self.index_name,
+            index_name=self.vector_index_name,
             text_key=self.text_key,
             embedding_key=self.embedding_key,
         )
@@ -134,7 +134,7 @@ class MongoDBVectorSearchTool(BaseTool):
 
         create_vector_search_index(
             collection=self._coll,
-            index_name=self.index_name,
+            index_name=self.vector_index_name,
             dimensions=dimensions,
             path=self.embedding_key,
             similarity=relevance_score_fn,

@@ -48,7 +48,7 @@ def test_provide_config():
         database_name="bar",
         collection_name="test",
         query_config=query_config,
-        index_name="foo",
+        vector_index_name="foo",
         embedding_model="bar",
     )
     # Enable overriding methods on the embeddings object.
