@@ -100,7 +100,7 @@ databricks-sdk = [
 ]
 mcp = [
     "mcp>=1.6.0",
-    "mcpadapt>=0.1.3",
+    "mcpadapt>=0.1.9",
 ]
 stagehand = [
     "stagehand-py>=0.3.6",
