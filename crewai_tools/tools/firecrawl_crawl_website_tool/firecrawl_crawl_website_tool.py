@@ -19,6 +19,7 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
 
     Args:
         api_key (str): Your Firecrawl API key.
+        api_url (str): The Firecrawl endpoint.
         config (dict): Optional. It contains Firecrawl API parameters.
 
     Default configuration options:
@@ -40,6 +41,7 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
     description: str = "Crawl webpages using Firecrawl and return the contents"
     args_schema: Type[BaseModel] = FirecrawlCrawlWebsiteToolSchema
     api_key: Optional[str] = None
+    api_url: Optional[str] = None
     config: Optional[dict[str, Any]] = Field(
         default_factory=lambda: {
             "max_depth": 2,
@@ -56,35 +58,27 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
     )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
 
-    def __init__(self, api_key: Optional[str] = None, **kwargs):
+    def __init__(self, api_key: Optional[str] = None, api_url: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         self.api_key = api_key
-        self._initialize_firecrawl()
-
-    def _initialize_firecrawl(self) -> None:
+        self.api_url = api_url
         try:
             from firecrawl import FirecrawlApp  # type: ignore
-
-            self._firecrawl = FirecrawlApp(api_key=self.api_key)
         except ImportError:
-            import click
-
+            import click, subprocess
             if click.confirm(
                 "You are missing the 'firecrawl-py' package. Would you like to install it?"
             ):
-                import subprocess
-
                 try:
                     subprocess.run(["uv", "add", "firecrawl-py"], check=True)
                     from firecrawl import FirecrawlApp
-
-                    self._firecrawl = FirecrawlApp(api_key=self.api_key)
                 except subprocess.CalledProcessError:
                     raise ImportError("Failed to install firecrawl-py package")
             else:
                 raise ImportError(
                     "`firecrawl-py` package not found, please run `uv add firecrawl-py`"
                 )
+        self._firecrawl = FirecrawlApp(api_key=self.api_key, api_url=self.api_url)
 
     def _run(self, url: str):
         return self._firecrawl.crawl_url(url, **self.config)

@@ -38,6 +38,7 @@ tool.run(url="firecrawl.dev")
 ## Arguments
 
 - `api_key`: Optional. Specifies Firecrawl API key. Defaults is the `FIRECRAWL_API_KEY` environment variable.
+- `api_url`: Optional. The Firecrawl endpoint. Defaults to the value of the `FIRECRAWL_API_URL` environment variable, or falls back to "https://api.firecrawl.dev" if unset.
 - `config`: Optional. It contains Firecrawl API parameters.
 
 This is the default configuration
