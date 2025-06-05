@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.10, <3.14"
 resolution-markers = [
     "python_full_version >= '3.13' and platform_python_implementation == 'PyPy' and sys_platform == 'darwin'",
@@ -812,7 +811,7 @@ wheels = [
 
 [[package]]
 name = "crewai-tools"
-version = "0.46.0"
+version = "0.47.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
@@ -961,7 +960,6 @@ requires-dist = [
     { name = "unstructured", extras = ["local-inference", "all-docs"], marker = "extra == 'xml'", specifier = ">=0.17.2" },
     { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.10.2" },
 ]
-provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "composio-core", "browserbase", "weaviate-client", "patronus", "serpapi", "beautifulsoup4", "selenium", "spider-client", "scrapegraph-py", "linkup-sdk", "tavily-python", "hyperbrowser", "snowflake", "exa-py", "qdrant-client", "apify", "databricks-sdk", "mcp", "stagehand", "github", "xml"]
 
 [package.metadata.requires-dev]
 dev = [
