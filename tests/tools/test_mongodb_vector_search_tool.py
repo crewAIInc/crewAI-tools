@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -11,34 +11,21 @@ def mongodb_vector_search_tool():
     tool = MongoDBVectorSearchTool(
         connection_string="foo", database_name="bar", collection_name="test"
     )
+    tool._embed_texts = lambda x: [[0.1]]
     yield tool
-
-
-class MockEmbeddingData:
-    @property
-    def embedding(self):
-        return [[0.1]]
 
 
 # Unit Tests
 def test_successful_query_execution(mongodb_vector_search_tool):
-    # Enable overriding methods on the embeddings object.
-    mongodb_vector_search_tool._embeddings.model_config["extra"] = "allow"
-    with patch.object(
-        mongodb_vector_search_tool._embeddings, "embed_documents"
-    ) as mock_create_embedding, patch.object(
-        mongodb_vector_search_tool._coll, "aggregate"
-    ) as mock_aggregate:
-        mock_result = MagicMock()
-        mock_result.data = [MockEmbeddingData()]
-        mock_create_embedding.return_value = mock_result
+    # Enable embedding
+    with patch.object(mongodb_vector_search_tool._coll, "aggregate") as mock_aggregate:
         mock_aggregate.return_value = [dict(text="foo", score=0.1, _id=1)]
 
         results = mongodb_vector_search_tool._run(query="sandwiches")
 
         assert len(results) == 1
         assert results[0]["context"] == "foo"
-        assert results[0]["id"] == "1"
+        assert results[0]["id"] == 1
 
 
 def test_provide_config():
@@ -51,14 +38,8 @@ def test_provide_config():
         vector_index_name="foo",
         embedding_model="bar",
     )
-    # Enable overriding methods on the embeddings object.
-    tool._embeddings.model_config["extra"] = "allow"
-    with patch.object(
-        tool._embeddings, "embed_documents"
-    ) as mock_create_embedding, patch.object(tool._coll, "aggregate") as mock_aggregate:
-        mock_result = MagicMock()
-        mock_result.data = [MockEmbeddingData()]
-        mock_create_embedding.return_value = mock_result
+    tool._embed_texts = lambda x: [[0.1]]
+    with patch.object(tool._coll, "aggregate") as mock_aggregate:
         mock_aggregate.return_value = [dict(text="foo", score=0.1, _id=1)]
 
         tool._run(query="sandwiches")
@@ -88,9 +69,8 @@ def test_create_search_index(mongodb_vector_search_tool):
 
 
 def test_add_texts(mongodb_vector_search_tool):
-    with patch.object(
-        mongodb_vector_search_tool._client, "add_texts"
-    ) as mock_add_texts:
+    with patch.object(mongodb_vector_search_tool._coll, "bulk_write") as bulk_write:
         mongodb_vector_search_tool.add_texts(["foo"])
-        args = mock_add_texts.mock_calls[0].args
-        assert args[0] == ["foo"]
+        args = bulk_write.mock_calls[0].args
+        assert "ReplaceOne" in str(args[0][0])
+        assert "foo" in str(args[0][0])

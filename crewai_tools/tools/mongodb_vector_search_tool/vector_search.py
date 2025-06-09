@@ -1,16 +1,21 @@
+import os
 from importlib.metadata import version
 from typing import Any, Dict, Iterable, List, Optional, Type
 
 try:
-    # Import for testing
-    from langchain_mongodb.index import create_vector_search_index  # noqa: F403
+    import pymongo  # noqa: F403
 
     MONGODB_AVAILABLE = True
 except ImportError:
     MONGODB_AVAILABLE = False
 
+import openai
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
+
+from crewai_tools.tools.mongodb_vector_search_tool.utils import (
+    create_vector_search_index,
+)
 
 
 class MongoDBVectorSearchConfig(BaseModel):
@@ -95,24 +100,21 @@ class MongoDBVectorSearchTool(BaseTool):
             else:
                 raise ImportError("You are missing the 'mongodb' crewai tool.")
 
-        from langchain_mongodb import MongoDBAtlasVectorSearch
-        from langchain_openai import OpenAIEmbeddings
         from pymongo import MongoClient
         from pymongo.driver_info import DriverInfo
 
-        client = MongoClient(
+        openai_api_key = os.environ.get("OPENAI_API_KEY")
+        if not openai_api_key:
+            raise ValueError(
+                "OPENAI_API_KEY environment variable is required for MongoDBVectorSearchTool and it is mandatory to use the tool."
+            )
+
+        self._client = MongoClient(
             self.connection_string,
             driver=DriverInfo(name="CrewAI", version=version("crewai-tools")),
         )
-        self._coll = client[self.database_name][self.collection_name]
-        self._embeddings = OpenAIEmbeddings(model=self.embedding_model)
-        self._client = MongoDBAtlasVectorSearch(
-            collection=self._coll,
-            embedding=self._embeddings,
-            index_name=self.vector_index_name,
-            text_key=self.text_key,
-            embedding_key=self.embedding_key,
-        )
+        self._coll = self._client[self.database_name][self.collection_name]
+        self._openai_client = openai.Client(api_key=openai_api_key)
 
     def create_vector_search_index(
         self,
@@ -170,10 +172,77 @@ class MongoDBVectorSearchTool(BaseTool):
         Returns:
             List of ids added to the vectorstore.
         """
-        return self._client.add_texts(texts, metadatas, ids, batch_size, **kwargs)
+        from bson import ObjectId
+
+        _metadatas = metadatas or [{} for _ in texts]
+        ids = [str(ObjectId()) for _ in range(len(list(texts)))]
+        metadatas_batch = _metadatas
+
+        result_ids = []
+        texts_batch = []
+        metadatas_batch = []
+        size = 0
+        i = 0
+        for j, (text, metadata) in enumerate(zip(texts, _metadatas)):
+            size += len(text) + len(metadata)
+            texts_batch.append(text)
+            metadatas_batch.append(metadata)
+            if (j + 1) % batch_size == 0 or size >= 47_000_000:
+                batch_res = self._bulk_embed_and_insert_texts(
+                    texts_batch, metadatas_batch, ids[i : j + 1]
+                )
+                result_ids.extend(batch_res)
+                texts_batch = []
+                metadatas_batch = []
+                size = 0
+                i = j + 1
+        if texts_batch:
+            batch_res = self._bulk_embed_and_insert_texts(
+                texts_batch, metadatas_batch, ids[i : j + 1]
+            )
+            result_ids.extend(batch_res)
+        return result_ids
+
+    def _embed_texts(self, texts: List[str]) -> List[List[float]]:
+        return [
+            i.embedding
+            for i in self._openai_client.embeddings.create(
+                input=texts,
+                model=self.embedding_model,
+            ).data
+        ]
+
+    def _bulk_embed_and_insert_texts(
+        self,
+        texts: List[str],
+        metadatas: List[dict],
+        ids: List[str],
+    ) -> List[str]:
+        """Bulk insert single batch of texts, embeddings, and ids."""
+        from bson import ObjectId
+        from pymongo.operations import ReplaceOne
+
+        if not texts:
+            return []
+        # Compute embedding vectors
+        embeddings = self._embed_texts(texts)
+        docs = [
+            {
+                "_id": ObjectId(i),
+                self.text_key: t,
+                self.embedding_key: embedding,
+                **m,
+            }
+            for i, t, m, embedding in zip(ids, texts, metadatas, embeddings)
+        ]
+        operations = [ReplaceOne({"_id": doc["_id"]}, doc, upsert=True) for doc in docs]
+        # insert the documents in MongoDB Atlas
+        result = self._coll.bulk_write(operations)
+        assert result.upserted_ids is not None
+        return [str(_id) for _id in result.upserted_ids.values()]
 
     def _run(self, **kwargs) -> list[dict[str, Any]]:
-        # Get the inputs.
+        # Get the inputs
         query_config = self.query_config or MongoDBVectorSearchConfig()
         query = kwargs["query"]
         limit = kwargs.get("limit", query_config.limit)
@@ -188,30 +257,54 @@ class MongoDBVectorSearchTool(BaseTool):
             "post_filter_pipeline", query_config.post_filter_pipeline
         )
 
-        docs = self._client.similarity_search(
-            query,
-            k=limit,
-            pre_filter=pre_filter,
-            post_filter_pipeline=post_filter_pipeline,
-            oversampling_factor=oversampling_factor,
-            include_scores=True,
-            include_embeddings=include_embeddings,
-        )
+        # Create the embedding for the query
+        query_vector = self._embed_texts([query])[0]
 
-        res = []
-        for doc in docs:
-            score = doc.metadata.pop("score")
-            res.append(
+        # Atlas Vector Search, potentially with filter
+        stage = {
+            "index": self.vector_index_name,
+            "path": self.embedding_key,
+            "queryVector": query_vector,
+            "numCandidates": limit * oversampling_factor,
+            "limit": limit,
+        }
+        if pre_filter:
+            stage["filter"] = pre_filter
+
+        pipeline = [
+            {"$vectorSearch": stage},
+            {"$set": {"score": {"$meta": "vectorSearchScore"}}},
+        ]
+
+        # Remove embeddings unless requested
+        if not include_embeddings:
+            pipeline.append({"$project": {self.embedding_key: 0}})
+
+        # Post-processing
+        if post_filter_pipeline is not None:
+            pipeline.extend(post_filter_pipeline)
+
+        # Execution
+        cursor = self._coll.aggregate(pipeline)  # type: ignore[arg-type]
+        docs = []
+
+        # Format
+        for doc in cursor:
+            if self.text_key not in doc:
+                continue
+            text = doc.pop(self.text_key)
+            score = doc.pop("score")
+            docs.append(
                 dict(
-                    context=doc.page_content,
-                    id=doc.id,
-                    metadata=doc.metadata,
+                    context=text,
+                    id=doc["_id"],
+                    metadata=doc,
                     score=score,
                 )
             )
-
-        return res
+        return docs
 
     def __del__(self):
         """Cleanup clients on deletion."""
         self._client.close()
+        self._openai_client.close()
