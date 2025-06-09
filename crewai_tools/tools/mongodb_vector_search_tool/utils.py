@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
 if TYPE_CHECKING:
     from pymongo.collection import Collection
-    from pymongo.operations import SearchIndexModel
 
 
 def _vector_search_index_definition(
@@ -56,6 +55,8 @@ def create_vector_search_index(
             until search index is ready.
         kwargs: Keyword arguments supplying any additional options to SearchIndexModel.
     """
+    from pymongo.operations import SearchIndexModel
+
     if collection.name not in collection.database.list_collection_names():
         collection.database.create_collection(collection.name)
 
