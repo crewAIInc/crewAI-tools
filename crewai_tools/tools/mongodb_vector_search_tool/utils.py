@@ -1,8 +1,9 @@
 from time import monotonic, sleep
-from typing import Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
-from pymongo.collection import Collection
-from pymongo.operations import SearchIndexModel
+if TYPE_CHECKING:
+    from pymongo.collection import Collection
+    from pymongo.operations import SearchIndexModel
 
 
 def _vector_search_index_definition(
