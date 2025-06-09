@@ -1,8 +1,11 @@
 import os
 import yaml
 import inspect
+import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
+
+logger = logging.getLogger(__file__)
 
 class ConfigLoader:
     """Utility class for loading and processing YAML configuration files."""
@@ -45,7 +48,7 @@ class ConfigLoader:
         full_path = self.base_directory / config_path
         
         if self.verbose:
-            print(f"Looking for config file at: {full_path}")
+            logger.info(f"Looking for config file at: {full_path}")
         
         try:
             # Load the YAML file (following CrewBase pattern)
@@ -55,16 +58,16 @@ class ConfigLoader:
             self._process_env_vars_in_config(config)
                 
             if self.verbose:
-                print(f"Loaded configuration from {full_path}")
+                logger.info(f"Loaded configuration from {full_path}")
                 
             return config
         except FileNotFoundError:
             if self.verbose:
-                print(f"Configuration file not found at {full_path}. Using empty config.")
+                logger.warning(f"Configuration file not found at {full_path}. Using empty config.")
             return {}
         except Exception as e:
             if self.verbose:
-                print(f"Error loading configuration: {str(e)}. Using empty config.")
+                logger.error(f"Error loading configuration: {str(e)}. Using empty config.")
             return {}
     
     def load_yaml(self, config_path: Path) -> Dict[str, Any]:
@@ -84,7 +87,7 @@ class ConfigLoader:
                 return yaml.safe_load(file)
         except FileNotFoundError:
             if self.verbose:
-                print(f"File not found: {config_path}")
+                logger.warning(f"File not found: {config_path}")
             raise
     
     def _process_env_vars_in_config(self, config: Any) -> None:
@@ -104,7 +107,7 @@ class ConfigLoader:
                     if env_value:
                         config[key] = env_value
                     elif self.verbose:
-                        print(f"Warning: Environment variable {env_var} not found")
+                        logger.warning(f"Warning: Environment variable {env_var} not found")
                 elif isinstance(value, (dict, list)):
                     self._process_env_vars_in_config(value)
         elif isinstance(config, list):
@@ -117,4 +120,4 @@ class ConfigLoader:
                     if env_value:
                         config[i] = env_value
                     elif self.verbose:
-                        print(f"Warning: Environment variable {env_var} not found")
+                        logger.warning(f"Warning: Environment variable {env_var} not found")

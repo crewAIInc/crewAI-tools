@@ -5,7 +5,10 @@ Utility module for handling Amazon Bedrock Inline Agent responses.
 import os
 import json
 import traceback
+import logging
 from typing import Dict, List, Optional, Any
+
+logger = logging.getLogger(__file__)
 
 class ResponseHandler:
     """Handler for processing Amazon Bedrock Inline Agent responses."""
@@ -23,7 +26,7 @@ class ResponseHandler:
             os.makedirs(self.output_folder)
             
         if self.enable_trace:
-            print(f"[TRACE] ResponseHandler initialized with output folder: {self.output_folder}")
+            logger.debug(f"[TRACE] ResponseHandler initialized with output folder: {self.output_folder}")
     
     def process_response(self, response: Dict) -> str:
         """Process a Bedrock Inline Agent response."""
@@ -36,15 +39,15 @@ class ResponseHandler:
             # Check response status
             if response['ResponseMetadata']['HTTPStatusCode'] != 200:
                 if self.enable_trace:
-                    print(f"[TRACE] Error: API Response was not 200: {response}")
+                    logger.error(f"[TRACE] Error: API Response was not 200: {response}")
                 return f"Error: API Response was not 200: {response}"
             elif response['completion'] is None:
                 if self.enable_trace:
-                    print(f"[TRACE] No completion found in the response.")
+                    logger.warning(f"[TRACE] No completion found in the response.")
                 return "Error: No completion found in the response."
             
             if self.enable_trace:
-                print(f"[TRACE] Processing response with request ID: {response['ResponseMetadata']['RequestId']}")
+                logger.debug(f"[TRACE] Processing response with request ID: {response['ResponseMetadata']['RequestId']}")
             
             # Process event stream
             agent_answer = ""

@@ -4,11 +4,14 @@ from pydantic import Field, model_validator
 import boto3
 import json, os
 import uuid
+import logging
 from datetime import datetime
 from crewai.utilities.config import process_config
 
 from utils.response_handler import ResponseHandler
 from ..exceptions import BedrockAgentError, BedrockValidationError
+
+logger = logging.getLogger(__file__)
 
 
 class BedrockInlineAgentTool(BaseTool):
@@ -53,7 +56,7 @@ class BedrockInlineAgentTool(BaseTool):
             env_value = os.environ.get(env_var_name)
             if env_value is None:
                 if self.enable_trace:
-                    print(f"[TRACE] Warning: Environment variable {env_var_name} not found")
+                    logger.warning(f"Warning: Environment variable {env_var_name} not found")
                 return None
             return env_value
         return value
@@ -205,7 +208,7 @@ class BedrockInlineAgentTool(BaseTool):
             # Wrap the exception in a BedrockAgentError
             error_message = f"Error invoking Bedrock Inline Agent: {str(e)}"
             if self.enable_trace:
-                print(f"[ERROR] {error_message}")
+                logger.error(error_message)
             raise BedrockAgentError(error_message) from e
     
     def get_generated_files(self) -> List[Dict]:
@@ -231,13 +234,13 @@ if __name__ == "__main__":
     region = os.environ.get("AWS_REGION", "us-east-1")
     
     if not model_id:
-        print("Error: CLAUDE_HAIKU_MODEL_ID environment variable not set")
+        logger.error("CLAUDE_HAIKU_MODEL_ID environment variable not set")
         exit(1)
     
-    print(f"Testing BedrockInlineAgentTool with model ID: {model_id} in region: {region}")
+    logger.info(f"Testing BedrockInlineAgentTool with model ID: {model_id} in region: {region}")
     
     # Example 1: Using direct parameters
-    print("Example 1: Using direct parameters")
+    logger.info("Example 1: Using direct parameters")
     direct_agent = BedrockInlineAgentTool(
         model_id=model_id,
         region_name=region,
@@ -268,24 +271,24 @@ if __name__ == "__main__":
     
     # Test query
     test_query = "Create a chart showing the revenue growth trend for Amazon from 2020 to 2024. Use Python code to generate this chart and save it as a PNG file."
-    print(f"\nRunning query: '{test_query}'")
+    logger.info(f"Running query: '{test_query}'")
     
     try:
         result = direct_agent.run(test_query)
-        print("\nResult:")
-        print(result)
+        logger.info("Result:")
+        logger.info(result)
         
         # Print information about generated files
         files = direct_agent.get_generated_files()
         if files:
-            print("\nGenerated files:")
+            logger.info("Generated files:")
             for file in files:
-                print(f"- {file['name']} ({file['type']}): {file['path']}")
+                logger.info(f"- {file['name']} ({file['type']}): {file['path']}")
     except Exception as e:
-        print(f"\nError: {str(e)}")
+        logger.error(f"Error: {str(e)}")
     
     # Example 2: Using YAML configuration
-    print("\n\nExample 2: Using YAML configuration")
+    logger.info("Example 2: Using YAML configuration")
     try:
         # Load the agents configuration
         # with open("src/sec_10k_analyser_flow/crews/research/config/bedrock_agents.yaml", "r") as f:
@@ -302,16 +305,16 @@ if __name__ == "__main__":
         Use different colors for each year and include a title and proper axis labels.
         Make sure to save the visualization as 'amazon_revenue_growth.png'."""
         
-        print(f"\nRunning query: '{query}'")
+        logger.info(f"Running query: '{query}'")
         response = config_agent.run(query)
-        print("\nResponse from Bedrock Inline Agent:")
-        print(response)
+        logger.info("Response from Bedrock Inline Agent:")
+        logger.info(response)
         
         # Print information about generated files
         files = config_agent.get_generated_files()
         if files:
-            print("\nGenerated files:")
+            logger.info("Generated files:")
             for file in files:
-                print(f"- {file['name']} ({file['type']}): {file['path']}")
+                logger.info(f"- {file['name']} ({file['type']}): {file['path']}")
     except FileNotFoundError:
-        print("Configuration file not found. Skipping Example 2.")
+        logger.warning("Configuration file not found. Skipping Example 2.")
