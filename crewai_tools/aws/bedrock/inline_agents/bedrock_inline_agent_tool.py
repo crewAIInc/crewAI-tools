@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from crewai.utilities.config import process_config
 
-from utils.response_handler import ResponseHandler
+from .utils.response_handler import ResponseHandler
 from ..exceptions import BedrockAgentError, BedrockValidationError
 
 logger = logging.getLogger(__file__)
