@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional, Any, Union
 from crewai.tools import BaseTool
 from pydantic import Field, model_validator
-import boto3
+
 import json, os
 import uuid
 import logging
@@ -64,6 +64,13 @@ class BedrockInlineAgentTool(BaseTool):
     @model_validator(mode="after")
     def setup_client(self):
         """Set up the Bedrock Agent Runtime client after validation."""
+        # Conditional import and setup for the Bedrock Agent Runtime client.
+        try:
+            import boto3
+            from botocore.exceptions import ClientError
+        except ImportError:
+            raise ImportError("`boto3` package not found, please run `uv add boto3`")
+        
         # Process environment variables in fields
         self.model_id = self._substitute_env_vars(self.model_id) or self.model_id
         self.knowledge_base_id = self._substitute_env_vars(self.knowledge_base_id)
@@ -110,6 +117,7 @@ class BedrockInlineAgentTool(BaseTool):
         Returns:
             A string containing the agent's response.
         """
+        
         try:
             # Prepare the request parameters
             request_params = self._prepare_request_params(query)
