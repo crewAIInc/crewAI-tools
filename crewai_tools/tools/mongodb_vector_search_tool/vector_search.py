@@ -93,9 +93,7 @@ class MongoDBVectorSearchTool(BaseTool):
             ):
                 import subprocess
 
-                subprocess.run(
-                    ["uv", "pip", "install", "crewai-tools[mongodb]"], check=True
-                )
+                subprocess.run(["uv", "add", "pymongo"], check=True)
 
             else:
                 raise ImportError("You are missing the 'mongodb' crewai tool.")

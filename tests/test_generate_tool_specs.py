@@ -6,7 +6,7 @@ import pytest
 from pydantic import BaseModel, Field
 
 from generate_tool_specs import ToolSpecExtractor
-from tests.utils import EnvVar
+from crewai.tools import EnvVar
 
 
 class MockToolSchema(BaseModel):
@@ -256,8 +256,9 @@ def test_extract_param_type(extractor, info, expected_type):
 
 
 def test_extract_tool_info(extractor):
-    with mock.patch("generate_tool_specs.dir", return_value=["MockTool"]), mock.patch(
-        "generate_tool_specs.getattr", return_value=MockTool
+    with (
+        mock.patch("generate_tool_specs.dir", return_value=["MockTool"]),
+        mock.patch("generate_tool_specs.getattr", return_value=MockTool),
     ):
         extractor.extract_all_tools()
 

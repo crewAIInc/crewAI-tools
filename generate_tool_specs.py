@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Type
 
 from crewai_tools import tools
-from tests.utils import EnvVar
+from crewai.tools import EnvVar
 
 
 class ToolSpecExtractor:

@@ -3,7 +3,7 @@
 ## Description
 This tool is specifically crafted for conducting vector searches within docs within a MongoDB database. Use this tool to find semantically similar docs to a given query.
 
-MongoDB can act as a vector database that is used to store and query vector embeddings. You can follow the docs here: 
+MongoDB can act as a vector database that is used to store and query vector embeddings. You can follow the docs here:
 https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-overview/
 
 ## Installation
@@ -33,7 +33,7 @@ tool = MongoDBVectorSearchTool(
 )
 ```
 
-or 
+or
 
 ```python
 from crewai_tools import MongoDBVectorSearchConfig, MongoDBVectorSearchTool
@@ -53,6 +53,8 @@ tool = MongoDBVectorSearchTool(
 rag_agent = Agent(
     name="rag_agent",
     role="You are a helpful assistant that can answer questions with the help of the MongoDBVectorSearchTool.",
+    goal="...",
+    backstory="...",
     llm="gpt-4o-mini",
     tools=[tool],
 )
