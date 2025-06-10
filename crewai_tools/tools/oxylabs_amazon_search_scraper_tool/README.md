@@ -13,13 +13,12 @@ pip install 'crewai[tools]' oxylabs
 ```python
 from crewai_tools import OxylabsAmazonSearchScraperTool
 
-tool = OxylabsAmazonSearchScraperTool(
-    username="OXYLABS_USERNAME",
-    password="OXYLABS_PASSWORD",
-)
+# make sure OXYLABS_USERNAME and OXYLABS_PASSWORD variables are set
+tool = OxylabsAmazonSearchScraperTool()
+
 result = tool.run(query="headsets")
 
-print(result.results[0].content)
+print(result)
 ```
 
 ## Arguments
@@ -36,20 +35,20 @@ Check out the Oxylabs [documentation](https://developers.oxylabs.io/scraper-apis
 ```python
 from crewai_tools import OxylabsAmazonSearchScraperTool
 
+# make sure OXYLABS_USERNAME and OXYLABS_PASSWORD variables are set
 tool = OxylabsAmazonSearchScraperTool(
-    username="OXYLABS_USERNAME",
-    password="OXYLABS_PASSWORD",
-)
-result = tool.run(
-    query='nirvana tshirt',
-    domain='nl',
-    start_page=2,
-    pages=2,
-    parse=True,
-    context=[
-        {'key': 'category_id', 'value': 16391693031}
-    ],
+    config={
+        "domain": 'nl',
+        "start_page": 2,
+        "pages": 2,
+        "parse": True,
+        "context": [
+            {'key': 'category_id', 'value': 16391693031}
+        ],
+    }
 )
 
-print(result.results[0].content)
+result = tool.run(query='nirvana tshirt')
+
+print(result)
 ```

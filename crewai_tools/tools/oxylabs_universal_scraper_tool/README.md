@@ -13,13 +13,12 @@ pip install 'crewai[tools]' oxylabs
 ```python
 from crewai_tools import OxylabsUniversalScraperTool
 
-tool = OxylabsUniversalScraperTool(
-    username="OXYLABS_USERNAME",
-    password="OXYLABS_PASSWORD",
-)
+# make sure OXYLABS_USERNAME and OXYLABS_PASSWORD variables are set
+tool = OxylabsUniversalScraperTool()
+
 result = tool.run(url="https://ip.oxylabs.io")
 
-print(result.results[0].content)
+print(result)
 ```
 
 ## Arguments
@@ -36,37 +35,35 @@ Check out the Oxylabs [documentation](https://developers.oxylabs.io/scraper-apis
 ```python
 from crewai_tools import OxylabsUniversalScraperTool
 
+# make sure OXYLABS_USERNAME and OXYLABS_PASSWORD variables are set
 tool = OxylabsUniversalScraperTool(
-    username="OXYLABS_USERNAME",
-    password="OXYLABS_PASSWORD",
-)
-result = tool.run(
-    url="https://ip.oxylabs.io",
-    geo_location="Berlin, Germany",
-    render="html",
-    user_agent_type="mobile",
-    context=[
-        {"key": "force_headers", "value": True},
-        {"key": "force_cookies", "value": True},
-        {
-            "key": "headers",
-            "value": {
-                "Content-Type": "text/html",
-                "Custom-Header-Name": "custom header content",
+    config={
+        "render": "html",
+        "user_agent_type": "mobile",
+        "context": [
+            {"key": "force_headers", "value": True},
+            {"key": "force_cookies", "value": True},
+            {
+                "key": "headers",
+                "value": {
+                    "Custom-Header-Name": "custom header content",
+                },
             },
-        },
-        {
-            "key": "cookies",
-            "value": [
-                {"key": "NID", "value": "1234567890"},
-                {"key": "1P JAR", "value": "0987654321"},
-            ],
-        },
-        {"key": "http_method", "value": "get"},
-        {"key": "follow_redirects", "value": True},
-        {"key": "successful_status_codes", "value": [808, 909]},
-    ],
+            {
+                "key": "cookies",
+                "value": [
+                    {"key": "NID", "value": "1234567890"},
+                    {"key": "1P JAR", "value": "0987654321"},
+                ],
+            },
+            {"key": "http_method", "value": "get"},
+            {"key": "follow_redirects", "value": True},
+            {"key": "successful_status_codes", "value": [808, 909]},
+        ],
+    }
 )
 
-print(result.results[0].content)
+result = tool.run(url="https://ip.oxylabs.io")
+
+print(result)
 ```

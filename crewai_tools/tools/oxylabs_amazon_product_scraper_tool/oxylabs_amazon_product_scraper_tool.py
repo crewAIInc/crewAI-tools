@@ -1,3 +1,5 @@
+import json
+import os
 from importlib.metadata import version
 from platform import architecture, python_version
 from typing import Any, Type
@@ -17,27 +19,39 @@ except ImportError:
     OXYLABS_AVAILABLE = False
 
 
-__all__ = ["OxylabsAmazonProductScraperTool"]
+__all__ = ["OxylabsAmazonProductScraperTool", "OxylabsAmazonProductScraperConfig"]
 
 
 class OxylabsAmazonProductScraperArgs(BaseModel):
     query: str = Field(description="Amazon product ASIN")
 
-    domain: str | None = None
-    geo_location: str | None = None
-    user_agent_type: str | None = None
-    render: str | None = None
-    callback_url: str | None = None
-    context: list | None = None
-    parse: bool | None = None
+
+class OxylabsAmazonProductScraperConfig(BaseModel):
+    """
+    Amazon Product Scraper configuration options:
+    https://developers.oxylabs.io/scraper-apis/web-scraper-api/targets/amazon/product
+    """
+
+    domain: str | None = Field(
+        None, description="The domain to limit the search results to."
+    )
+    geo_location: str | None = Field(None, description="The Deliver to location.")
+    user_agent_type: str | None = Field(None, description="Device type and browser.")
+    render: str | None = Field(None, description="Enables JavaScript rendering.")
+    callback_url: str | None = Field(None, description="URL to your callback endpoint.")
+    context: list | None = Field(
+        None,
+        description="Additional advanced settings and controls for specialized requirements.",
+    )
+    parse: bool | None = Field(None, description="True will return structured data.")
+    parsing_instructions: dict | None = Field(
+        None, description="Instructions for parsing the results."
+    )
 
 
 class OxylabsAmazonProductScraperTool(BaseTool):
     """
     Scrape Amazon product pages with OxylabsAmazonProductScraperTool.
-
-    Oxylabs API documentation:
-    https://developers.oxylabs.io/scraper-apis/web-scraper-api/targets/amazon/product
 
     Get Oxylabs account:
     https://dashboard.oxylabs.io/en
@@ -45,6 +59,7 @@ class OxylabsAmazonProductScraperTool(BaseTool):
     Args:
         username (str): Oxylabs username.
         password (str): Oxylabs password.
+        config: Configuration options. See ``OxylabsAmazonProductScraperConfig``
     """
 
     model_config = ConfigDict(
@@ -56,14 +71,25 @@ class OxylabsAmazonProductScraperTool(BaseTool):
     args_schema: Type[BaseModel] = OxylabsAmazonProductScraperArgs
 
     oxylabs_api: RealtimeClient
+    config: OxylabsAmazonProductScraperConfig
 
-    def __init__(self, username: str, password: str, **kwargs):
+    def __init__(
+        self,
+        username: str | None = None,
+        password: str | None = None,
+        config: OxylabsAmazonProductScraperConfig
+        | dict = OxylabsAmazonProductScraperConfig(),
+        **kwargs,
+    ) -> None:
         bits, _ = architecture()
         sdk_type = (
             f"oxylabs-crewai-sdk-python/"
             f"{version('crewai')} "
             f"({python_version()}; {bits})"
         )
+
+        if username is None or password is None:
+            username, password = self._get_credentials_from_env()
 
         if OXYLABS_AVAILABLE:
             # import RealtimeClient to make it accessible for the current scope
@@ -98,7 +124,27 @@ class OxylabsAmazonProductScraperTool(BaseTool):
                     "`oxylabs` package not found, please run `uv add oxylabs`"
                 )
 
-        super().__init__(**kwargs)
+        super().__init__(config=config, **kwargs)
 
-    def _run(self, query: str, **kwargs) -> OxylabsResponse:
-        return self.oxylabs_api.amazon.scrape_product(query, **kwargs)
+    def _get_credentials_from_env(self) -> tuple[str, str]:
+        username = os.environ.get("OXYLABS_USERNAME")
+        password = os.environ.get("OXYLABS_PASSWORD")
+        if not username or not password:
+            raise ValueError(
+                "You must pass oxylabs username and password when instantiating the tool "
+                "or specify OXYLABS_USERNAME and OXYLABS_PASSWORD environment variables"
+            )
+        return username, password
+
+    def _run(self, query: str) -> str:
+        response = self.oxylabs_api.amazon.scrape_product(
+            query,
+            **self.config.model_dump(exclude_none=True),
+        )
+
+        content = response.results[0].content
+
+        if isinstance(content, dict):
+            return json.dumps(content)
+
+        return content
