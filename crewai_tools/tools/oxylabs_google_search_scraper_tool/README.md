@@ -13,13 +13,12 @@ pip install 'crewai[tools]' oxylabs
 ```python
 from crewai_tools import OxylabsGoogleSearchScraperTool
 
-tool = OxylabsGoogleSearchScraperTool(
-    username="OXYLABS_USERNAME",
-    password="OXYLABS_PASSWORD",
-)
+# make sure OXYLABS_USERNAME and OXYLABS_PASSWORD variables are set
+tool = OxylabsGoogleSearchScraperTool()
+
 result = tool.run(query="iPhone 16")
 
-print(result.results[0].content)
+print(result)
 ```
 
 ## Arguments
@@ -36,16 +35,16 @@ Check out the Oxylabs [documentation](https://developers.oxylabs.io/scraper-apis
 ```python
 from crewai_tools import OxylabsGoogleSearchScraperTool
 
+# make sure OXYLABS_USERNAME and OXYLABS_PASSWORD variables are set
 tool = OxylabsGoogleSearchScraperTool(
-    username="OXYLABS_USERNAME",
-    password="OXYLABS_PASSWORD",
-)
-result = tool.run(
-    query="iPhone 16",
-    parse=True,
-    geo_location="Paris, France",
-    user_agent_type="tablet"
+    config={
+        "parse": True,
+        "geo_location": "Paris, France",
+        "user_agent_type": "tablet",
+    }
 )
 
-print(result.results[0].content)
+result = tool.run(query="iPhone 16")
+
+print(result)
 ```

@@ -13,13 +13,12 @@ pip install 'crewai[tools]' oxylabs
 ```python
 from crewai_tools import OxylabsAmazonProductScraperTool
 
-tool = OxylabsAmazonProductScraperTool(
-    username="OXYLABS_USERNAME",
-    password="OXYLABS_PASSWORD",
-)
+# make sure OXYLABS_USERNAME and OXYLABS_PASSWORD variables are set
+tool = OxylabsAmazonProductScraperTool()
+
 result = tool.run(query="AAAAABBBBCC")
 
-print(result.results[0].content)
+print(result)
 ```
 
 ## Arguments
@@ -36,21 +35,21 @@ Check out the Oxylabs [documentation](https://developers.oxylabs.io/scraper-apis
 ```python
 from crewai_tools import OxylabsAmazonProductScraperTool
 
+# make sure OXYLABS_USERNAME and OXYLABS_PASSWORD variables are set
 tool = OxylabsAmazonProductScraperTool(
-    username="OXYLABS_USERNAME",
-    password="OXYLABS_PASSWORD",
-)
-result = tool.run(
-    query="AAAAABBBBCC",
-    domain="nl",
-    parse=True,
-    context=[
-        {
-            "key": "autoselect_variant", 
-            "value": True
-        }
-    ]
+    config={
+        "domain": "com",
+        "parse": True,
+        "context": [
+            {
+                "key": "autoselect_variant", 
+                "value": True
+            }
+        ]
+    }
 )
 
-print(result.results[0].content)
+result = tool.run(query="AAAAABBBBCC")
+
+print(result)
 ```
