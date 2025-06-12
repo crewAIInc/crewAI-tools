@@ -37,6 +37,7 @@ class ToolSpecExtractor:
                 "description": self._extract_field_default(fields.get("description")).strip(),
                 "run_params": self._extract_params(fields.get("args_schema")),
                 "env_vars": self._extract_env_vars(fields.get("env_vars")),
+                "init_params": self._extract_init_params(fields),
             }
 
             self.tools_spec.append(tool_info)
@@ -52,7 +53,7 @@ class ToolSpecExtractor:
     def _extract_field_default(self, field: Optional[Dict], fallback: str = "") -> str:
         if not field:
             return fallback
-            
+
         schema = field.get("schema", {})
         default = schema.get("default")
         return default if isinstance(default, str) else fallback
@@ -73,8 +74,7 @@ class ToolSpecExtractor:
             params = []
             for name, info in fields.items():
                 _type = self._extract_param_type(info)
-                if _type == "union":
-                    breakpoint()
+
                 param = {
                     "name": name,
                     "description": self._extract_field_default(info)
@@ -103,7 +103,7 @@ class ToolSpecExtractor:
                     "default": env_var.default,
                 })
         return env_vars
-    
+
     def _extract_field_description_from_metadata(self, field: Dict) -> str:
         if metadata := field.get("metadata"):
             return metadata.get("pydantic_js_updates", {}).get("description", "")
@@ -119,13 +119,28 @@ class ToolSpecExtractor:
 
         return self._schema_type_to_str(schema)
 
+    def _extract_init_params(self, schema: Dict) -> dict:
+        exclude_init_params = ['name', 'description', 'env_vars', 'args_schema', 'description_updated', 'cache_function', 'result_as_answer', 'max_usage_count', 'current_usage_count']
+        filtered_dict = sorted({k: schema[k] for k in schema.keys() - exclude_init_params}.items(), key=lambda x: x[0])
+        params = []
+        for name, info in filtered_dict:
+            _type = self._extract_param_type(info)
+            param = {
+                "name": name,
+                "description": self._extract_field_description_from_metadata(info),
+                "default": self._extract_field_default(info),
+                "type": _type,
+            }
+            params.append(param)
+        return params
+
     def _schema_type_to_str(self, schema: Dict) -> str:
         schema_type = schema.get("type", "")
 
         if schema_type == "list" and "items_schema" in schema:
             item_type = self._schema_type_to_str(schema["items_schema"])
             return f"list[{item_type}]"
-        
+
         if schema_type == "union" and "choices" in schema:
             choices = schema["choices"]
             item_types = [self._schema_type_to_str(choice) for choice in choices]

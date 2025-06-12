@@ -39,7 +39,9 @@ def create_mock_schema(cls):
                 "args_schema": {"type": "model-field", "schema": {"type": "default", "schema": {"type": "is-subclass", "cls": BaseModel}, "default": cls.args_schema}, "metadata": {}},
                 "env_vars": {
                     "type": "model-field", "schema": {"type": "default", "schema": {"type": "list", "items_schema": {"type": "model", "cls": "INSPECT CLASS", "schema": {"type": "model-fields", "fields": {"name": {"type": "model-field", "schema": {"type": "str"}, "metadata": {}}, "description": {"type": "model-field", "schema": {"type": "str"}, "metadata": {}}, "required": {"type": "model-field", "schema": {"type": "default", "schema": {"type": "bool"}, "default": True}, "metadata": {}}, "default": {"type": "model-field", "schema": {"type": "default", "schema": {"type": "nullable", "schema": {"type": "str"}}, "default": None}, "metadata": {}},}, "model_name": "EnvVar", "computed_fields": []}, "custom_init": False, "root_model": False, "config": {"title": "EnvVar"}, "ref": "crewai.tools.base_tool.EnvVar:4593650640", "metadata": {"pydantic_js_functions": ["INSPECT __get_pydantic_json_schema__"]}}}, "default": [EnvVar(name='SERPER_API_KEY', description='API key for Serper', required=True, default=None), EnvVar(name='API_RATE_LIMIT', description='API rate limit', required=False, default="100")]}, "metadata": {}
-                }
+                },
+                "my_parameter": {'type': 'model-field', 'schema': {'type': 'default', 'schema': {'type': 'nullable', 'schema': {'type': 'str'}}, 'default': 'This is default value'}, 'metadata': {'pydantic_js_updates': {'description': 'What a description'}}},
+                "another_parameter": {'type': 'model-field', 'schema': {'type': 'default', 'schema': {'type': 'nullable', 'schema': {'type': 'str'}}, 'default': 'Another way to define a default value'}},
             },
             "model_name": cls.__name__
         }
@@ -123,6 +125,19 @@ def test_extract_tool_info(extractor):
         assert tool_info["name"] == "MockTool"
         assert tool_info["humanized_name"] == "Mock Search Tool"
         assert tool_info["description"] == "A tool that mocks search functionality"
+
+        init_params = tool_info["init_params"]
+        first_init_param, second_init_param = sorted(init_params, key=lambda x: x['name'])
+
+        assert first_init_param["name"] == "another_parameter"
+        assert first_init_param["description"] == ""
+        assert first_init_param["default"] == "Another way to define a default value"
+        assert first_init_param["type"] == "str"
+
+        assert second_init_param["name"] == "my_parameter"
+        assert second_init_param["description"] == "What a description"
+        assert second_init_param["default"] == "This is default value"
+        assert second_init_param["type"] == "str"
 
         assert len(tool_info["env_vars"]) == 2
         api_key_var, rate_limit_var = tool_info["env_vars"]
