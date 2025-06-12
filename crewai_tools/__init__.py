@@ -26,6 +26,7 @@ from .tools import (
     FileWriterTool,
     FileCompressorTool,
     FirecrawlCrawlWebsiteTool,
+    FirecrawlExtractTool,
     FirecrawlScrapeWebsiteTool,
     FirecrawlSearchTool,
     GithubSearchTool,
