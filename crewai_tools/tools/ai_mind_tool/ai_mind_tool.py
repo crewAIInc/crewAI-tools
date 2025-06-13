@@ -32,6 +32,7 @@ class AIMindTool(BaseTool):
     api_key: Optional[str] = None
     datasources: Optional[List[Dict[str, Any]]] = None
     mind_name: Optional[Text] = None
+    package_dependencies: List[str] = ["minds-sdk"]
 
     def __init__(self, api_key: Optional[Text] = None, **kwargs):
         super().__init__(**kwargs)
