@@ -27,10 +27,6 @@ def CrewaiEnterpriseTools(
     """
     if enterprise_token is None:
         enterprise_token = os.environ.get("CREWAI_ENTEPRISE_TOOLS_TOKEN")
-        if enterprise_token is None:
-            raise ValueError(
-                "No enterprise token provided. Please provide a token or set the CREWAI_ENTEPRISE_TOOLS_TOKEN environment variable."
-            )
 
     adapter_kwargs = {"enterprise_action_token": enterprise_token}
 
