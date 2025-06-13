@@ -78,9 +78,9 @@ class ToolSpecExtractor:
                     breakpoint()
                 param = {
                     "name": name,
-                    "description": self._extract_field_default(info)
-                        or self._extract_field_description_from_metadata(info),
+                    "description": self._extract_field_description_from_metadata(info),
                     "type": _type,
+                    "default": self._extract_field_default(info),
                 }
                 params.append(param)
 
