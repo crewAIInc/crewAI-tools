@@ -49,13 +49,13 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 10,
           "description": "",
           "name": "n_results",
           "type": "int"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "save_file",
           "type": "bool"
@@ -114,7 +114,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "text_content",
           "type": "bool"
@@ -151,7 +151,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -192,7 +192,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -233,7 +233,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "unsafe_mode",
           "type": "bool"
@@ -302,7 +302,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -337,7 +337,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 1,
           "description": "",
           "name": "n",
           "type": "int"
@@ -420,7 +420,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 1000,
           "description": "Maximum number of rows to return (default: 1000)",
           "name": "row_limit",
           "type": "int"
@@ -468,7 +468,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -503,13 +503,13 @@
           "type": "is-instance"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "content",
           "type": "bool"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summary",
           "type": "bool"
@@ -573,7 +573,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "Whether to overwrite the archive if it already exists.",
           "name": "overwrite",
           "type": "bool"
@@ -608,7 +608,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 1,
           "description": "Line number to start reading from (1-indexed)",
           "name": "start_line",
           "type": "int"
@@ -642,7 +642,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "overwrite",
           "type": "union[str, bool]"
@@ -778,7 +778,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -868,7 +868,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -936,7 +936,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -965,13 +965,13 @@
       "humanized_name": "Multion Browse Tool",
       "init_params": [
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "local",
           "type": "bool"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "",
           "name": "max_steps",
           "type": "int"
@@ -1019,7 +1019,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -1089,7 +1089,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -1136,7 +1136,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -1270,7 +1270,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "",
           "name": "limit",
           "type": "int"
@@ -1343,7 +1343,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -1447,7 +1447,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "enable_logging",
           "type": "bool"
@@ -1557,13 +1557,13 @@
           "type": "any"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "return_html",
           "type": "bool"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "",
           "name": "wait_time",
           "type": "int"
@@ -1694,13 +1694,13 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 10,
           "description": "",
           "name": "n_results",
           "type": "int"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "save_file",
           "type": "bool"
@@ -1759,7 +1759,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -1788,7 +1788,7 @@
           "type": "dict[any, any]"
         },
         {
-          "default": "",
+          "default": 10,
           "description": "",
           "name": "limit",
           "type": "int"
@@ -1882,7 +1882,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 10,
           "description": "",
           "name": "limit",
           "type": "int"
@@ -1953,7 +1953,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -1982,19 +1982,19 @@
           "type": "model"
         },
         {
-          "default": "",
+          "default": true,
           "description": "Enable query result caching",
           "name": "enable_caching",
           "type": "bool"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "Maximum retry attempts",
           "name": "max_retries",
           "type": "int"
         },
         {
-          "default": "",
+          "default": 5,
           "description": "Size of connection pool",
           "name": "pool_size",
           "type": "int"
@@ -2032,7 +2032,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 300,
           "description": "Query timeout in seconds",
           "name": "timeout",
           "type": "int"
@@ -2063,7 +2063,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": true,
           "description": "",
           "name": "log_failures",
           "type": "bool"
@@ -2112,13 +2112,13 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 3000,
           "description": "",
           "name": "dom_settle_timeout_ms",
           "type": "int"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "headless",
           "type": "bool"
@@ -2142,7 +2142,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": true,
           "description": "",
           "name": "self_heal",
           "type": "bool"
@@ -2154,13 +2154,13 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 1,
           "description": "",
           "name": "verbose",
           "type": "int"
         },
         {
-          "default": "",
+          "default": true,
           "description": "",
           "name": "wait_for_captcha_solves",
           "type": "bool"
@@ -2209,7 +2209,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -2272,7 +2272,7 @@
           "type": "dict[any, any]"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "",
           "name": "limit",
           "type": "int"
@@ -2333,7 +2333,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -2374,7 +2374,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -2415,7 +2415,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
@@ -2456,7 +2456,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
