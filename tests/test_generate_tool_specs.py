@@ -149,6 +149,8 @@ def test_extract_tool_info(extractor):
         assert params["filters"]["description"] == ""
         assert params["filters"]["type"] == "list[str]"
 
+        assert tool_info["package_dependencies"] == ["this-is-a-required-package", "another-required-package"]
+
 
 def test_save_to_json(extractor, tmp_path):
     extractor.tools_spec = [{
