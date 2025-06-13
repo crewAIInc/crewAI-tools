@@ -40,6 +40,26 @@
       ]
     },
     {
+      "description": "A tool that can be used to generate speech from text.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Camb AI",
+          "name": "CAMB_API_KEY",
+          "required": true
+        }
+      ],
+      "humanized_name": "CambAI Tool",
+      "name": "CambAITool",
+      "run_params": [
+        {
+          "description": "Mandatory text you want to generate speech from",
+          "name": "text",
+          "type": "str"
+        }
+      ]
+    },
+    {
       "description": "A tool that can be used to semantic search a query from a CSV's content.",
       "env_vars": [],
       "humanized_name": "Search a CSV's content",
