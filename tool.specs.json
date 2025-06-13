@@ -25,8 +25,12 @@
         }
       ],
       "name": "AIMindTool",
+      "package_dependencies": [
+        "minds-sdk"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Question in natural language to ask the AI-Mind",
           "name": "query",
           "type": "str"
@@ -45,13 +49,13 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 10,
           "description": "",
           "name": "n_results",
           "type": "int"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "save_file",
           "type": "bool"
@@ -64,8 +68,10 @@
         }
       ],
       "name": "BraveSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the internet",
           "name": "search_query",
           "type": "str"
@@ -108,15 +114,19 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "text_content",
           "type": "bool"
         }
       ],
       "name": "BrowserbaseLoadTool",
+      "package_dependencies": [
+        "browserbase"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Website URL",
           "name": "url",
           "type": "str"
@@ -141,20 +151,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "CSVSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the CSV's content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory csv path you want to search",
           "name": "csv",
           "type": "str"
@@ -179,20 +192,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "CodeDocsSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the Code Docs content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory docs_url path you want to search",
           "name": "docs_url",
           "type": "str"
@@ -217,7 +233,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "unsafe_mode",
           "type": "bool"
@@ -236,13 +252,16 @@
         }
       ],
       "name": "CodeInterpreterTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Python3 code used to be interpreted in the Docker container. ALWAYS PRINT the final result and the output of the code",
           "name": "code",
           "type": "str"
         },
         {
+          "default": "",
           "description": "List of libraries used in the code with proper installing names separated by commas. Example: numpy,pandas,beautifulsoup4",
           "name": "libraries_used",
           "type": "list[str]"
@@ -262,6 +281,7 @@
         }
       ],
       "name": "ComposioTool",
+      "package_dependencies": [],
       "run_params": []
     },
     {
@@ -282,20 +302,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "DOCXSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory docx path you want to search",
           "name": "docx",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the DOCX's content",
           "name": "search_query",
           "type": "str"
@@ -314,7 +337,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 1,
           "description": "",
           "name": "n",
           "type": "int"
@@ -333,8 +356,10 @@
         }
       ],
       "name": "DallETool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Description of the image to be generated by Dall-E.",
           "name": "image_description",
           "type": "str"
@@ -366,28 +391,36 @@
         }
       ],
       "name": "DatabricksQueryTool",
+      "package_dependencies": [
+        "databricks-sdk"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "SQL query to execute against the Databricks workspace table",
           "name": "query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Databricks catalog name (optional, defaults to configured catalog)",
           "name": "catalog",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Databricks schema name (optional, defaults to configured schema)",
           "name": "db_schema",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Databricks SQL warehouse ID (optional, defaults to configured warehouse)",
           "name": "warehouse_id",
           "type": "str"
         },
         {
+          "default": 1000,
           "description": "Maximum number of rows to return (default: 1000)",
           "name": "row_limit",
           "type": "int"
@@ -407,8 +440,10 @@
         }
       ],
       "name": "DirectoryReadTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory directory to list content",
           "name": "directory",
           "type": "str"
@@ -433,20 +468,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "DirectorySearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the directory's content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory directory you want to search",
           "name": "directory",
           "type": "str"
@@ -465,13 +503,13 @@
           "type": "is-instance"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "content",
           "type": "bool"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summary",
           "type": "bool"
@@ -484,23 +522,30 @@
         }
       ],
       "name": "EXASearchTool",
+      "package_dependencies": [
+        "exa_py"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the internet",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Start date for the search",
           "name": "start_published_date",
           "type": "str"
         },
         {
+          "default": "",
           "description": "End date for the search",
           "name": "end_published_date",
           "type": "str"
         },
         {
+          "default": "",
           "description": "List of domains to include in the search",
           "name": "include_domains",
           "type": "list[str]"
@@ -513,24 +558,29 @@
       "humanized_name": "File Compressor Tool",
       "init_params": [],
       "name": "FileCompressorTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Path to the file or directory to compress.",
           "name": "input_path",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Optional output archive filename.",
           "name": "output_path",
           "type": "str"
         },
         {
+          "default": false,
           "description": "Whether to overwrite the archive if it already exists.",
           "name": "overwrite",
           "type": "bool"
         },
         {
-          "description": "zip",
+          "default": "zip",
+          "description": "Compression format ('zip', 'tar', 'tar.gz', 'tar.bz2', 'tar.xz').",
           "name": "format",
           "type": "str"
         }
@@ -549,18 +599,22 @@
         }
       ],
       "name": "FileReadTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory file full path to read the file",
           "name": "file_path",
           "type": "str"
         },
         {
+          "default": 1,
           "description": "Line number to start reading from (1-indexed)",
           "name": "start_line",
           "type": "int"
         },
         {
+          "default": "",
           "description": "Number of lines to read. If None, reads the entire file",
           "name": "line_count",
           "type": "int"
@@ -573,23 +627,28 @@
       "humanized_name": "File Writer Tool",
       "init_params": [],
       "name": "FileWriterTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "",
           "name": "filename",
           "type": "str"
         },
         {
-          "description": "./",
+          "default": "./",
+          "description": "",
           "name": "directory",
           "type": "str"
         },
         {
+          "default": false,
           "description": "",
           "name": "overwrite",
           "type": "union[str, bool]"
         },
         {
+          "default": "",
           "description": "",
           "name": "content",
           "type": "str"
@@ -615,8 +674,12 @@
         }
       ],
       "name": "FirecrawlCrawlWebsiteTool",
+      "package_dependencies": [
+        "firecrawl-py"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Website URL",
           "name": "url",
           "type": "str"
@@ -642,8 +705,12 @@
         }
       ],
       "name": "FirecrawlScrapeWebsiteTool",
+      "package_dependencies": [
+        "firecrawl-py"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Website URL",
           "name": "url",
           "type": "str"
@@ -669,8 +736,12 @@
         }
       ],
       "name": "FirecrawlSearchTool",
+      "package_dependencies": [
+        "firecrawl-py"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Search query",
           "name": "query",
           "type": "str"
@@ -707,25 +778,29 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "GithubSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the github repo's content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory github you want to search",
           "name": "github_repo",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory content types you want to be included search, options: [code, repo, pr, issue]",
           "name": "content_types",
           "type": "list[str]"
@@ -751,18 +826,24 @@
         }
       ],
       "name": "HyperbrowserLoadTool",
+      "package_dependencies": [
+        "hyperbrowser"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Website URL",
           "name": "url",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Operation to perform on the website. Either 'scrape' or 'crawl'",
           "name": "operation",
           "type": "literal"
         },
         {
+          "default": "",
           "description": "Optional params for scrape or crawl. For more information on the supported params, visit https://docs.hyperbrowser.ai/reference/sdks/python/scrape#start-scrape-job-and-wait or https://docs.hyperbrowser.ai/reference/sdks/python/crawl#start-crawl-job-and-wait",
           "name": "params",
           "type": "dict[any, any]"
@@ -787,20 +868,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "JSONSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the JSON's content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory json path you want to search",
           "name": "json_path",
           "type": "str"
@@ -813,6 +897,9 @@
       "humanized_name": "Linkup Search Tool",
       "init_params": [],
       "name": "LinkupSearchTool",
+      "package_dependencies": [
+        "linkup-sdk"
+      ],
       "run_params": []
     },
     {
@@ -828,6 +915,7 @@
         }
       ],
       "name": "LlamaIndexTool",
+      "package_dependencies": [],
       "run_params": []
     },
     {
@@ -848,20 +936,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "MDXSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the MDX's content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory mdx path you want to search",
           "name": "mdx",
           "type": "str"
@@ -874,13 +965,13 @@
       "humanized_name": "Multion Browse Tool",
       "init_params": [
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "local",
           "type": "bool"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "",
           "name": "max_steps",
           "type": "int"
@@ -899,6 +990,9 @@
         }
       ],
       "name": "MultiOnTool",
+      "package_dependencies": [
+        "multion"
+      ],
       "run_params": []
     },
     {
@@ -925,15 +1019,17 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "MySQLSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory semantic search query you want to use to search the database's content",
           "name": "search_query",
           "type": "str"
@@ -958,15 +1054,17 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": [],
           "description": "",
           "name": "tables",
           "type": "list[any]"
         }
       ],
       "name": "NL2SQLTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "The SQL query to execute.",
           "name": "sql_query",
           "type": "str"
@@ -991,20 +1089,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "PDFSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory query you want to use to search the PDF's content",
           "name": "query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory pdf path you want to search",
           "name": "pdf",
           "type": "str"
@@ -1035,15 +1136,17 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "PGSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory semantic search query you want to use to search the database's content",
           "name": "search_query",
           "type": "str"
@@ -1056,7 +1159,7 @@
       "humanized_name": "Patronus Evaluation Tool",
       "init_params": [
         {
-          "default": "",
+          "default": [],
           "description": "",
           "name": "criteria",
           "type": "list[dict[str, str]]"
@@ -1068,13 +1171,14 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": [],
           "description": "",
           "name": "evaluators",
           "type": "list[dict[str, str]]"
         }
       ],
       "name": "PatronusEvalTool",
+      "package_dependencies": [],
       "run_params": []
     },
     {
@@ -1089,35 +1193,41 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": [],
           "description": "",
           "name": "evaluators",
           "type": "list[dict[str, str]]"
         }
       ],
       "name": "PatronusPredefinedCriteriaEvalTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "The agent's task description in simple text",
           "name": "evaluated_model_input",
           "type": "dict[any, any]"
         },
         {
+          "default": "",
           "description": "The agent's output of the task",
           "name": "evaluated_model_output",
           "type": "dict[any, any]"
         },
         {
+          "default": "",
           "description": "The agent's context",
           "name": "evaluated_model_retrieved_context",
           "type": "dict[any, any]"
         },
         {
+          "default": "",
           "description": "The agent's gold answer only if available",
           "name": "evaluated_model_gold_answer",
           "type": "dict[any, any]"
         },
         {
+          "default": "",
           "description": "List of dictionaries containing the evaluator and criteria to evaluate the model input and output. An example input for this field: [{'evaluator': '[evaluator-from-user]', 'criteria': '[criteria-from-user]'}]",
           "name": "evaluators",
           "type": "list[dict[str, str]]"
@@ -1160,7 +1270,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "",
           "name": "limit",
           "type": "int"
@@ -1191,18 +1301,24 @@
         }
       ],
       "name": "QdrantVectorSearchTool",
+      "package_dependencies": [
+        "qdrant-client"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "The query to search retrieve relevant information from the Qdrant database. Pass only the query, not the question.",
           "name": "query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Filter by properties. Pass only the properties, not the question.",
           "name": "filter_by",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Filter by value. Pass only the value, not the question.",
           "name": "filter_value",
           "type": "str"
@@ -1227,13 +1343,14 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "RagTool",
+      "package_dependencies": [],
       "run_params": []
     },
     {
@@ -1267,13 +1384,16 @@
         }
       ],
       "name": "ScrapeElementFromWebsiteTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory website url to read the file",
           "name": "website_url",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory css reference for element to scrape from the website",
           "name": "css_element",
           "type": "str"
@@ -1305,8 +1425,10 @@
         }
       ],
       "name": "ScrapeWebsiteTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory website url to read the file",
           "name": "website_url",
           "type": "str"
@@ -1325,7 +1447,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "enable_logging",
           "type": "bool"
@@ -1344,14 +1466,19 @@
         }
       ],
       "name": "ScrapegraphScrapeTool",
+      "package_dependencies": [
+        "scrapegraph-py"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory website url to scrape",
           "name": "website_url",
           "type": "str"
         },
         {
-          "description": "Extract the main content of the webpage",
+          "default": "Extract the main content of the webpage",
+          "description": "Prompt to guide the extraction of content",
           "name": "user_prompt",
           "type": "str"
         }
@@ -1376,23 +1503,30 @@
         }
       ],
       "name": "ScrapflyScrapeWebsiteTool",
+      "package_dependencies": [
+        "scrapfly-sdk"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Webpage URL",
           "name": "url",
           "type": "str"
         },
         {
-          "description": "markdown",
+          "default": "markdown",
+          "description": "Webpage extraction format",
           "name": "scrape_format",
           "type": "literal"
         },
         {
+          "default": "",
           "description": "Scrapfly request scrape config",
           "name": "scrape_config",
           "type": "dict[str, any]"
         },
         {
+          "default": "",
           "description": "whether to ignore failures",
           "name": "ignore_scrape_failures",
           "type": "bool"
@@ -1423,13 +1557,13 @@
           "type": "any"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "return_html",
           "type": "bool"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "",
           "name": "wait_time",
           "type": "int"
@@ -1442,13 +1576,19 @@
         }
       ],
       "name": "SeleniumScrapingTool",
+      "package_dependencies": [
+        "selenium",
+        "webdriver-manager"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory website url to read the file. Must start with http:// or https://",
           "name": "website_url",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory css reference for element to scrape from the website",
           "name": "css_element",
           "type": "str"
@@ -1468,13 +1608,18 @@
         }
       ],
       "name": "SerpApiGoogleSearchTool",
+      "package_dependencies": [
+        "serpapi"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to Google search.",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Location you want the search to be performed in.",
           "name": "location",
           "type": "str"
@@ -1494,13 +1639,18 @@
         }
       ],
       "name": "SerpApiGoogleShoppingTool",
+      "package_dependencies": [
+        "serpapi"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to Google shopping.",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Location you want the search to be performed in.",
           "name": "location",
           "type": "str"
@@ -1544,13 +1694,13 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 10,
           "description": "",
           "name": "n_results",
           "type": "int"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "save_file",
           "type": "bool"
@@ -1563,8 +1713,10 @@
         }
       ],
       "name": "SerperDevTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the internet",
           "name": "search_query",
           "type": "str"
@@ -1607,15 +1759,17 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "SerplyJobSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to fetch jobs postings.",
           "name": "search_query",
           "type": "str"
@@ -1634,7 +1788,7 @@
           "type": "dict[any, any]"
         },
         {
-          "default": "",
+          "default": 10,
           "description": "",
           "name": "limit",
           "type": "int"
@@ -1653,8 +1807,10 @@
         }
       ],
       "name": "SerplyNewsSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to fetch news articles",
           "name": "search_query",
           "type": "str"
@@ -1692,8 +1848,10 @@
         }
       ],
       "name": "SerplyScholarSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to fetch scholarly literature",
           "name": "search_query",
           "type": "str"
@@ -1724,7 +1882,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 10,
           "description": "",
           "name": "limit",
           "type": "int"
@@ -1749,8 +1907,10 @@
         }
       ],
       "name": "SerplyWebSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to Google search",
           "name": "search_query",
           "type": "str"
@@ -1793,15 +1953,17 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "SerplyWebpageToMarkdownTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory url you want to use to fetch and convert to markdown",
           "name": "url",
           "type": "str"
@@ -1820,19 +1982,19 @@
           "type": "model"
         },
         {
-          "default": "",
+          "default": true,
           "description": "Enable query result caching",
           "name": "enable_caching",
           "type": "bool"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "Maximum retry attempts",
           "name": "max_retries",
           "type": "int"
         },
         {
-          "default": "",
+          "default": 5,
           "description": "Size of connection pool",
           "name": "pool_size",
           "type": "int"
@@ -1845,23 +2007,32 @@
         }
       ],
       "name": "SnowflakeSearchTool",
+      "package_dependencies": [
+        "snowflake-connector-python",
+        "snowflake-sqlalchemy",
+        "cryptography"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "SQL query or semantic search query to execute",
           "name": "query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Override default database",
           "name": "database",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Override default schema",
           "name": "snowflake_schema",
           "type": "str"
         },
         {
+          "default": 300,
           "description": "Query timeout in seconds",
           "name": "timeout",
           "type": "int"
@@ -1892,7 +2063,7 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": true,
           "description": "",
           "name": "log_failures",
           "type": "bool"
@@ -1911,14 +2082,19 @@
         }
       ],
       "name": "SpiderTool",
+      "package_dependencies": [
+        "spider-client"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory website URL to scrape or crawl",
           "name": "website_url",
           "type": "str"
         },
         {
-          "description": "scrape",
+          "default": "scrape",
+          "description": "The mode of the SpiderTool. The only two allowed modes are `scrape` or `crawl`. Crawl mode will follow up to 5 links and return their content in markdown format.",
           "name": "mode",
           "type": "literal"
         }
@@ -1936,13 +2112,13 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 3000,
           "description": "",
           "name": "dom_settle_timeout_ms",
           "type": "int"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "headless",
           "type": "bool"
@@ -1966,7 +2142,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": true,
           "description": "",
           "name": "self_heal",
           "type": "bool"
@@ -1978,32 +2154,38 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 1,
           "description": "",
           "name": "verbose",
           "type": "int"
         },
         {
-          "default": "",
+          "default": true,
           "description": "",
           "name": "wait_for_captcha_solves",
           "type": "bool"
         }
       ],
       "name": "StagehandTool",
+      "package_dependencies": [
+        "stagehand"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "Natural language instruction describing what you want to do on the website. Be specific about the action you want to perform, data to extract, or elements to observe. If your task is complex, break it down into simple, sequential steps. For example: 'Step 1: Navigate to https://example.com; Step 2: Click the login button; Step 3: Enter your credentials; Step 4: Submit the form.' Complex tasks like 'Search for OpenAI' should be broken down as: 'Step 1: Navigate to https://google.com; Step 2: Type OpenAI in the search box; Step 3: Press Enter or click the search button'.",
           "name": "instruction",
           "type": "str"
         },
         {
+          "default": "",
           "description": "The URL to navigate to before executing the instruction. MUST be used with 'navigate' command. ",
           "name": "url",
           "type": "str"
         },
         {
-          "description": "act",
+          "default": "act",
+          "description": "The type of command to execute (choose one): \n        - 'act': Perform an action like clicking buttons, filling forms, etc. (default)\n        - 'navigate': Specifically navigate to a URL\n        - 'extract': Extract structured data from the page \n        - 'observe': Identify and analyze elements on the page\n        ",
           "name": "command_type",
           "type": "str"
         }
@@ -2027,20 +2209,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "TXTSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the txt's content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory txt path you want to search",
           "name": "txt",
           "type": "str"
@@ -2053,9 +2238,11 @@
       "humanized_name": "Vision Tool",
       "init_params": [],
       "name": "VisionTool",
+      "package_dependencies": [],
       "run_params": [
         {
-          "description": "The image path or URL.",
+          "default": "The image path or URL.",
+          "description": "",
           "name": "image_path_url",
           "type": "str"
         }
@@ -2085,7 +2272,7 @@
           "type": "dict[any, any]"
         },
         {
-          "default": "",
+          "default": 3,
           "description": "",
           "name": "limit",
           "type": "int"
@@ -2116,8 +2303,12 @@
         }
       ],
       "name": "WeaviateVectorSearchTool",
+      "package_dependencies": [
+        "weaviate-client"
+      ],
       "run_params": [
         {
+          "default": "",
           "description": "The query to search retrieve relevant information from the Weaviate database. Pass only the query, not the question.",
           "name": "query",
           "type": "str"
@@ -2142,20 +2333,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "WebsiteSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search a specific website",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory valid website URL you want to search on",
           "name": "website",
           "type": "str"
@@ -2180,20 +2374,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "XMLSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the XML's content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory xml path you want to search",
           "name": "xml",
           "type": "str"
@@ -2218,20 +2415,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "YoutubeChannelSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the Youtube Channels content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory youtube_channel_handle path you want to search",
           "name": "youtube_channel_handle",
           "type": "str"
@@ -2256,20 +2456,23 @@
           "type": "dict[str, any]"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "summarize",
           "type": "bool"
         }
       ],
       "name": "YoutubeVideoSearchTool",
+      "package_dependencies": [],
       "run_params": [
         {
+          "default": "",
           "description": "Mandatory search query you want to use to search the Youtube Video content",
           "name": "search_query",
           "type": "str"
         },
         {
+          "default": "",
           "description": "Mandatory youtube_video_url path you want to search",
           "name": "youtube_video_url",
           "type": "str"
