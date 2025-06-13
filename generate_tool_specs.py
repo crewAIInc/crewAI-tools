@@ -38,6 +38,7 @@ class ToolSpecExtractor:
                 "run_params": self._extract_params(fields.get("args_schema")),
                 "env_vars": self._extract_env_vars(fields.get("env_vars")),
                 "init_params": self._extract_init_params(fields),
+                "package_dependencies": self._extract_field_default(fields.get("package_dependencies"), fallback=[]),
             }
 
             self.tools_spec.append(tool_info)
@@ -56,7 +57,7 @@ class ToolSpecExtractor:
 
         schema = field.get("schema", {})
         default = schema.get("default")
-        return default if isinstance(default, str) else fallback
+        return default if isinstance(default, (list, str)) else fallback
 
     def _extract_params(self, args_schema_field: Optional[Dict]) -> List[Dict[str, str]]:
         if not args_schema_field:
@@ -120,7 +121,7 @@ class ToolSpecExtractor:
         return self._schema_type_to_str(schema)
 
     def _extract_init_params(self, schema: Dict) -> dict:
-        exclude_init_params = ['name', 'description', 'env_vars', 'args_schema', 'description_updated', 'cache_function', 'result_as_answer', 'max_usage_count', 'current_usage_count']
+        exclude_init_params = ['name', 'description', 'env_vars', 'args_schema', 'description_updated', 'cache_function', 'result_as_answer', 'max_usage_count', 'current_usage_count', 'package_dependencies']
         filtered_dict = sorted({k: schema[k] for k in schema.keys() - exclude_init_params}.items(), key=lambda x: x[0])
         params = []
         for name, info in filtered_dict:

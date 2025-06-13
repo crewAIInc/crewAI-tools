@@ -42,6 +42,7 @@ def create_mock_schema(cls):
                 },
                 "my_parameter": {'type': 'model-field', 'schema': {'type': 'default', 'schema': {'type': 'nullable', 'schema': {'type': 'str'}}, 'default': 'This is default value'}, 'metadata': {'pydantic_js_updates': {'description': 'What a description'}}},
                 "another_parameter": {'type': 'model-field', 'schema': {'type': 'default', 'schema': {'type': 'nullable', 'schema': {'type': 'str'}}, 'default': 'Another way to define a default value'}},
+                "package_dependencies": {'type': 'model-field', 'schema': {'type': 'default', 'schema': {'type': 'nullable', 'schema': {'type': 'list', 'items_schema': {'type': 'str'}}}, 'default': ["this-is-a-required-package", "another-required-package"]}},
             },
             "model_name": cls.__name__
         }
@@ -163,6 +164,8 @@ def test_extract_tool_info(extractor):
 
         assert params["filters"]["description"] == ""
         assert params["filters"]["type"] == "list[str]"
+
+        assert tool_info["package_dependencies"] == ["this-is-a-required-package", "another-required-package"]
 
 
 def test_save_to_json(extractor, tmp_path):
