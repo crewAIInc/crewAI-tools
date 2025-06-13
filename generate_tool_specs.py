@@ -56,7 +56,7 @@ class ToolSpecExtractor:
 
         schema = field.get("schema", {})
         default = schema.get("default")
-        return default if isinstance(default, (list, str)) else fallback
+        return default if isinstance(default, (list, str, int)) else fallback
 
     def _extract_params(self, args_schema_field: Optional[Dict]) -> List[Dict[str, str]]:
         if not args_schema_field:

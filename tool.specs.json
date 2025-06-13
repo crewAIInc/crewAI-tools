@@ -190,7 +190,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 1000,
           "description": "Maximum number of rows to return (default: 1000)",
           "name": "row_limit",
           "type": "int"
@@ -288,7 +288,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "Whether to overwrite the archive if it already exists.",
           "name": "overwrite",
           "type": "bool"
@@ -315,7 +315,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 1,
           "description": "Line number to start reading from (1-indexed)",
           "name": "start_line",
           "type": "int"
@@ -348,7 +348,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": false,
           "description": "",
           "name": "overwrite",
           "type": "union[str, bool]"
@@ -979,7 +979,7 @@
           "type": "str"
         },
         {
-          "default": "",
+          "default": 300,
           "description": "Query timeout in seconds",
           "name": "timeout",
           "type": "int"
