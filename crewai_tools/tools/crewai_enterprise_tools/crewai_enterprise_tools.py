@@ -4,8 +4,11 @@ Crewai Enterprise Tools
 
 import os
 import typing as t
+import logging
 from crewai.tools import BaseTool
 from crewai_tools.adapters.enterprise_adapter import EnterpriseActionKitToolAdapter
+
+logger = logging.getLogger(__name__)
 
 
 def CrewaiEnterpriseTools(
@@ -27,6 +30,7 @@ def CrewaiEnterpriseTools(
     """
     if enterprise_token is None:
         enterprise_token = os.environ.get("CREWAI_ENTEPRISE_TOOLS_TOKEN")
+        logger.warning("No enterprise token provided")
 
     adapter_kwargs = {"enterprise_action_token": enterprise_token}
 
