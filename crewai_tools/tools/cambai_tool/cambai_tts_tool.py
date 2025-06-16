@@ -11,7 +11,7 @@ class VoicePromptSchema(BaseModel):
     text: str
 
 
-class CambAITool(BaseTool):
+class CambAITTSTool(BaseTool):
     name: str = "CambAI Tool"
     description: str = "Generates Speech from Text"
     args_schema: Type[BaseModel] = VoicePromptSchema

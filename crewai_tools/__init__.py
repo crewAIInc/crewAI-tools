@@ -11,7 +11,7 @@ from .tools import (
     ApifyActorsTool,
     BraveSearchTool,
     BrowserbaseLoadTool,
-    CambAITool,
+    CambAITTSTool,
     CodeDocsSearchTool,
     CodeInterpreterTool,
     ComposioTool,
