@@ -37,6 +37,7 @@ class ToolSpecExtractor:
                 "description": self._extract_field_default(fields.get("description")).strip(),
                 "run_params": self._extract_params(fields.get("args_schema")),
                 "env_vars": self._extract_env_vars(fields.get("env_vars")),
+                "package_dependencies": self._extract_field_default(fields.get("package_dependencies"), fallback=[]),
             }
 
             self.tools_spec.append(tool_info)
@@ -52,10 +53,10 @@ class ToolSpecExtractor:
     def _extract_field_default(self, field: Optional[Dict], fallback: str = "") -> str:
         if not field:
             return fallback
-            
+
         schema = field.get("schema", {})
         default = schema.get("default")
-        return default if isinstance(default, str) else fallback
+        return default if isinstance(default, (list, str, int)) else fallback
 
     def _extract_params(self, args_schema_field: Optional[Dict]) -> List[Dict[str, str]]:
         if not args_schema_field:
@@ -77,9 +78,9 @@ class ToolSpecExtractor:
                     breakpoint()
                 param = {
                     "name": name,
-                    "description": self._extract_field_default(info)
-                        or self._extract_field_description_from_metadata(info),
+                    "description": self._extract_field_description_from_metadata(info),
                     "type": _type,
+                    "default": self._extract_field_default(info),
                 }
                 params.append(param)
 
@@ -103,7 +104,7 @@ class ToolSpecExtractor:
                     "default": env_var.default,
                 })
         return env_vars
-    
+
     def _extract_field_description_from_metadata(self, field: Dict) -> str:
         if metadata := field.get("metadata"):
             return metadata.get("pydantic_js_updates", {}).get("description", "")
@@ -125,7 +126,7 @@ class ToolSpecExtractor:
         if schema_type == "list" and "items_schema" in schema:
             item_type = self._schema_type_to_str(schema["items_schema"])
             return f"list[{item_type}]"
-        
+
         if schema_type == "union" and "choices" in schema:
             choices = schema["choices"]
             item_types = [self._schema_type_to_str(choice) for choice in choices]
