@@ -22,14 +22,83 @@ class ToolSpecExtractor:
         self.tools_spec: List[Dict[str, Any]] = []
         self.processed_tools: set[str] = set()
 
-    def extract_all_tools(self) -> List[Dict[str, Any]]:
+    def extract_all_tools(self, include_hardcoded_specs: bool = True) -> List[Dict[str, Any]]:
         for name in dir(tools):
             if name.endswith("Tool") and name not in self.processed_tools:
                 obj = getattr(tools, name, None)
                 if inspect.isclass(obj):
                     self.extract_tool_info(obj)
                     self.processed_tools.add(name)
+
+        if include_hardcoded_specs:
+            self.add_crewai_enterprise_tools_specs()
+
         return self.tools_spec
+
+    def add_crewai_enterprise_tools_specs(self) -> None:
+        crewai_enterprise_tools_spec = {
+            "name": "CrewaiEnterpriseTools",
+            "humanized_name": "CrewAI Enterprise Tools",
+            "description": "Factory function that returns crewai enterprise tools.",
+            "run_params_schema": {},
+            "init_params_schema": {
+                "properties": {
+                    "enterprise_token": {
+                        "anyOf": [
+                            {"type": "string"},
+                            {"type": "null"}
+                        ],
+                        "default": None,
+                        "title": "Enterprise Token",
+                        "description": "The token for accessing enterprise actions. If not provided, will try to use CREWAI_ENTERPRISE_TOOLS_TOKEN env var."
+                    },
+                    "actions_list": {
+                        "anyOf": [
+                            {
+                                "items": {"type": "string"},
+                                "type": "array"
+                            },
+                            {"type": "null"}
+                        ],
+                        "default": None,
+                        "title": "Actions List",
+                        "description": "Optional list of specific tool names to include. If provided, only tools with these names will be returned."
+                    },
+                    "enterprise_action_kit_project_id": {
+                        "anyOf": [
+                            {"type": "string"},
+                            {"type": "null"}
+                        ],
+                        "default": None,
+                        "title": "Enterprise Action Kit Project ID",
+                        "description": "Optional project ID for enterprise action kit."
+                    },
+                    "enterprise_action_kit_project_url": {
+                        "anyOf": [
+                            {"type": "string"},
+                            {"type": "null"}
+                        ],
+                        "default": None,
+                        "title": "Enterprise Action Kit Project URL",
+                        "description": "Optional project URL for enterprise action kit."
+                    }
+                },
+                "title": "CrewaiEnterpriseTools",
+                "type": "object"
+            },
+            "env_vars": [
+                {
+                    "name": "CREWAI_ENTERPRISE_TOOLS_TOKEN",
+                    "description": "The token for accessing enterprise actions",
+                    "required": False,
+                    "default": None
+                }
+            ],
+            "package_dependencies": [],
+        }
+
+        self.tools_spec.append(crewai_enterprise_tools_spec)
+
     def extract_tool_info(self, tool_class: BaseTool) -> None:
         try:
             core_schema = tool_class.__pydantic_core_schema__

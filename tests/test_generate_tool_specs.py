@@ -48,7 +48,7 @@ def test_unwrap_schema(extractor):
 def mock_tool_extractor(extractor):
     with mock.patch("generate_tool_specs.dir", return_value=["MockTool"]), \
          mock.patch("generate_tool_specs.getattr", return_value=MockTool):
-        extractor.extract_all_tools()
+        extractor.extract_all_tools(include_hardcoded_specs=False)
         assert len(extractor.tools_spec) == 1
         return extractor.tools_spec[0]
 
@@ -136,6 +136,31 @@ def test_extract_run_params_schema(mock_tool_extractor):
 def test_extract_package_dependencies(mock_tool_extractor):
     tool_info = mock_tool_extractor
     assert tool_info["package_dependencies"] == ["this-is-a-required-package", "another-required-package"]
+
+
+def test_hardcoded_crewai_enterprise_tools_specs(extractor):
+    with mock.patch("generate_tool_specs.dir", return_value=[]), \
+         mock.patch("generate_tool_specs.getattr", return_value=None):
+        tools_specs = extractor.extract_all_tools()
+
+    enterprise_tools_specs = None
+    for tool_spec in tools_specs:
+        if tool_spec["name"] == "CrewaiEnterpriseTools":
+            enterprise_tools_specs = tool_spec
+            break
+
+    assert enterprise_tools_specs is not None, "CrewaiEnterpriseTools specs not found"
+    assert enterprise_tools_specs["humanized_name"] == "CrewAI Enterprise Tools"
+    assert "Factory function that returns" in enterprise_tools_specs["description"]
+
+    init_params = enterprise_tools_specs["init_params_schema"]["properties"]
+    assert "enterprise_token" in init_params
+    assert "actions_list" in init_params
+    assert "enterprise_action_kit_project_id" in init_params
+    assert "enterprise_action_kit_project_url" in init_params
+
+    assert len(enterprise_tools_specs["env_vars"]) == 1
+    assert enterprise_tools_specs["env_vars"][0]["name"] == "CREWAI_ENTERPRISE_TOOLS_TOKEN"
 
 
 def test_save_to_json(extractor, tmp_path):

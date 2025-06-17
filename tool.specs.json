@@ -6240,6 +6240,82 @@
         "title": "YoutubeVideoSearchToolSchema",
         "type": "object"
       }
+    },
+    {
+      "description": "Factory function that returns crewai enterprise tools.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "The token for accessing enterprise actions",
+          "name": "CREWAI_ENTERPRISE_TOOLS_TOKEN",
+          "required": false
+        }
+      ],
+      "humanized_name": "CrewAI Enterprise Tools",
+      "init_params_schema": {
+        "properties": {
+          "actions_list": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional list of specific tool names to include. If provided, only tools with these names will be returned.",
+            "title": "Actions List"
+          },
+          "enterprise_action_kit_project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional project ID for enterprise action kit.",
+            "title": "Enterprise Action Kit Project ID"
+          },
+          "enterprise_action_kit_project_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional project URL for enterprise action kit.",
+            "title": "Enterprise Action Kit Project URL"
+          },
+          "enterprise_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The token for accessing enterprise actions. If not provided, will try to use CREWAI_ENTERPRISE_TOOLS_TOKEN env var.",
+            "title": "Enterprise Token"
+          }
+        },
+        "title": "CrewaiEnterpriseTools",
+        "type": "object"
+      },
+      "name": "CrewaiEnterpriseTools",
+      "package_dependencies": [],
+      "run_params_schema": {}
     }
   ]
 }
