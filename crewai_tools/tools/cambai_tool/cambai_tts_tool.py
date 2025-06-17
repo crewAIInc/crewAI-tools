@@ -1,5 +1,6 @@
 import json
 import os
+import random
 from typing import Any, Optional, Type
 
 from crewai.tools import BaseTool
@@ -16,8 +17,8 @@ class CambAITTSTool(BaseTool):
     description: str = "Generates Speech from Text"
     args_schema: Type[BaseModel] = VoicePromptSchema
     api_key: Optional[str] = None
-    voice_id: int = 20303
-    language: int = 1
+    voice_id: Optional[int] = None
+    language: Optional[int] = None
     client: Optional[Any] = None
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
@@ -30,12 +31,12 @@ class CambAITTSTool(BaseTool):
         try:
             from cambai import CambAI
         except ImportError:
-            raise ImportError("`cambai` package not found, please run `pip install cambai`")
+            raise ImportError("`cambai` package not found, please run `pip install cambai-sdk`")
         client = CambAI(api_key=self.api_key)
         self.client = client
 
     def _run(self, **kwargs) -> str:
-
+        from cambai.models.output_type import OutputType 
         text = kwargs.get("text")
         voice_id = kwargs.get("voice_id")
         language = kwargs.get("language")
@@ -43,10 +44,18 @@ class CambAITTSTool(BaseTool):
         if not text:
             return "Text is required."
 
+        if not voice_id:
+            voices = self.client.list_voices()
+            voice_list = []
+            for voice in voices:
+                voice_list.append(voice.id)
+            voice_id = random.choice(voice_list)
+
         response = self.client.text_to_speech(
             text=text, 
-            voice_id=voice_id if voice_id is not None else 20303, 
-            language=language if language is not None else 1
+            voice_id=voice_id, 
+            language=language if language is not None else 1,
+            output_type=OutputType.FILE_URL
         )
 
         audio_data = json.dumps(
