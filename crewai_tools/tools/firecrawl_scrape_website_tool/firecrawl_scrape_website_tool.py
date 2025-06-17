@@ -131,6 +131,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
             "proxy": None,
             "storeInCache": True,
             "zeroDataRetention": False
+            "integration": "crewai",
         }
     )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
@@ -197,6 +198,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
             self.config["store_in_cache"] = store_in_cache
         if zero_data_retention is not None:
             self.config["zero_data_retention"] = zero_data_retention
+        self.config["integration"] = "crewai"
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
