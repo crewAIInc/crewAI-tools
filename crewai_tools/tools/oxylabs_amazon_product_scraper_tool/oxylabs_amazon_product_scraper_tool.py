@@ -2,7 +2,7 @@ import json
 import os
 from importlib.metadata import version
 from platform import architecture, python_version
-from typing import Any, Type
+from typing import Any, List, Type
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field
@@ -72,6 +72,7 @@ class OxylabsAmazonProductScraperTool(BaseTool):
 
     oxylabs_api: RealtimeClient
     config: OxylabsAmazonProductScraperConfig
+    package_dependencies: List[str] = ["oxylabs"]
 
     def __init__(
         self,
