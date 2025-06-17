@@ -108,9 +108,6 @@ class FirecrawlSearchTool(BaseTool):
                 )
 
     def _run(self, query: str) -> Any:
-        if not self._firecrawl:
-            raise RuntimeError("FirecrawlApp not properly initialized")
-
         return self._firecrawl.search(query=query, **self.config)
 
 

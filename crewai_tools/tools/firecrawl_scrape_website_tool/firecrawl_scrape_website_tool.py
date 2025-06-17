@@ -197,9 +197,6 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
                 )
 
     def _run(self, url: str) -> Any:
-        if not self._firecrawl:
-            raise RuntimeError("FirecrawlApp not properly initialized")
-
         return self._firecrawl.scrape_url(url, **self.config)
 
 try:

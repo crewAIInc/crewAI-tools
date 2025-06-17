@@ -13,37 +13,28 @@ class FirecrawlExtractToolSchema(BaseModel):
     urls: List[str] = Field(
         description="List of URLs to extract data from. URLs can include glob patterns"
     )
-    prompt: Optional[str] = Field(
-        default=None,
-        description="The prompt describing what information to extract from the pages"
-    )
-    schema: Optional[Dict[str, Any]] = Field(
-        default=None,
-        description="JSON schema defining the structure of the data to extract",
-    )
-    enable_web_search: Optional[bool] = Field(
-        default=False,
-        description="When true, the extraction will use web search to find additional data",
-    )
-    ignore_site_map: Optional[bool] = Field(
-        default=False,
-        description="When true, the extraction will not use the sitemap.xml to find additional data",
-    )
-    include_subdomains: Optional[bool] = Field(
-        default=True,
-        description="When true, subdomains of the provided URLs will also be scanned",
-    )
-    show_sources: Optional[bool] = Field(
-        default=False,
-        description="When true, the sources used to extract the data will be included in the response as sources key",
-    )
-    scrape_options: Optional[Dict[str, Any]] = Field(
-        default={},
-        description="Additional options for the crawl request",
-    )
 
 
 class FirecrawlExtractTool(BaseTool):
+    """
+    Tool for extracting structured data from webpages using Firecrawl and LLMs.
+
+    Args:
+        api_key (str): Your Firecrawl API key.
+        config (dict): Configuration options for extraction. This should include any
+            parameters supported by Firecrawl's extract method, such as:
+                - prompt (str): The prompt describing what information to extract from the pages
+                - schema (dict): JSON schema defining the structure of the data to extract
+                - enableWebSearch (bool): Use web search to find additional data
+                - ignoreSiteMap (bool): Ignore sitemap.xml
+                - includeSubdomains (bool): Scan subdomains
+                - showSources (bool): Include sources in the response
+                - scrapeOptions (dict): Additional crawl options
+
+    Note:
+        The preferred and only supported way to set extraction options is via the config dictionary.
+        Passing individual parameters is deprecated and not supported.
+    """
     model_config = ConfigDict(
         arbitrary_types_allowed=True, validate_assignment=True, frozen=False
     )
@@ -67,26 +58,20 @@ class FirecrawlExtractTool(BaseTool):
     def __init__(
         self,
         api_key: Optional[str] = None,
-        prompt: Optional[str] = None,
-        schema: Optional[Dict[str, Any]] = None,
-        enable_web_search: Optional[bool] = False,
-        ignore_site_map: Optional[bool] = False,
-        include_subdomains: Optional[bool] = True,
-        show_sources: Optional[bool] = False,
-        scrape_options: Optional[Dict[str, Any]] = None,
+        config: Optional[Dict[str, Any]] = None,
         **kwargs
     ):
+        """
+        Initialize FirecrawlExtractTool.
+
+        Args:
+            api_key (str): Your Firecrawl API key.
+            config (dict): Configuration options for extraction. See class docstring for details.
+        """
         super().__init__(**kwargs)
         self.api_key = api_key
-        self.config.update({
-            "prompt": prompt,
-            "schema": schema,
-            "enableWebSearch": enable_web_search,
-            "ignoreSiteMap": ignore_site_map,
-            "includeSubdomains": include_subdomains,
-            "showSources": show_sources,
-            "scrapeOptions": scrape_options or {},
-        })
+        if config is not None:
+            self.config = config
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
@@ -115,9 +100,6 @@ class FirecrawlExtractTool(BaseTool):
                 )
 
     def _run(self, urls: List[str]) -> Any:
-        if not self._firecrawl:
-            raise RuntimeError("FirecrawlApp not properly initialized")
-
         options = {
             "urls": urls,
             **self.config,
