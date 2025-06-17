@@ -1,15 +1,14 @@
-import os
 import re
 import time
 import urllib.request
 import urllib.parse
 import urllib.error
 import xml.etree.ElementTree as ET
-from typing import Type, List, Optional
+from typing import Type, List, Optional, ClassVar
 from pydantic import BaseModel, Field
 from crewai.tools import BaseTool
-from typing import ClassVar
 import logging
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,39 +16,45 @@ logger = logging.getLogger(__name__)
 class ArxivToolInput(BaseModel):
     search_query: str = Field(..., description="Search query for Arxiv, e.g., 'transformer neural network'")
     max_results: int = Field(5, ge=1, le=100, description="Max results to fetch; must be between 1 and 100")
-    download_pdfs: Optional[bool] = Field(False, description="If True, download PDFs to local folder")
-    save_dir: Optional[str] = Field("./arxiv_pdfs", description="Directory path to save downloaded PDFs")
-    use_title_as_filename: Optional[bool] = Field(False, description="Use paper title as PDF filename instead of arXiv ID")
 
 class ArxivPaperTool(BaseTool):
     BASE_API_URL: ClassVar[str] = "http://export.arxiv.org/api/query"
     SLEEP_DURATION: ClassVar[int] = 1
     SUMMARY_TRUNCATE_LENGTH: ClassVar[int] = 300
     ATOM_NAMESPACE: ClassVar[str] = "{http://www.w3.org/2005/Atom}"
+    REQUEST_TIMEOUT: ClassVar[int] = 10  
     name: str = "Arxiv Paper Fetcher and Downloader"
     description: str = "Fetches metadata from Arxiv based on a search query and optionally downloads PDFs."
     args_schema: Type[BaseModel] = ArxivToolInput
+    model_config = {"extra": "allow"} 
 
-    def _run(self, **kwargs) -> str:
+    def __init__(self, download_pdfs=False, save_dir="./arxiv_pdfs", use_title_as_filename=False):
+        super().__init__()
+        self.download_pdfs = download_pdfs
+        self.save_dir = save_dir
+        self.use_title_as_filename = use_title_as_filename
+
+    def _run(self, search_query: str, max_results: int = 5) -> str:
         try:
-            args = ArxivToolInput(**kwargs)
+            args = ArxivToolInput(search_query=search_query, max_results=max_results)
             logger.info(f"Running Arxiv tool: query='{args.search_query}', max_results={args.max_results}, "
-                        f"download_pdfs={args.download_pdfs}, save_dir='{args.save_dir}', "
-                        f"use_title_as_filename={args.use_title_as_filename}")
+                        f"download_pdfs={self.download_pdfs}, save_dir='{self.save_dir}', "
+                        f"use_title_as_filename={self.use_title_as_filename}")
 
             papers = self.fetch_arxiv_data(args.search_query, args.max_results)
 
-            if args.download_pdfs:
-                save_dir = self._validate_save_path(args.save_dir)
+            if self.download_pdfs:
+                save_dir = self._validate_save_path(self.save_dir)
                 for paper in papers:
                     if paper['pdf_url']:
-                        if args.use_title_as_filename:
+                        if self.use_title_as_filename:
                             safe_title = re.sub(r'[\\/*?:"<>|]', "_", paper['title']).strip()
                             filename_base = safe_title or paper['arxiv_id']
                         else:
                             filename_base = paper['arxiv_id']
                         filename = f"{filename_base[:500]}.pdf"
-                        save_path = os.path.join(save_dir, filename)
+                        save_path = Path(save_dir) / filename
+
                         self.download_pdf(paper['pdf_url'], save_path)
                         time.sleep(self.SLEEP_DURATION)
 
@@ -59,11 +64,21 @@ class ArxivPaperTool(BaseTool):
         except Exception as e:
             logger.error(f"ArxivTool Error: {str(e)}")
             return f"Failed to fetch or download Arxiv papers: {str(e)}"
+    
 
     def fetch_arxiv_data(self, search_query: str, max_results: int) -> List[dict]:
         api_url = f"{self.BASE_API_URL}?search_query={urllib.parse.quote(search_query)}&start=0&max_results={max_results}"
         logger.info(f"Fetching data from Arxiv API: {api_url}")
-        data = urllib.request.urlopen(api_url).read().decode('utf-8')
+
+        try:
+            with urllib.request.urlopen(api_url, timeout=self.REQUEST_TIMEOUT) as response:
+                if response.status != 200:
+                    raise Exception(f"HTTP {response.status}: {response.reason}")
+                data = response.read().decode('utf-8')
+        except urllib.error.URLError as e:
+            logger.error(f"Error fetching data from Arxiv: {e}")
+            raise
+
         root = ET.fromstring(data)
         papers = []
 
@@ -95,7 +110,6 @@ class ArxivPaperTool(BaseTool):
     @staticmethod
     def _get_element_text(entry: ET.Element, element_name: str) -> Optional[str]:
         elem = entry.find(f'{ArxivPaperTool.ATOM_NAMESPACE}{element_name}')
-
         return elem.text.strip() if elem is not None and elem.text else None
 
     def _extract_pdf_url(self, entry: ET.Element) -> Optional[str]:
@@ -119,15 +133,15 @@ class ArxivPaperTool(BaseTool):
                 f"Summary: {summary}")
 
     @staticmethod
-    def _validate_save_path(path: str) -> str:
-        abs_path = os.path.abspath(path)
-        os.makedirs(abs_path, exist_ok=True)
-        return abs_path
+    def _validate_save_path(path: str) -> Path:
+        save_path = Path(path).resolve()
+        save_path.mkdir(parents=True, exist_ok=True)
+        return save_path
 
     def download_pdf(self, pdf_url: str, save_path: str):
         try:
             logger.info(f"Downloading PDF from {pdf_url} to {save_path}")
-            urllib.request.urlretrieve(pdf_url, save_path)
+            urllib.request.urlretrieve(pdf_url, str(save_path))
             logger.info(f"PDF saved: {save_path}")
         except urllib.error.URLError as e:
             logger.error(f"Network error occurred while downloading {pdf_url}: {e}")
