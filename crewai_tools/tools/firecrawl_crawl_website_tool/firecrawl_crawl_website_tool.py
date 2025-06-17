@@ -3,15 +3,11 @@ from typing import Any, Optional, Type, List, TYPE_CHECKING
 from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
-if TYPE_CHECKING:
-    from firecrawl import FirecrawlApp
-
 try:
     from firecrawl import FirecrawlApp
-
-    FIRECRAWL_AVAILABLE = True
 except ImportError:
-    FIRECRAWL_AVAILABLE = False
+    FirecrawlApp = Any
+    ScrapeOptions = Any  # Fallback to Any if ScrapeOptions is not available
 
 
 class FirecrawlCrawlWebsiteToolSchema(BaseModel):
@@ -93,7 +89,7 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
 
     def _initialize_firecrawl(self) -> None:
         try:
-            from firecrawl import FirecrawlApp  # type: ignore
+            from firecrawl import FirecrawlApp, ScrapeOptions
 
             self._firecrawl = FirecrawlApp(api_key=self.api_key)
         except ImportError:
@@ -106,7 +102,7 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
 
                 try:
                     subprocess.run(["uv", "add", "firecrawl-py"], check=True)
-                    from firecrawl import FirecrawlApp
+                    from firecrawl import FirecrawlApp, ScrapeOptions
 
                     self._firecrawl = FirecrawlApp(api_key=self.api_key)
                 except subprocess.CalledProcessError:
@@ -117,13 +113,10 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
                 )
 
     def _run(self, url: str) -> Any:
-        if not self._firecrawl:
-            raise RuntimeError("FirecrawlApp not properly initialized")
-
         return self._firecrawl.crawl_url(url, **self.config)
 
 try:
-    from firecrawl import FirecrawlApp
+    from firecrawl import FirecrawlApp, ScrapeOptions
 
     # Only rebuild if the class hasn't been initialized yet
     if not hasattr(FirecrawlCrawlWebsiteTool, "_model_rebuilt"):
