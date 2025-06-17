@@ -51,6 +51,7 @@ class FirecrawlSearchTool(BaseTool):
             "country": "us",
             "location": None,
             "timeout": 60000,
+            "integration": "crewai",
         }
     )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
@@ -80,6 +81,7 @@ class FirecrawlSearchTool(BaseTool):
             self.config["location"] = location
         if timeout is not None:
             self.config["timeout"] = timeout
+        self.config["integration"] = "crewai"  # Ensure integration is always set
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
@@ -108,6 +110,7 @@ class FirecrawlSearchTool(BaseTool):
                 )
 
     def _run(self, query: str) -> Any:
+        self.config["integration"] = "crewai"
         return self._firecrawl.search(query=query, **self.config)
 
 

@@ -113,6 +113,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
             "block_ads": True,
             "actions": None,
             "proxy": None,
+            "integration": "crewai",
         }
     )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
@@ -169,6 +170,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
             self.config["actions"] = actions
         if proxy is not None:
             self.config["proxy"] = proxy
+        self.config["integration"] = "crewai"
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
@@ -197,6 +199,7 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
                 )
 
     def _run(self, url: str) -> Any:
+        self.config["integration"] = "crewai"
         return self._firecrawl.scrape_url(url, **self.config)
 
 try:

@@ -51,6 +51,7 @@ class FirecrawlExtractTool(BaseTool):
             "includeSubdomains": True,
             "showSources": False,
             "scrapeOptions": {},
+            "integration": "crewai",
         }
     )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
@@ -100,6 +101,7 @@ class FirecrawlExtractTool(BaseTool):
                 )
 
     def _run(self, urls: List[str]) -> Any:
+        self.config["integration"] = "crewai"  # Ensure integration is always set
         options = {
             "urls": urls,
             **self.config,
