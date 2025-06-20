@@ -21,7 +21,6 @@ except ImportError:
     SNOWFLAKE_AVAILABLE = False
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Cache for query results
@@ -100,6 +99,7 @@ class SnowflakeSearchTool(BaseTool):
     _pool_lock: Optional[asyncio.Lock] = None
     _thread_pool: Optional[ThreadPoolExecutor] = None
     _model_rebuilt: bool = False
+    package_dependencies: List[str] = ["snowflake-connector-python", "snowflake-sqlalchemy", "cryptography"]
 
     def __init__(self, **data):
         """Initialize SnowflakeSearchTool."""

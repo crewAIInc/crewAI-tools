@@ -100,6 +100,7 @@ class FirecrawlSearchTool(BaseTool):
         ]
     ] = None
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
+    package_dependencies: List[str] = ["firecrawl-py"]
 
     def __init__(
         self,
