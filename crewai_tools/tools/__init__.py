@@ -26,6 +26,7 @@ from .firecrawl_search_tool.firecrawl_search_tool import FirecrawlSearchTool
 from .github_search_tool.github_search_tool import GithubSearchTool
 from .hyperbrowser_load_tool.hyperbrowser_load_tool import HyperbrowserLoadTool
 from .json_search_tool.json_search_tool import JSONSearchTool
+from .keboola_storage_api_tool.keboola_table_extract_tool import KeboolaTableExtractTool
 from .linkup.linkup_search_tool import LinkupSearchTool
 from .llamaindex_tool.llamaindex_tool import LlamaIndexTool
 from .mdx_search_tool.mdx_search_tool import MDXSearchTool

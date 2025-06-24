@@ -1,57 +1,73 @@
 # Keboola Storage API Tool
 
-The Keboola Storage API Tool is a set of CrewAI-compatible extensions built to connect Keboola’s Storage API with 
-intelligent agents. 
+The Keboola Storage API Tool is a set of [CrewAI](https://www.crewai.com)-compatible tools that empower agents to interact with structured data from the 
+[Keboola](https://www.keboola.com) platform across all major cloud providers.
 
-This suite empowers CrewAI workflows to programmatically interact with Keboola’s structured data platform across 
-all supported cloud providers:
+This suite supports:
 
-- ✅ Table extraction (this tool)
-- ⬜ Table upload (planned)
-- ⬜ Bucket/table metadata listing (planned)
+- [x] Table extraction (`KeboolaTableExtractTool`)
+- [ ] Table upload (coming soon)
+- [ ] Bucket/table metadata listing (planned)
 
-This toolset is cloud-aware — designed to support federated authentication and export flows across AWS, GCP, and Azure-based Keboola stacks.
+The tools are **cloud-aware** and support **federated authentication and slice exports** from AWS (S3), GCP (GCS), 
+and Azure Blob Storage.
 
-## Table extraction Tool (KeboolaTableExtractTool)
+## Table extraction Tool (`KeboolaTableExtractTool`)
 
-This is the first tool in the Keboola Storage API suite. It enables CrewAI agents to export and read tables from Keboola via the [async export API](https://keboola.docs.apiary.io/#reference/tables/unload-data-asynchronously).
+This tool allows CrewAI agents to **asynchronously export** a Keboola table and return 
+the result as a CSV string using the [Keboola async export API](https://keboola.docs.apiary.io/#reference/tables/unload-data-asynchronously).
 
-### Features
+### Key Features
 
-- Works with all Keboola stacks, including:
+- Supports **all Keboola Connection stacks**, including:
 
-  - https://connection.keboola.com (AWS US East 1)
-  - https://connection.eu-central-1.keboola.com (AWS EU Central 1)
-  - https://connection.north-europe.azure.keboola.com (Azure)
-  - https://connection.europe-west3.gcp.keboola.com (GCP EU)
-  - https://connection.us-east4.gcp.keboola.com (GCP US)
-
-- Automatically detects the backend (`gs://`, `s3://`, or `azure://`).
-- Downloads and merges slices into a single CSV string.
-- CrewAI-compatible with structured input validation.
+  - https://connection.keboola.com (AWS: us-east-1)
+  - https://connection.eu-central-1.keboola.com (AWS: eu-central-1)
+  - https://connection.north-europe.azure.keboola.com (Azure: north-europe)
+  - https://connection.europe-west3.gcp.keboola.com (GCP: europe-west3)
+  - https://connection.us-east4.gcp.keboola.com (GCP: us-east4)
+  
+- Automatically detects the storage backend (`s3://`, `gs://`, or `azure://`).
+- Merges all sliced parts into a single CSV using pandas.
+- Integrates with CrewAI agents via the `BaseTool` interface.
+- Centralized config using `pydantic.BaseSettings` (`KeboolaConfig`).
 
 ## Installation
 
-Install `crewai-tools` along with required dependencies:
+Install with pip (alongside your existing `crewai` stack):
 
 ```bash
 pip install 'crewai[tools]' pandas requests boto3 google-auth
 ```
 
-### Configuration
+> ⚡️ Optional: If you're using `uv`, you can run the same command with `uv pip install ...` for faster installs.
 
-You must pass the following arguments when using the tool:
+## Configuration
 
-| Param       | Description                                     |
-| ----------- | ----------------------------------------------- |
-| `api_token` | A Keboola Storage API token with read access    |
-| `table_id`  | Full table ID (e.g., `in.c-bucket.my_table`)    |
-| `base_url`  | URL of the Keboola stack (see supported stacks) |
+This tool requires the following inputs:
 
-### Usage Example (Manual)
+| Argument    | Description                                         |
+|-------------|:----------------------------------------------------|
+| `table_id`  | Full Keboola table ID (e.g. `in.c-bucket.my_table`) |
+| `api_token` | Keboola Storage API token with read access          |
+| `base_url`  | Keboola stack base URL (see supported stacks above) |
+	
+
+### Optional tuning (via environment variables)
+
+You can optionally customize polling behavior via env vars:
+
+| Env Variable                    | Default	 | Description                         |
+|---------------------------------|:---------|:------------------------------------|
+| `KEBOOLA_MAX_POLL_ATTEMPTS`     | `30`     | Maximum attempts to poll export job |
+| `KEBOOLA_POLL_INTERVAL_SECONDS` | `2`      | Seconds between poll attempts       |
+
+> These are managed via `KeboolaConfig` using [Pydantic settings](https://docs.pydantic.dev/latest/usage/settings).
+
+## Manual Usage
 
 ```python
-from keboola_storage_api_tool.keboola_table_extract_tool import KeboolaTableExtractTool
+from crewai_tools import KeboolaTableExtractTool
 
 tool = KeboolaTableExtractTool()
 
@@ -61,30 +77,29 @@ csv = tool.run({
     "base_url": "https://connection.eu-central-1.keboola.com"
 })
 
-print(csv[:500])  # preview first 500 characters
+print(csv[:500])  # Print first 500 characters of the CSV
 ```
 
-### Usage in a CrewAI Agent
+## Usage in a CrewAI Agent
 
 ```python
 from crewai import Agent, Task, Crew
-from keboola_storage_api_tool.keboola_table_extract_tool import KeboolaTableExtractTool
+from crewai_tools import KeboolaTableExtractTool
 
 extract_tool = KeboolaTableExtractTool()
 
 agent = Agent(
     role="Data Downloader",
     goal="Extract and preview usage data from Keboola",
-    backstory="You're a data analyst that pulls structured records from Keboola tables.",
+    backstory="You're a data analyst who retrieves structured records from Keboola tables.",
     tools=[extract_tool],
     verbose=True
 )
 
 task = Task(
-    description="Use the tool to fetch a CSV export of the 'in.c-usage.usage_data' table.",
+    description="Use the tool to fetch a CSV export of 'in.c-usage.usage_data'.",
     expected_output="First 5 rows of the exported CSV",
     agent=agent,
-    async_execution=False,
     arguments={
         "table_id": "in.c-usage.usage_data",
         "api_token": "your_token",
@@ -96,19 +111,24 @@ crew = Crew(agents=[agent], tasks=[task])
 crew.kickoff()
 ```
 
-### Returns
+## Returns
 
-Returns the full table content as a **CSV string**, ready for parsing or downstream analysis.
+Returns the **entire table** as a **CSV string** - ready for parsing, LLM input, or downstream processing.
 
-### Error Handling
 
-- `ValueError`: if credentials or arguments are missing
-- `TimeoutError`: if the async export job does not finish
-- `requests.exceptions.HTTPError`: for Keboola API or GCP/AWS/Azure download issues
+## Error Handling
 
-### Resources
+| Exception                       | Trigger                                                        |
+|:--------------------------------|:---------------------------------------------------------------|
+| `KeboolaAPIError`               | API errors, export failures, invalid credentials               |
+| `TimeoutError`                  | Async export job didn’t complete in the configured time frame  |
+| `requests.exceptions.HTTPError` | Low-level HTTP errors during polling or slice download         |
+
+All cloud-specific download errors (S3/GCP/Azure) are wrapped into a KeboolaAPIError with detailed context.
+
+## Resources
 
 - [Keboola Storage API Docs](https://keboola.docs.apiary.io)
 - [CrewAI Documentation](https://docs.crewai.com)
 
-> 🛠️ Built and maintained by [Keboola](https://www.keboola.com) as an official CrewAI tool extension for the Keboola platform.
+> 🛠️ Maintained by [Keboola](https://www.keboola.com) as part of our official AI and automation toolset for CrewAI.
