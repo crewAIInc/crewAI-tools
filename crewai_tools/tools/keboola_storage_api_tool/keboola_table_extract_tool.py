@@ -54,7 +54,8 @@ class KeboolaTableExtractTool(BaseTool):
 
             print(csv_string[:500])  # Print first 500 characters of the CSV
     """
-    name: str = "Keboola Table Extract"
+
+    name: str = "download_keboola_table_tool"
     description: str = "Downloads a Keboola table (async export) and returns its content as a CSV string"
     args_schema: Type[BaseModel] = ExtractInput
 
