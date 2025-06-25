@@ -156,9 +156,7 @@ class EnterpriseActionKitToolAdapter:
                 )
 
             actions_url = f"{self.enterprise_action_kit_project_url}/{self.enterprise_action_kit_project_id}/actions"
-            headers = {
-                "Authorization": f"Bearer {self.enterprise_action_token or os.environ.get('CREWAI_ENTERPRISE_TOOLS_TOKEN')}"
-            }
+            headers = {"Authorization": f"Bearer {self.enterprise_action_token}"}
             params = {"format": "json_schema"}
 
             response = requests.get(
