@@ -778,7 +778,7 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.126.0"
+version = "0.130.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
@@ -807,14 +807,14 @@ dependencies = [
     { name = "tomli-w" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e7/53/c04da767da6defc6bf6cd2a03f15626441a5eb6079b5ede69059f060d8cb/crewai-0.126.0.tar.gz", hash = "sha256:2dc3a5159ccff8402a150c7242baa475b39c5ecf4652af967e8b430211c64586", size = 103524351 }
+sdist = { url = "https://files.pythonhosted.org/packages/0f/ab/eb88d3e78469838a948da890717d0576b35c2b8126ea16a0cad672e8a6b4/crewai-0.130.0.tar.gz", hash = "sha256:d011defe512cd3b8326c3041389199facb6cc0c8f8bcba452231226777a66386", size = 5687280 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5a/82/a753902c9061eaf8b927d22d068b3ebf3ad1722848e00d9d0c746fe47101/crewai-0.126.0-py3-none-any.whl", hash = "sha256:9c780c1d05ae739c249d96840b136d06e5b41eb63394fa74e26fe378ef7a1d42", size = 321070 },
+    { url = "https://files.pythonhosted.org/packages/bf/a1/214cef7e5ef62fcd461ff4b996bf2359d8ab1d14daebcc729e5d3893022d/crewai-0.130.0-py3-none-any.whl", hash = "sha256:2f335578eed34a935f75f0a2dd1bcdbaaf50780ed783bf5ea072ca542b212c8b", size = 324555 },
 ]
 
 [[package]]
 name = "crewai-tools"
-version = "0.47.1"
+version = "0.48.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
@@ -929,7 +929,7 @@ requires-dist = [
     { name = "chromadb", specifier = ">=0.4.22" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
-    { name = "crewai", specifier = ">=0.126.0" },
+    { name = "crewai", specifier = ">=0.130.0" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },
@@ -2499,7 +2499,7 @@ wheels = [
 
 [[package]]
 name = "litellm"
-version = "1.68.0"
+version = "1.72.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -2514,9 +2514,9 @@ dependencies = [
     { name = "tiktoken" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ba/22/138545b646303ca3f4841b69613c697b9d696322a1386083bb70bcbba60b/litellm-1.68.0.tar.gz", hash = "sha256:9fb24643db84dfda339b64bafca505a2eef857477afbc6e98fb56512c24dbbfa", size = 7314051 }
+sdist = { url = "https://files.pythonhosted.org/packages/55/d3/f1a8c9c9ffdd3bab1bc410254c8140b1346f05a01b8c6b37c48b56abb4b0/litellm-1.72.0.tar.gz", hash = "sha256:135022b9b8798f712ffa84e71ac419aa4310f1d0a70f79dd2007f7ef3a381e43", size = 8082337 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/af/1e344bc8aee41445272e677d802b774b1f8b34bdc3bb5697ba30f0fb5d52/litellm-1.68.0-py3-none-any.whl", hash = "sha256:3bca38848b1a5236b11aa6b70afa4393b60880198c939e582273f51a542d4759", size = 7684460 },
+    { url = "https://files.pythonhosted.org/packages/c2/98/bec08f5a3e504013db6f52b5fd68375bd92b463c91eb454d5a6460e957af/litellm-1.72.0-py3-none-any.whl", hash = "sha256:88360a7ae9aa9c96278ae1bb0a459226f909e711c5d350781296d0640386a824", size = 7979630 },
 ]
 
 [[package]]
