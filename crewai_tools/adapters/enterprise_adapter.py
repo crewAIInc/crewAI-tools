@@ -1,7 +1,8 @@
-import requests
-from pydantic import Field, create_model
-from typing import List, Any, Dict, Optional
+import os
 import json
+import requests
+from typing import List, Any, Dict, Optional
+from pydantic import Field, create_model
 from crewai.tools import BaseTool
 
 # DEFAULTS
@@ -146,8 +147,18 @@ class EnterpriseActionKitToolAdapter:
     def _fetch_actions(self):
         """Fetch available actions from the API."""
         try:
+            if (
+                self.enterprise_action_token is None
+                or self.enterprise_action_token == ""
+            ):
+                self.enterprise_action_token = os.environ.get(
+                    "CREWAI_ENTERPRISE_TOOLS_TOKEN"
+                )
+
             actions_url = f"{self.enterprise_action_kit_project_url}/{self.enterprise_action_kit_project_id}/actions"
-            headers = {"Authorization": f"Bearer {self.enterprise_action_token}"}
+            headers = {
+                "Authorization": f"Bearer {self.enterprise_action_token or os.environ.get('CREWAI_ENTERPRISE_TOOLS_TOKEN')}"
+            }
             params = {"format": "json_schema"}
 
             response = requests.get(
