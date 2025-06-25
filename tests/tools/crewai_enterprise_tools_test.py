@@ -71,5 +71,10 @@ class TestCrewaiEnterpriseTools(unittest.TestCase):
 
     @patch.dict(os.environ, {"CREWAI_ENTERPRISE_TOOLS_TOKEN": "env-token"})
     def test_uses_environment_token_when_no_token_provided(self):
-        CrewaiEnterpriseTools(enterprise_token="")
-        self.MockAdapter.assert_called_once_with(enterprise_action_token="env-token")
+        with patch.dict(
+            os.environ, {"CREWAI_ENTERPRISE_TOOLS_TOKEN": "env-token"}, clear=True
+        ):
+            CrewaiEnterpriseTools(enterprise_token="")
+            self.MockAdapter.assert_called_once_with(
+                enterprise_action_token="env-token"
+            )
