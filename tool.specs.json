@@ -1251,6 +1251,185 @@
       }
     },
     {
+      "description": "Search the internet using Desearch",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Desearch services",
+          "name": "DESEARCH_API_KEY",
+          "required": false
+        }
+      ],
+      "humanized_name": "DesearchTool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "API key for Desearch services",
+            "required": false,
+            "title": "Api Key"
+          }
+        },
+        "title": "DesearchTool",
+        "type": "object"
+      },
+      "name": "DesearchTool",
+      "package_dependencies": [
+        "desearch_py"
+      ],
+      "run_params_schema": {
+        "$defs": {
+          "DesearchDateFilterEnum": {
+            "enum": [
+              "PAST_24_HOURS",
+              "PAST_2_DAYS",
+              "PAST_WEEK",
+              "PAST_2_WEEKS",
+              "PAST_MONTH",
+              "PAST_2_MONTHS",
+              "PAST_YEAR",
+              "PAST_2_YEARS"
+            ],
+            "title": "DesearchDateFilterEnum",
+            "type": "string"
+          },
+          "DesearchModelEnum": {
+            "enum": [
+              "NOVA",
+              "ORBIT",
+              "HORIZON"
+            ],
+            "title": "DesearchModelEnum",
+            "type": "string"
+          },
+          "DesearchToolEnum": {
+            "enum": [
+              "web",
+              "hackernews",
+              "reddit",
+              "wikipedia",
+              "youtube",
+              "twitter",
+              "arxiv"
+            ],
+            "title": "DesearchToolEnum",
+            "type": "string"
+          }
+        },
+        "properties": {
+          "date_filter": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/DesearchDateFilterEnum"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "PAST_24_HOURS",
+            "description": "The date filter to be used for the search",
+            "example": "PAST_24_HOURS"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/DesearchModelEnum"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "NOVA",
+            "description": "The model to be used for the search",
+            "example": "NOVA"
+          },
+          "prompt": {
+            "description": "Search query prompt",
+            "example": "Bittensor",
+            "title": "Prompt",
+            "type": "string"
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/DesearchToolEnum"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [
+              "web",
+              "twitter"
+            ],
+            "description": "A list of tools to be used for the search",
+            "example": [
+              "web",
+              "hackernews",
+              "reddit",
+              "wikipedia",
+              "youtube",
+              "twitter",
+              "arxiv"
+            ],
+            "title": "Tools"
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "title": "DesearchBaseToolSchema",
+        "type": "object"
+      }
+    },
+    {
       "description": "A tool that can be used to recursively list a directory's content.",
       "env_vars": [],
       "humanized_name": "List files in directory",
