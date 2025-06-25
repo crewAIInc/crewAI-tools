@@ -18,6 +18,7 @@ from .tools import (
     CSVSearchTool,
     DallETool,
     DatabricksQueryTool,
+    DesearchTool,
     DirectoryReadTool,
     DirectorySearchTool,
     DOCXSearchTool,
