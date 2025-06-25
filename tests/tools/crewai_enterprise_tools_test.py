@@ -74,13 +74,15 @@ class TestCrewaiEnterpriseTools(unittest.TestCase):
         CrewaiEnterpriseTools(enterprise_token="")
         self.MockAdapter.assert_called_once_with(enterprise_action_token="env-token")
 
-    @patch.dict(os.environ, {"CREWAI_ENTERPRISE_TOOLS_TOKEN": "env-token"})
+    @patch.dict(
+        os.environ,
+        {
+            "CREWAI_ENTERPRISE_TOOLS_TOKEN": "env-token",
+            "CREWAI_ENTERPRISE_TOOLS_ACTIONS_LIST": '["tool1", "tool3"]',
+        },
+    )
     def test_uses_environment_actions_list(self):
-        with patch.dict(
-            os.environ,
-            {"CREWAI_ENTERPRISE_TOOLS_ACTIONS_LIST": '["tool1", "tool3"]'},
-        ):
-            tools = CrewaiEnterpriseTools()
-            self.assertEqual(len(tools), 2)
-            self.assertEqual(tools[0].name, "tool1")
-            self.assertEqual(tools[1].name, "tool3")
+        tools = CrewaiEnterpriseTools()
+        self.assertEqual(len(tools), 2)
+        self.assertEqual(tools[0].name, "tool1")
+        self.assertEqual(tools[1].name, "tool3")
