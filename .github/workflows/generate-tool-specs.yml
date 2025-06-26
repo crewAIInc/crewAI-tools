@@ -27,10 +27,10 @@ jobs:
 
       - name: Install the project
         run: uv sync --dev --all-extras
-      
+
       - name: Generate tool specifications
-        run: python generate_tool_specs.py
-      
+        run: uv run python generate_tool_specs.py
+
       - name: Configure Git and add upstream
         run: |
           git config user.name "github-actions[bot]"
