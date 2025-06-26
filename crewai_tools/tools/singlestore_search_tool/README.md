@@ -211,10 +211,10 @@ Set the `SINGLESTOREDB_URL` environment variable and initialize the tool without
 
 ```bash
 # Set the environment variable
-export SINGLESTOREDB_URL="user:password@localhost:3306/database_name"
+export SINGLESTOREDB_URL="singlestoredb://user:password@localhost:3306/database_name"
 
 # Or for cloud connections
-export SINGLESTOREDB_URL="user:password@your_cloud_host:3333/database_name?ssl_disabled=false"
+export SINGLESTOREDB_URL="singlestoredb://user:password@your_cloud_host:3333/database_name?ssl_disabled=false"
 ```
 
 ```python

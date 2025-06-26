@@ -1,11 +1,11 @@
+import os
 from typing import Generator
-from unittest.mock import MagicMock, patch
 
 import pytest
 
 try:
-    import singlestoredb as s2
     from singlestoredb import connect
+    from singlestoredb.server import docker
 
     SINGLESTORE_AVAILABLE = True
 except ImportError:
@@ -23,7 +23,7 @@ pytestmark = pytest.mark.skipif(
 def docker_server_url() -> Generator[str, None, None]:
     """Start a SingleStore Docker server for tests."""
     try:
-        sdb = s2.docker.start(license="")
+        sdb = docker.start(license="")
         conn = sdb.connect()
         curr = conn.cursor()
         curr.execute("CREATE DATABASE test_crewai")
@@ -113,13 +113,14 @@ class TestSingleStoreSearchTool:
         url_parts = sample_table_setup.split("@")[1].split(":")
         host = url_parts[0]
         port = int(url_parts[1].split("/")[0])
-
+        user = "root"
+        password = sample_table_setup.split("@")[0].split(":")[2]
         tool = SingleStoreSearchTool(
             tables=[],
             host=host,
             port=port,
-            user="root",
-            password="",
+            user=user,
+            password=password,
             database="test_crewai",
         )
 
@@ -145,16 +146,9 @@ class TestSingleStoreSearchTool:
 
     def test_tool_creation_with_specific_tables(self, sample_table_setup):
         """Test tool creation with specific table list."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
         tool = SingleStoreSearchTool(
             tables=["employees"],
-            host=host,
-            port=port,
-            user="root",
-            password="",
+            host=sample_table_setup,
             database="test_crewai",
         )
 
@@ -164,40 +158,24 @@ class TestSingleStoreSearchTool:
 
     def test_tool_creation_with_nonexistent_table(self, sample_table_setup):
         """Test tool creation fails with non-existent table."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
 
         with pytest.raises(ValueError, match="Table nonexistent does not exist"):
             SingleStoreSearchTool(
                 tables=["employees", "nonexistent"],
-                host=host,
-                port=port,
-                user="root",
-                password="",
+                host=sample_table_setup,
                 database="test_crewai",
             )
 
     def test_tool_creation_with_empty_database(self, clean_db_url):
         """Test tool creation fails with empty database."""
-        url_parts = clean_db_url.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
 
         with pytest.raises(ValueError, match="No tables found in the database"):
-            SingleStoreSearchTool(
-                host=host, port=port, user="root", password="", database="test_crewai"
-            )
+            SingleStoreSearchTool(host=clean_db_url, database="test_crewai")
 
     def test_description_generation(self, sample_table_setup):
         """Test that tool description is properly generated with table info."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
 
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         # Check description contains table definitions
         assert "employees(" in tool.description
@@ -207,13 +185,8 @@ class TestSingleStoreSearchTool:
 
     def test_query_validation_select_allowed(self, sample_table_setup):
         """Test that SELECT queries are allowed."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        os.environ["SINGLESTOREDB_URL"] = sample_table_setup
+        tool = SingleStoreSearchTool(database="test_crewai")
 
         valid, message = tool._validate_query("SELECT * FROM employees")
         assert valid is True
@@ -221,13 +194,7 @@ class TestSingleStoreSearchTool:
 
     def test_query_validation_show_allowed(self, sample_table_setup):
         """Test that SHOW queries are allowed."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         valid, message = tool._validate_query("SHOW TABLES")
         assert valid is True
@@ -235,29 +202,17 @@ class TestSingleStoreSearchTool:
 
     def test_query_validation_case_insensitive(self, sample_table_setup):
         """Test that query validation is case insensitive."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
-
-        valid, message = tool._validate_query("select * from employees")
+        valid, _ = tool._validate_query("select * from employees")
         assert valid is True
 
-        valid, message = tool._validate_query("SHOW tables")
+        valid, _ = tool._validate_query("SHOW tables")
         assert valid is True
 
     def test_query_validation_insert_denied(self, sample_table_setup):
         """Test that INSERT queries are denied."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         valid, message = tool._validate_query(
             "INSERT INTO employees VALUES (4, 'Test', 'Test', 1000)"
@@ -267,13 +222,7 @@ class TestSingleStoreSearchTool:
 
     def test_query_validation_update_denied(self, sample_table_setup):
         """Test that UPDATE queries are denied."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         valid, message = tool._validate_query("UPDATE employees SET salary = 90000")
         assert valid is False
@@ -281,13 +230,7 @@ class TestSingleStoreSearchTool:
 
     def test_query_validation_delete_denied(self, sample_table_setup):
         """Test that DELETE queries are denied."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         valid, message = tool._validate_query("DELETE FROM employees WHERE id = 1")
         assert valid is False
@@ -295,13 +238,7 @@ class TestSingleStoreSearchTool:
 
     def test_query_validation_non_string(self, sample_table_setup):
         """Test that non-string queries are rejected."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         valid, message = tool._validate_query(123)
         assert valid is False
@@ -309,13 +246,7 @@ class TestSingleStoreSearchTool:
 
     def test_run_select_query(self, sample_table_setup):
         """Test executing a SELECT query."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         result = tool._run("SELECT * FROM employees ORDER BY id")
 
@@ -326,13 +257,7 @@ class TestSingleStoreSearchTool:
 
     def test_run_filtered_query(self, sample_table_setup):
         """Test executing a filtered SELECT query."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         result = tool._run(
             "SELECT name FROM employees WHERE department = 'Engineering'"
@@ -345,13 +270,7 @@ class TestSingleStoreSearchTool:
 
     def test_run_show_query(self, sample_table_setup):
         """Test executing a SHOW query."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         result = tool._run("SHOW TABLES")
 
@@ -361,13 +280,7 @@ class TestSingleStoreSearchTool:
 
     def test_run_empty_result(self, sample_table_setup):
         """Test executing a query that returns no results."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         result = tool._run("SELECT * FROM employees WHERE department = 'NonExistent'")
 
@@ -375,13 +288,7 @@ class TestSingleStoreSearchTool:
 
     def test_run_invalid_query_syntax(self, sample_table_setup):
         """Test executing a query with invalid syntax."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         result = tool._run("SELECT * FORM employees")  # Intentional typo
 
@@ -389,13 +296,7 @@ class TestSingleStoreSearchTool:
 
     def test_run_denied_query(self, sample_table_setup):
         """Test that denied queries return appropriate error message."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
-        tool = SingleStoreSearchTool(
-            host=host, port=port, user="root", password="", database="test_crewai"
-        )
+        tool = SingleStoreSearchTool(host=sample_table_setup, database="test_crewai")
 
         result = tool._run("DELETE FROM employees")
 
@@ -404,22 +305,15 @@ class TestSingleStoreSearchTool:
 
     def test_connection_pool_usage(self, sample_table_setup):
         """Test that connection pooling works correctly."""
-        url_parts = sample_table_setup.split("@")[1].split(":")
-        host = url_parts[0]
-        port = int(url_parts[1].split("/")[0])
-
         tool = SingleStoreSearchTool(
-            host=host,
-            port=port,
-            user="root",
-            password="",
+            host=sample_table_setup,
             database="test_crewai",
             pool_size=2,
         )
 
         # Execute multiple queries to test pool usage
         results = []
-        for i in range(5):
+        for _ in range(5):
             result = tool._run("SELECT COUNT(*) FROM employees")
             results.append(result)
 
@@ -450,22 +344,3 @@ class TestSingleStoreSearchTool:
                 password="invalid_password",
                 database="invalid_db",
             )
-
-    def test_environment_variable_support(self, sample_table_setup):
-        """Test that environment variable SINGLESTOREDB_URL is supported."""
-        with patch.dict(
-            "os.environ", {"SINGLESTOREDB_URL": f"{sample_table_setup}/test_crewai"}
-        ):
-            with patch.object(
-                SingleStoreSearchTool, "_create_connection"
-            ) as mock_create:
-                # Mock the connection creation to avoid actual connection
-                mock_conn = MagicMock()
-                mock_cursor = MagicMock()
-                mock_cursor.fetchall.return_value = [("employees",), ("departments",)]
-                mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
-                mock_create.return_value = mock_conn
-
-                # This should work without explicit connection parameters
-                tool = SingleStoreSearchTool()
-                assert tool is not None
