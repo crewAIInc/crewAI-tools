@@ -186,36 +186,40 @@ class SingleStoreSearchTool(BaseTool):
             ValueError: If no tables exist or specified tables don't exist
         """
         conn = self._get_connection()
-        with conn.cursor() as cursor:
-            # Get all existing tables in the database
-            cursor.execute("SHOW TABLES")
-            existing_tables = {table[0] for table in cursor.fetchall()}
+        try:
+            with conn.cursor() as cursor:
+                # Get all existing tables in the database
+                cursor.execute("SHOW TABLES")
+                existing_tables = {table[0] for table in cursor.fetchall()}
 
-            # Validate that the database has tables
-            if not existing_tables or len(existing_tables) == 0:
-                raise ValueError(
-                    "No tables found in the database. "
-                    "Please ensure the database is initialized with the required tables."
-                )
-
-            # Use all tables if none specified
-            if not tables or len(tables) == 0:
-                tables = existing_tables
-
-            # Build table definitions for description
-            table_definitions = []
-            for table in tables:
-                if table not in existing_tables:
+                # Validate that the database has tables
+                if not existing_tables or len(existing_tables) == 0:
                     raise ValueError(
-                        f"Table {table} does not exist in the database. "
-                        f"Please ensure the table is created."
+                        "No tables found in the database. "
+                        "Please ensure the database is initialized with the required tables."
                     )
 
-                # Get column information for each table
-                cursor.execute(f"SHOW COLUMNS FROM {table}")
-                columns = cursor.fetchall()
-                column_info = ", ".join(f"{row[0]} {row[1]}" for row in columns)
-                table_definitions.append(f"{table}({column_info})")
+                # Use all tables if none specified
+                if not tables or len(tables) == 0:
+                    tables = existing_tables
+
+                # Build table definitions for description
+                table_definitions = []
+                for table in tables:
+                    if table not in existing_tables:
+                        raise ValueError(
+                            f"Table {table} does not exist in the database. "
+                            f"Please ensure the table is created."
+                        )
+
+                    # Get column information for each table
+                    cursor.execute(f"SHOW COLUMNS FROM {table}")
+                    columns = cursor.fetchall()
+                    column_info = ", ".join(f"{row[0]} {row[1]}" for row in columns)
+                    table_definitions.append(f"{table}({column_info})")
+        finally:
+            # Ensure the connection is returned to the pool
+            conn.close()
 
         # Update the tool description with actual table information
         self.description = (
