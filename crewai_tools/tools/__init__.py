@@ -81,6 +81,7 @@ from .snowflake_search_tool import (
 from .spider_tool.spider_tool import SpiderTool
 from .stagehand_tool.stagehand_tool import StagehandTool
 from .txt_search_tool.txt_search_tool import TXTSearchTool
+from .vertex_cambai_tool.vertex_cambai_tool import VertexCambAITool
 from .vision_tool.vision_tool import VisionTool
 from .weaviate_tool.vector_search import WeaviateVectorSearchTool
 from .website_search.website_search_tool import WebsiteSearchTool
