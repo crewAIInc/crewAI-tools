@@ -109,7 +109,14 @@
     },
     {
       "description": "A tool that can be used to search the internet with a search_query.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Brave Search",
+          "name": "BRAVE_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Brave Web Search the internet",
       "init_params_schema": {
         "$defs": {
@@ -202,7 +209,20 @@
     },
     {
       "description": "Load webpages url in a headless browser using Browserbase and return the contents",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Browserbase services",
+          "name": "BROWSERBASE_API_KEY",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "Project ID for Browserbase services",
+          "name": "BROWSERBASE_PROJECT_ID",
+          "required": false
+        }
+      ],
       "humanized_name": "Browserbase web load tool",
       "init_params_schema": {
         "$defs": {
@@ -2062,7 +2082,14 @@
     },
     {
       "description": "Scrape or crawl a website using Hyperbrowser and return the contents in properly formatted markdown or html",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Hyperbrowser services",
+          "name": "HYPERBROWSER_API_KEY",
+          "required": false
+        }
+      ],
       "humanized_name": "Hyperbrowser web load tool",
       "init_params_schema": {
         "$defs": {
@@ -2946,7 +2973,14 @@
     },
     {
       "description": "",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Patronus evaluation services",
+          "name": "PATRONUS_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Patronus Evaluation Tool",
       "init_params_schema": {
         "$defs": {
@@ -3635,7 +3669,14 @@
     },
     {
       "description": "A tool that uses Scrapegraph AI to intelligently scrape website content.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Scrapegraph AI services",
+          "name": "SCRAPEGRAPH_API_KEY",
+          "required": false
+        }
+      ],
       "humanized_name": "Scrapegraph website scraper",
       "init_params_schema": {
         "$defs": {
@@ -4021,7 +4062,14 @@
     },
     {
       "description": "A tool to perform to perform a Google search with a search_query.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for SerpApi searches",
+          "name": "SERPAPI_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Google Search",
       "init_params_schema": {
         "$defs": {
@@ -4111,7 +4159,14 @@
     },
     {
       "description": "A tool to perform search on Google shopping with a search_query.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for SerpApi searches",
+          "name": "SERPAPI_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Google Shopping",
       "init_params_schema": {
         "$defs": {
@@ -4664,7 +4719,14 @@
     },
     {
       "description": "A tool to perform Google search with a search_query.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Serply services",
+          "name": "SERPLY_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Google Search",
       "init_params_schema": {
         "$defs": {
@@ -5691,7 +5753,14 @@
     },
     {
       "description": "A tool to search the Weaviate database for relevant information on internal documents.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "OpenAI API key for embedding generation and retrieval",
+          "name": "OPENAI_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "WeaviateVectorSearchTool",
       "init_params_schema": {
         "$defs": {
