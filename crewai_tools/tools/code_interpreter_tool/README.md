@@ -9,6 +9,9 @@ It is incredible useful since it allows the Agent to generate code, run it in th
 
 - Docker
 
+> [!CAUTION]
+> By default, the CodeInterpreterTool will mount and provide read/write access to your current working directory. This means the executed code can access, modify, or delete any files in your project directory. To limit access to a specific folder, use the `mount_path` parameter to specify which directory should be mounted instead.
+
 ## Installation
 Install the crewai_tools package
 ```shell
@@ -50,4 +53,15 @@ Agent(
         user_dockerfile_path="<Dockerfile_path>")],
 )
 
+```
+
+To limit file system access to a specific directory, use the `mount_path` parameter:
+
+```python
+from crewai_tools import CodeInterpreterTool
+
+Agent(
+    ...
+    tools=[CodeInterpreterTool(mount_path="./data")],  # Only provides access to ./data folder
+)
 ```
