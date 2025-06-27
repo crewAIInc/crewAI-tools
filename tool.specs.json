@@ -1247,7 +1247,14 @@
     },
     {
       "description": "Search the internet using Exa",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Exa services",
+          "name": "EXA_API_KEY",
+          "required": false
+        }
+      ],
       "humanized_name": "EXASearchTool",
       "init_params_schema": {
         "$defs": {
@@ -1288,6 +1295,29 @@
           }
         },
         "properties": {
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "API key for Exa services",
+            "required": false,
+            "title": "Api Key"
+          },
+          "client": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Client"
+          },
           "content": {
             "anyOf": [
               {
@@ -2752,6 +2782,818 @@
           "sql_query"
         ],
         "title": "NL2SQLToolInput",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Scrape Amazon product pages with Oxylabs Amazon Product Scraper",
+      "env_vars": [],
+      "humanized_name": "Oxylabs Amazon Product Scraper tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          },
+          "OxylabsAmazonProductScraperConfig": {
+            "description": "Amazon Product Scraper configuration options:\nhttps://developers.oxylabs.io/scraper-apis/web-scraper-api/targets/amazon/product",
+            "properties": {
+              "callback_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "URL to your callback endpoint.",
+                "title": "Callback Url"
+              },
+              "context": {
+                "anyOf": [
+                  {
+                    "items": {},
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Additional advanced settings and controls for specialized requirements.",
+                "title": "Context"
+              },
+              "domain": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The domain to limit the search results to.",
+                "title": "Domain"
+              },
+              "geo_location": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The Deliver to location.",
+                "title": "Geo Location"
+              },
+              "parse": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "True will return structured data.",
+                "title": "Parse"
+              },
+              "parsing_instructions": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Instructions for parsing the results.",
+                "title": "Parsing Instructions"
+              },
+              "render": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Enables JavaScript rendering.",
+                "title": "Render"
+              },
+              "user_agent_type": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Device type and browser.",
+                "title": "User Agent Type"
+              }
+            },
+            "title": "OxylabsAmazonProductScraperConfig",
+            "type": "object"
+          }
+        },
+        "description": "Scrape Amazon product pages with OxylabsAmazonProductScraperTool.\n\nGet Oxylabs account:\nhttps://dashboard.oxylabs.io/en\n\nArgs:\n    username (str): Oxylabs username.\n    password (str): Oxylabs password.\n    config: Configuration options. See ``OxylabsAmazonProductScraperConfig``",
+        "properties": {
+          "config": {
+            "$ref": "#/$defs/OxylabsAmazonProductScraperConfig"
+          },
+          "oxylabs_api": {
+            "title": "Oxylabs Api"
+          }
+        },
+        "required": [
+          "oxylabs_api",
+          "config"
+        ],
+        "title": "OxylabsAmazonProductScraperTool",
+        "type": "object"
+      },
+      "name": "OxylabsAmazonProductScraperTool",
+      "package_dependencies": [
+        "oxylabs"
+      ],
+      "run_params_schema": {
+        "properties": {
+          "query": {
+            "description": "Amazon product ASIN",
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "OxylabsAmazonProductScraperArgs",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Scrape Amazon search results with Oxylabs Amazon Search Scraper",
+      "env_vars": [],
+      "humanized_name": "Oxylabs Amazon Search Scraper tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          },
+          "OxylabsAmazonSearchScraperConfig": {
+            "description": "Amazon Search Scraper configuration options:\nhttps://developers.oxylabs.io/scraper-apis/web-scraper-api/targets/amazon/search",
+            "properties": {
+              "callback_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "URL to your callback endpoint.",
+                "title": "Callback Url"
+              },
+              "context": {
+                "anyOf": [
+                  {
+                    "items": {},
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Additional advanced settings and controls for specialized requirements.",
+                "title": "Context"
+              },
+              "domain": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The domain to limit the search results to.",
+                "title": "Domain"
+              },
+              "geo_location": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The Deliver to location.",
+                "title": "Geo Location"
+              },
+              "pages": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The number of pages to scrape.",
+                "title": "Pages"
+              },
+              "parse": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "True will return structured data.",
+                "title": "Parse"
+              },
+              "parsing_instructions": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Instructions for parsing the results.",
+                "title": "Parsing Instructions"
+              },
+              "render": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Enables JavaScript rendering.",
+                "title": "Render"
+              },
+              "start_page": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The starting page number.",
+                "title": "Start Page"
+              },
+              "user_agent_type": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Device type and browser.",
+                "title": "User Agent Type"
+              }
+            },
+            "title": "OxylabsAmazonSearchScraperConfig",
+            "type": "object"
+          }
+        },
+        "description": "Scrape Amazon search results with OxylabsAmazonSearchScraperTool.\n\nGet Oxylabs account:\nhttps://dashboard.oxylabs.io/en\n\nArgs:\n    username (str): Oxylabs username.\n    password (str): Oxylabs password.\n    config: Configuration options. See ``OxylabsAmazonSearchScraperConfig``",
+        "properties": {
+          "config": {
+            "$ref": "#/$defs/OxylabsAmazonSearchScraperConfig"
+          },
+          "oxylabs_api": {
+            "title": "Oxylabs Api"
+          }
+        },
+        "required": [
+          "oxylabs_api",
+          "config"
+        ],
+        "title": "OxylabsAmazonSearchScraperTool",
+        "type": "object"
+      },
+      "name": "OxylabsAmazonSearchScraperTool",
+      "package_dependencies": [
+        "oxylabs"
+      ],
+      "run_params_schema": {
+        "properties": {
+          "query": {
+            "description": "Amazon search term",
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "OxylabsAmazonSearchScraperArgs",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Scrape Google Search results with Oxylabs Google Search Scraper",
+      "env_vars": [],
+      "humanized_name": "Oxylabs Google Search Scraper tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          },
+          "OxylabsGoogleSearchScraperConfig": {
+            "description": "Google Search Scraper configuration options:\nhttps://developers.oxylabs.io/scraper-apis/web-scraper-api/targets/google/search/search",
+            "properties": {
+              "callback_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "URL to your callback endpoint.",
+                "title": "Callback Url"
+              },
+              "context": {
+                "anyOf": [
+                  {
+                    "items": {},
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Additional advanced settings and controls for specialized requirements.",
+                "title": "Context"
+              },
+              "domain": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The domain to limit the search results to.",
+                "title": "Domain"
+              },
+              "geo_location": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The Deliver to location.",
+                "title": "Geo Location"
+              },
+              "limit": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Number of results to retrieve in each page.",
+                "title": "Limit"
+              },
+              "pages": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The number of pages to scrape.",
+                "title": "Pages"
+              },
+              "parse": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "True will return structured data.",
+                "title": "Parse"
+              },
+              "parsing_instructions": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Instructions for parsing the results.",
+                "title": "Parsing Instructions"
+              },
+              "render": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Enables JavaScript rendering.",
+                "title": "Render"
+              },
+              "start_page": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The starting page number.",
+                "title": "Start Page"
+              },
+              "user_agent_type": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Device type and browser.",
+                "title": "User Agent Type"
+              }
+            },
+            "title": "OxylabsGoogleSearchScraperConfig",
+            "type": "object"
+          }
+        },
+        "description": "Scrape Google Search results with OxylabsGoogleSearchScraperTool.\n\nGet Oxylabs account:\nhttps://dashboard.oxylabs.io/en\n\nArgs:\n    username (str): Oxylabs username.\n    password (str): Oxylabs password.\n    config: Configuration options. See ``OxylabsGoogleSearchScraperConfig``",
+        "properties": {
+          "config": {
+            "$ref": "#/$defs/OxylabsGoogleSearchScraperConfig"
+          },
+          "oxylabs_api": {
+            "title": "Oxylabs Api"
+          }
+        },
+        "required": [
+          "oxylabs_api",
+          "config"
+        ],
+        "title": "OxylabsGoogleSearchScraperTool",
+        "type": "object"
+      },
+      "name": "OxylabsGoogleSearchScraperTool",
+      "package_dependencies": [
+        "oxylabs"
+      ],
+      "run_params_schema": {
+        "properties": {
+          "query": {
+            "description": "Search query",
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "OxylabsGoogleSearchScraperArgs",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Scrape any url with Oxylabs Universal Scraper",
+      "env_vars": [],
+      "humanized_name": "Oxylabs Universal Scraper tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          },
+          "OxylabsUniversalScraperConfig": {
+            "description": "Universal Scraper configuration options:\nhttps://developers.oxylabs.io/scraper-apis/web-scraper-api/other-websites",
+            "properties": {
+              "callback_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "URL to your callback endpoint.",
+                "title": "Callback Url"
+              },
+              "context": {
+                "anyOf": [
+                  {
+                    "items": {},
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Additional advanced settings and controls for specialized requirements.",
+                "title": "Context"
+              },
+              "geo_location": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "The Deliver to location.",
+                "title": "Geo Location"
+              },
+              "parse": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "True will return structured data.",
+                "title": "Parse"
+              },
+              "parsing_instructions": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Instructions for parsing the results.",
+                "title": "Parsing Instructions"
+              },
+              "render": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Enables JavaScript rendering.",
+                "title": "Render"
+              },
+              "user_agent_type": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Device type and browser.",
+                "title": "User Agent Type"
+              }
+            },
+            "title": "OxylabsUniversalScraperConfig",
+            "type": "object"
+          }
+        },
+        "description": "Scrape any website with OxylabsUniversalScraperTool.\n\nGet Oxylabs account:\nhttps://dashboard.oxylabs.io/en\n\nArgs:\n    username (str): Oxylabs username.\n    password (str): Oxylabs password.\n    config: Configuration options. See ``OxylabsUniversalScraperConfig``",
+        "properties": {
+          "config": {
+            "$ref": "#/$defs/OxylabsUniversalScraperConfig"
+          },
+          "oxylabs_api": {
+            "title": "Oxylabs Api"
+          }
+        },
+        "required": [
+          "oxylabs_api",
+          "config"
+        ],
+        "title": "OxylabsUniversalScraperTool",
+        "type": "object"
+      },
+      "name": "OxylabsUniversalScraperTool",
+      "package_dependencies": [
+        "oxylabs"
+      ],
+      "run_params_schema": {
+        "properties": {
+          "url": {
+            "description": "Website URL",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "OxylabsUniversalScraperArgs",
         "type": "object"
       }
     },
@@ -5390,17 +6232,6 @@
       "humanized_name": "Web Automation Tool",
       "init_params_schema": {
         "$defs": {
-          "AvailableModel": {
-            "enum": [
-              "gpt-4o",
-              "gpt-4o-mini",
-              "claude-3-5-sonnet-latest",
-              "claude-3-7-sonnet-latest",
-              "computer-use-preview"
-            ],
-            "title": "AvailableModel",
-            "type": "string"
-          },
           "EnvVar": {
             "properties": {
               "default": {
@@ -5471,17 +6302,6 @@
             ],
             "default": null,
             "title": "Model Api Key"
-          },
-          "model_name": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/AvailableModel"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": "claude-3-7-sonnet-latest"
           },
           "project_id": {
             "anyOf": [
@@ -5670,6 +6490,93 @@
       }
     },
     {
+      "description": "Converts text to speech using CambAI's MARS7 model on Google Cloud Vertex AI. Requires reference audio and transcription for voice cloning.",
+      "env_vars": [],
+      "humanized_name": "Vertex CambAI Tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "Tool for text-to-speech synthesis using Google Cloud Vertex AI with CambAI's MARS7 model.\n\nThis tool provides voice cloning capabilities using the MARS7 model.\nRequires Google Cloud credentials and Vertex AI endpoint access.\n\nEnvironment Variables Required:\n    GOOGLE_APPLICATION_CREDENTIALS: Path to service account key file\n    PROJECT_ID: Google Cloud project ID\n    LOCATION: Google Cloud location (e.g., us-central1)\n    ENDPOINT_ID: Vertex AI endpoint ID for MARS7 model",
+        "properties": {},
+        "title": "VertexCambAITool",
+        "type": "object"
+      },
+      "name": "VertexCambAITool",
+      "package_dependencies": [
+        "google-cloud-aiplatform",
+        "soundfile"
+      ],
+      "run_params_schema": {
+        "description": "Input schema for Vertex CambAI Tool.",
+        "properties": {
+          "audio_ref_path": {
+            "title": "Audio Ref Path",
+            "type": "string"
+          },
+          "language": {
+            "default": "en-us",
+            "title": "Language",
+            "type": "string"
+          },
+          "output_file": {
+            "default": "output.flac",
+            "title": "Output File",
+            "type": "string"
+          },
+          "ref_text": {
+            "title": "Ref Text",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "audio_ref_path",
+          "ref_text"
+        ],
+        "title": "VertexCambAISchema",
+        "type": "object"
+      }
+    },
+    {
       "description": "This tool uses OpenAI's Vision API to describe the contents of an image.",
       "env_vars": [],
       "humanized_name": "Vision Tool",
@@ -5778,36 +6685,6 @@
             ],
             "title": "EnvVar",
             "type": "object"
-          },
-          "Vectorizers": {
-            "description": "The available vectorization modules in Weaviate.\n\nThese modules encode binary data into lists of floats called vectors.\nSee the [docs](https://weaviate.io/developers/weaviate/modules/retriever-vectorizer-modules) for more details.\n\nAttributes:\n    `NONE`\n        No vectorizer.\n    `TEXT2VEC_AWS`\n        Weaviate module backed by AWS text-based embedding models.\n    `TEXT2VEC_COHERE`\n        Weaviate module backed by Cohere text-based embedding models.\n    `TEXT2VEC_CONTEXTIONARY`\n        Weaviate module backed by Contextionary text-based embedding models.\n    `TEXT2VEC_GPT4ALL`\n        Weaviate module backed by GPT-4-All text-based embedding models.\n    `TEXT2VEC_HUGGINGFACE`\n        Weaviate module backed by HuggingFace text-based embedding models.\n    `TEXT2VEC_OPENAI`\n        Weaviate module backed by OpenAI and Azure-OpenAI text-based embedding models.\n    `TEXT2VEC_PALM`\n        Weaviate module backed by PaLM text-based embedding models.\n    `TEXT2VEC_TRANSFORMERS`\n        Weaviate module backed by Transformers text-based embedding models.\n    `TEXT2VEC_JINAAI`\n        Weaviate module backed by Jina AI text-based embedding models.\n    `TEXT2VEC_VOYAGEAI`\n        Weaviate module backed by Voyage AI text-based embedding models.\n    `TEXT2VEC_WEAVIATE`\n        Weaviate module backed by Weaviate's self-hosted text-based embedding models.\n    `IMG2VEC_NEURAL`\n        Weaviate module backed by a ResNet-50 neural network for images.\n    `MULTI2VEC_CLIP`\n        Weaviate module backed by a Sentence-BERT CLIP model for images and text.\n    `MULTI2VEC_PALM`\n        Weaviate module backed by a palm model for images and text.\n    `MULTI2VEC_BIND`\n        Weaviate module backed by the ImageBind model for images, text, audio, depth, IMU, thermal, and video.\n    `MULTI2VEC_VOYAGEAI`\n        Weaviate module backed by a Voyage AI multimodal embedding models.\n    `REF2VEC_CENTROID`\n        Weaviate module backed by a centroid-based model that calculates an object's vectors from its referenced vectors.",
-            "enum": [
-              "none",
-              "text2vec-aws",
-              "text2vec-cohere",
-              "text2vec-contextionary",
-              "text2vec-databricks",
-              "text2vec-gpt4all",
-              "text2vec-huggingface",
-              "text2vec-mistral",
-              "text2vec-ollama",
-              "text2vec-openai",
-              "text2vec-palm",
-              "text2vec-transformers",
-              "text2vec-jinaai",
-              "text2vec-voyageai",
-              "text2vec-weaviate",
-              "img2vec-neural",
-              "multi2vec-clip",
-              "multi2vec-cohere",
-              "multi2vec-jinaai",
-              "multi2vec-bind",
-              "multi2vec-palm",
-              "multi2vec-voyageai",
-              "ref2vec-centroid"
-            ],
-            "title": "Vectorizers",
-            "type": "string"
           }
         },
         "description": "Tool to search the Weaviate database",
@@ -5875,14 +6752,13 @@
           },
           "vectorizer": {
             "anyOf": [
-              {
-                "$ref": "#/$defs/Vectorizers"
-              },
+              {},
               {
                 "type": "null"
               }
             ],
-            "default": null
+            "default": null,
+            "title": "Vectorizer"
           },
           "weaviate_api_key": {
             "description": "The API key for the Weaviate cluster",
