@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Type
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, List
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -57,6 +57,7 @@ class FirecrawlSearchTool(BaseTool):
         }
     )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
+    package_dependencies: List[str] = ["firecrawl-py"]
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
@@ -97,7 +98,7 @@ class FirecrawlSearchTool(BaseTool):
 
         return self._firecrawl.search(
             query=query,
-            **self.config,
+            params=self.config,
         )
 
 
