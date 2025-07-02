@@ -15,10 +15,10 @@ from .docx_search_tool.docx_search_tool import DOCXSearchTool
 from .exa_tools.exa_search_tool import EXASearchTool
 from .file_read_tool.file_read_tool import FileReadTool
 from .file_writer_tool.file_writer_tool import FileWriterTool
+from .files_compressor_tool.files_compressor_tool import FileCompressorTool
 from .firecrawl_crawl_website_tool.firecrawl_crawl_website_tool import (
     FirecrawlCrawlWebsiteTool,
 )
-from .files_compressor_tool.files_compressor_tool import FileCompressorTool
 from .firecrawl_scrape_website_tool.firecrawl_scrape_website_tool import (
     FirecrawlScrapeWebsiteTool,
 )
@@ -73,6 +73,7 @@ from .serply_api_tool.serply_news_search_tool import SerplyNewsSearchTool
 from .serply_api_tool.serply_scholar_search_tool import SerplyScholarSearchTool
 from .serply_api_tool.serply_web_search_tool import SerplyWebSearchTool
 from .serply_api_tool.serply_webpage_to_markdown_tool import SerplyWebpageToMarkdownTool
+from .singlestore_search_tool import SingleStoreSearchTool, SingleStoreSearchToolSchema
 from .snowflake_search_tool import (
     SnowflakeConfig,
     SnowflakeSearchTool,
