@@ -158,14 +158,12 @@ class EnterpriseActionTool(BaseTool):
     def _run(self, **kwargs) -> str:
         """Execute the specific enterprise action with validated parameters."""
         try:
-            # Handle required nullable fields
             required_nullable_fields = self._get_required_nullable_fields()
 
             for field_name in required_nullable_fields:
                 if field_name not in kwargs:
                     kwargs[field_name] = None
 
-            # Continue with existing logic
             params = {k: v for k, v in kwargs.items() if v is not None}
 
             api_url = f"{self.enterprise_action_kit_project_url}/{self.enterprise_action_kit_project_id}/actions"
