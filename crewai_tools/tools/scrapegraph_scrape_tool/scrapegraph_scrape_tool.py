@@ -1,8 +1,8 @@
 import os
-from typing import TYPE_CHECKING, Any, Optional, Type
+from typing import TYPE_CHECKING, Any, Optional, Type, List
 from urllib.parse import urlparse
 
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # Type checking import
@@ -67,6 +67,10 @@ class ScrapegraphScrapeTool(BaseTool):
     api_key: Optional[str] = None
     enable_logging: bool = False
     _client: Optional["Client"] = None
+    package_dependencies: List[str] = ["scrapegraph-py"]
+    env_vars: List[EnvVar] = [
+        EnvVar(name="SCRAPEGRAPH_API_KEY", description="API key for Scrapegraph AI services", required=False),
+    ]
 
     def __init__(
         self,

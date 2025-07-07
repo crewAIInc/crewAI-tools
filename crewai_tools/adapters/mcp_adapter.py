@@ -4,7 +4,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from crewai.tools import BaseTool
-
+from crewai_tools.adapters.tool_collection import ToolCollection
 """
 MCPServer for CrewAI.
 
@@ -46,10 +46,18 @@ class MCPServerAdapter:
         with MCPServerAdapter({"url": "http://localhost:8000/sse"}) as tools:
             # tools is now available
 
+        # context manager with filtered tools
+        with MCPServerAdapter(..., "tool1", "tool2") as filtered_tools:
+            # only tool1 and tool2 are available
+
         # manually stop mcp server
         try:
             mcp_server = MCPServerAdapter(...)
-            tools = mcp_server.tools
+            tools = mcp_server.tools  # all tools
+
+            # or with filtered tools
+            mcp_server = MCPServerAdapter(..., "tool1", "tool2")
+            filtered_tools = mcp_server.tools  # only tool1 and tool2
             ...
         finally:
             mcp_server.stop()
@@ -61,18 +69,22 @@ class MCPServerAdapter:
     def __init__(
         self,
         serverparams: StdioServerParameters | dict[str, Any],
+        *tool_names: str,
     ):
         """Initialize the MCP Server
 
         Args:
             serverparams: The parameters for the MCP server it supports either a
                 `StdioServerParameters` or a `dict` respectively for STDIO and SSE.
+            *tool_names: Optional names of tools to filter. If provided, only tools with
+                matching names will be available.
 
         """
 
         super().__init__()
         self._adapter = None
         self._tools = None
+        self._tool_names = list(tool_names) if tool_names else None
 
         if not MCP_AVAILABLE:
             import click
@@ -114,7 +126,7 @@ class MCPServerAdapter:
         self._adapter.__exit__(None, None, None)
 
     @property
-    def tools(self) -> list[BaseTool]:
+    def tools(self) -> ToolCollection[BaseTool]:
         """The CrewAI tools available from the MCP server.
 
         Raises:
@@ -127,7 +139,11 @@ class MCPServerAdapter:
             raise ValueError(
                 "MCP server not started, run `mcp_server.start()` first before accessing `tools`"
             )
-        return self._tools
+
+        tools_collection = ToolCollection(self._tools)
+        if self._tool_names:
+            return tools_collection.filter_by_names(self._tool_names)
+        return tools_collection
 
     def __enter__(self):
         """

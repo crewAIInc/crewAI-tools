@@ -5,8 +5,18 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Type
 
+from pydantic import BaseModel
+
 from crewai_tools import tools
-from crewai.tools import EnvVar
+from crewai.tools.base_tool import BaseTool, EnvVar
+
+from pydantic.json_schema import GenerateJsonSchema
+from pydantic_core import PydanticOmit
+
+
+class SchemaGenerator(GenerateJsonSchema):
+    def handle_invalid_for_json_schema(self, schema, error_info):
+        raise PydanticOmit
 
 
 class ToolSpecExtractor:
@@ -23,7 +33,7 @@ class ToolSpecExtractor:
                     self.processed_tools.add(name)
         return self.tools_spec
 
-    def extract_tool_info(self, tool_class: Type) -> None:
+    def extract_tool_info(self, tool_class: BaseTool) -> None:
         try:
             core_schema = tool_class.__pydantic_core_schema__
             if not core_schema:
@@ -31,6 +41,7 @@ class ToolSpecExtractor:
 
             schema = self._unwrap_schema(core_schema)
             fields = schema.get("schema", {}).get("fields", {})
+
             tool_info = {
                 "name": tool_class.__name__,
                 "humanized_name": self._extract_field_default(
@@ -39,8 +50,12 @@ class ToolSpecExtractor:
                 "description": self._extract_field_default(
                     fields.get("description")
                 ).strip(),
-                "run_params": self._extract_params(fields.get("args_schema")),
+                "run_params_schema": self._extract_params(fields.get("args_schema")),
+                "init_params_schema": self._extract_init_params(tool_class),
                 "env_vars": self._extract_env_vars(fields.get("env_vars")),
+                "package_dependencies": self._extract_field_default(
+                    fields.get("package_dependencies"), fallback=[]
+                ),
             }
 
             self.tools_spec.append(tool_info)
@@ -61,44 +76,28 @@ class ToolSpecExtractor:
 
         schema = field.get("schema", {})
         default = schema.get("default")
-        return default if isinstance(default, str) else fallback
+        return default if isinstance(default, (list, str, int)) else fallback
 
     def _extract_params(
         self, args_schema_field: Optional[Dict]
     ) -> List[Dict[str, str]]:
         if not args_schema_field:
-            return []
+            return {}
 
         args_schema_class = args_schema_field.get("schema", {}).get("default")
         if not (
             inspect.isclass(args_schema_class)
             and hasattr(args_schema_class, "__pydantic_core_schema__")
         ):
-            return []
+            return {}
 
         try:
-            core_schema = args_schema_class.__pydantic_core_schema__
-            schema = self._unwrap_schema(core_schema)
-            fields = schema.get("schema", {}).get("fields", {})
-
-            params = []
-            for name, info in fields.items():
-                _type = self._extract_param_type(info)
-                if _type == "union":
-                    breakpoint()
-                param = {
-                    "name": name,
-                    "description": self._extract_field_default(info)
-                    or self._extract_field_description_from_metadata(info),
-                    "type": _type,
-                }
-                params.append(param)
-
-            return params
-
+            return args_schema_class.model_json_schema(
+                schema_generator=SchemaGenerator, mode="validation"
+            )
         except Exception as e:
             print(f"Error extracting params from {args_schema_class}: {e}")
-            return []
+            return {}
 
     def _extract_env_vars(self, env_vars_field: Optional[Dict]) -> List[Dict[str, str]]:
         if not env_vars_field:
@@ -117,51 +116,31 @@ class ToolSpecExtractor:
                 )
         return env_vars
 
-    def _extract_field_description_from_metadata(self, field: Dict) -> str:
-        if metadata := field.get("metadata"):
-            return metadata.get("pydantic_js_updates", {}).get("description", "")
-        return ""
+    def _extract_init_params(self, tool_class: BaseTool) -> dict:
+        ignored_init_params = [
+            "name",
+            "description",
+            "env_vars",
+            "args_schema",
+            "description_updated",
+            "cache_function",
+            "result_as_answer",
+            "max_usage_count",
+            "current_usage_count",
+            "package_dependencies",
+        ]
 
-    def _extract_param_type(self, info: Dict) -> Optional[str]:
-        schema = info.get("schema", {})
-        schema = self._unwrap_schema(schema)
+        json_schema = tool_class.model_json_schema(
+            schema_generator=SchemaGenerator, mode="serialization"
+        )
 
-        if schema.get("type") == "nullable":
-            inner = schema.get("schema", {})
-            return self._schema_type_to_str(inner)
+        properties = {}
+        for key, value in json_schema["properties"].items():
+            if key not in ignored_init_params:
+                properties[key] = value
 
-        return self._schema_type_to_str(schema)
-
-    def _schema_type_to_str(self, schema: Dict) -> str:
-        schema_type = schema.get("type", "")
-
-        if schema_type == "list" and "items_schema" in schema:
-            item_type = self._schema_type_to_str(schema["items_schema"])
-            return f"list[{item_type}]"
-
-        if schema_type == "union" and "choices" in schema:
-            choices = schema["choices"]
-            item_types = [self._schema_type_to_str(choice) for choice in choices]
-            return f"union[{', '.join(item_types)}]"
-
-        if (
-            schema_type == "dict"
-            and "keys_schema" in schema
-            and "values_schema" in schema
-        ):
-            key_type = self._schema_type_to_str(schema["keys_schema"])
-            value_type = self._schema_type_to_str(schema["values_schema"])
-            return f"dict[{key_type}, {value_type}]"
-
-        return {
-            "str": "str",
-            "int": "int",
-            "float": "float",
-            "bool": "bool",
-            "list": "list",
-            "dict": "dict",
-            "any": "any",
-        }.get(schema_type, schema_type or "unknown")
+        json_schema["properties"] = properties
+        return json_schema
 
     def save_to_json(self, output_path: str) -> None:
         with open(output_path, "w", encoding="utf-8") as f:

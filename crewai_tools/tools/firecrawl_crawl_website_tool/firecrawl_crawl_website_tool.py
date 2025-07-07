@@ -1,12 +1,17 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, List, TYPE_CHECKING
 
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
+if TYPE_CHECKING:
+    from firecrawl import FirecrawlApp
+
 try:
-    from firecrawl import FirecrawlApp, ScrapeOptions
+    from firecrawl import FirecrawlApp
+
+    FIRECRAWL_AVAILABLE = True
 except ImportError:
-    FirecrawlApp = Any
+    FIRECRAWL_AVAILABLE = False
 
 
 class FirecrawlCrawlWebsiteToolSchema(BaseModel):
@@ -42,19 +47,23 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
     api_key: Optional[str] = None
     config: Optional[dict[str, Any]] = Field(
         default_factory=lambda: {
-            "max_depth": 2,
-            "ignore_sitemap": True,
-            "limit": 100,
-            "allow_backward_links": False,
-            "allow_external_links": False,
-            "scrape_options": ScrapeOptions(
-                formats=["markdown", "screenshot", "links"],
-                only_main_content=True,
-                timeout=30000,
-            ),
+            "maxDepth": 2,
+            "ignoreSitemap": True,
+            "limit": 10,
+            "allowBackwardLinks": False,
+            "allowExternalLinks": False,
+            "scrapeOptions": {
+                "formats": ["markdown", "screenshot", "links"],
+                "onlyMainContent": True,
+                "timeout": 10000,
+            },
         }
     )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
+    package_dependencies: List[str] = ["firecrawl-py"]
+    env_vars: List[EnvVar] = [
+        EnvVar(name="FIRECRAWL_API_KEY", description="API key for Firecrawl services", required=True),
+    ]
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
@@ -87,7 +96,10 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
                 )
 
     def _run(self, url: str):
-        return self._firecrawl.crawl_url(url, **self.config)
+        if not self._firecrawl:
+            raise RuntimeError("FirecrawlApp not properly initialized")
+
+        return self._firecrawl.crawl_url(url, poll_interval=2, params=self.config)
 
 
 try:
