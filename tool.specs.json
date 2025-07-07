@@ -673,7 +673,14 @@
     },
     {
       "description": "",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Composio services",
+          "name": "COMPOSIO_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "ComposioTool",
       "init_params_schema": {
         "$defs": {
@@ -832,7 +839,14 @@
     },
     {
       "description": "Generates images using OpenAI's Dall-E model.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for OpenAI services",
+          "name": "OPENAI_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Dall-E Tool",
       "init_params_schema": {
         "$defs": {
@@ -1705,7 +1719,14 @@
     },
     {
       "description": "Crawl webpages using Firecrawl and return the contents",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Firecrawl services",
+          "name": "FIRECRAWL_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Firecrawl web crawl tool",
       "init_params_schema": {
         "$defs": {
@@ -1796,7 +1817,14 @@
     },
     {
       "description": "Scrape webpages using Firecrawl and return the contents",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Firecrawl services",
+          "name": "FIRECRAWL_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Firecrawl web scrape tool",
       "init_params_schema": {
         "$defs": {
@@ -1836,7 +1864,7 @@
             "type": "object"
           }
         },
-        "description": "Tool for scraping webpages using Firecrawl. To run this tool, you need to have a Firecrawl API key.\n\nArgs:\n    api_key (str): Your Firecrawl API key.\n    config (dict): Optional. It contains Firecrawl API parameters.\n\nDefault configuration options:\n    formats (list[str]): Content formats to return. Default: [\"markdown\"]\n    only_main_content (bool): Only return main content. Default: True\n    include_tags (list[str]): Tags to include. Default: []\n    exclude_tags (list[str]): Tags to exclude. Default: []\n    headers (dict): Headers to include. Default: {}\n    wait_for (int): Time to wait for page to load in ms. Default: 0\n    json_options (dict): Options for JSON extraction. Default: None",
+        "description": "Tool for scraping webpages using Firecrawl. To run this tool, you need to have a Firecrawl API key.\n\nArgs:\n    api_key (str): Your Firecrawl API key.\n    config (dict): Optional. It contains Firecrawl API parameters.\n\nDefault configuration options:\n    formats (list[str]): Content formats to return. Default: [\"markdown\"]\n    onlyMainContent (bool): Only return main content. Default: True\n    includeTags (list[str]): Tags to include. Default: []\n    excludeTags (list[str]): Tags to exclude. Default: []\n    headers (dict): Headers to include. Default: {}\n    waitFor (int): Time to wait for page to load in ms. Default: 0\n    json_options (dict): Options for JSON extraction. Default: None",
         "properties": {
           "api_key": {
             "anyOf": [
@@ -1880,7 +1908,14 @@
     },
     {
       "description": "Search webpages using Firecrawl and return the results",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Firecrawl services",
+          "name": "FIRECRAWL_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Firecrawl web search tool",
       "init_params_schema": {
         "$defs": {
@@ -5206,7 +5241,14 @@
     },
     {
       "description": "A tool to perform to perform a job search in the US with a search_query.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Serply services",
+          "name": "SERPLY_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Job Search",
       "init_params_schema": {
         "$defs": {
@@ -5327,7 +5369,14 @@
     },
     {
       "description": "A tool to perform News article search with a search_query.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Serply services",
+          "name": "SERPLY_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "News Search",
       "init_params_schema": {
         "$defs": {
@@ -5434,7 +5483,14 @@
     },
     {
       "description": "A tool to perform scholarly literature search with a search_query.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Serply services",
+          "name": "SERPLY_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Scholar Search",
       "init_params_schema": {
         "$defs": {
@@ -5692,7 +5748,14 @@
     },
     {
       "description": "A tool to perform convert a webpage to markdown to make it easier for LLMs to understand",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Serply services",
+          "name": "SERPLY_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Webpage to Markdown",
       "init_params_schema": {
         "$defs": {
@@ -6490,95 +6553,15 @@
       }
     },
     {
-      "description": "Converts text to speech using CambAI's MARS7 model on Google Cloud Vertex AI. Requires reference audio and transcription for voice cloning.",
-      "env_vars": [],
-      "humanized_name": "Vertex CambAI Tool",
-      "init_params_schema": {
-        "$defs": {
-          "EnvVar": {
-            "properties": {
-              "default": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "default": null,
-                "title": "Default"
-              },
-              "description": {
-                "title": "Description",
-                "type": "string"
-              },
-              "name": {
-                "title": "Name",
-                "type": "string"
-              },
-              "required": {
-                "default": true,
-                "title": "Required",
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "name",
-              "description"
-            ],
-            "title": "EnvVar",
-            "type": "object"
-          }
-        },
-        "description": "Tool for text-to-speech synthesis using Google Cloud Vertex AI with CambAI's MARS7 model.\n\nThis tool provides voice cloning capabilities using the MARS7 model.\nRequires Google Cloud credentials and Vertex AI endpoint access.\n\nEnvironment Variables Required:\n    GOOGLE_APPLICATION_CREDENTIALS: Path to service account key file\n    PROJECT_ID: Google Cloud project ID\n    LOCATION: Google Cloud location (e.g., us-central1)\n    ENDPOINT_ID: Vertex AI endpoint ID for MARS7 model",
-        "properties": {},
-        "title": "VertexCambAITool",
-        "type": "object"
-      },
-      "name": "VertexCambAITool",
-      "package_dependencies": [
-        "google-cloud-aiplatform",
-        "soundfile"
-      ],
-      "run_params_schema": {
-        "description": "Input schema for Vertex CambAI Tool.",
-        "properties": {
-          "audio_ref_path": {
-            "title": "Audio Ref Path",
-            "type": "string"
-          },
-          "language": {
-            "default": "en-us",
-            "title": "Language",
-            "type": "string"
-          },
-          "output_file": {
-            "default": "output.flac",
-            "title": "Output File",
-            "type": "string"
-          },
-          "ref_text": {
-            "title": "Ref Text",
-            "type": "string"
-          },
-          "text": {
-            "title": "Text",
-            "type": "string"
-          }
-        },
-        "required": [
-          "text",
-          "audio_ref_path",
-          "ref_text"
-        ],
-        "title": "VertexCambAISchema",
-        "type": "object"
-      }
-    },
-    {
       "description": "This tool uses OpenAI's Vision API to describe the contents of an image.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for OpenAI services",
+          "name": "OPENAI_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Vision Tool",
       "init_params_schema": {
         "$defs": {
