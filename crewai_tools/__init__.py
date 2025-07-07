@@ -38,6 +38,10 @@ from .tools import (
     MultiOnTool,
     MySQLSearchTool,
     NL2SQLTool,
+    OxylabsUniversalScraperTool,
+    OxylabsGoogleSearchScraperTool,
+    OxylabsAmazonProductScraperTool,
+    OxylabsAmazonSearchScraperTool,
     PatronusEvalTool,
     PatronusLocalEvaluatorTool,
     PatronusPredefinedCriteriaEvalTool,
@@ -70,4 +74,6 @@ from .tools import (
     XMLSearchTool,
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
+    ZapierActionTools,
 )
+from .adapters.zapier_adapter import ZapierActionTool

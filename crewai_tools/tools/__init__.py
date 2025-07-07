@@ -33,6 +33,18 @@ from .mdx_search_tool.mdx_search_tool import MDXSearchTool
 from .multion_tool.multion_tool import MultiOnTool
 from .mysql_search_tool.mysql_search_tool import MySQLSearchTool
 from .nl2sql.nl2sql_tool import NL2SQLTool
+from .oxylabs_universal_scraper_tool.oxylabs_universal_scraper_tool import (
+    OxylabsUniversalScraperTool,
+)
+from .oxylabs_google_search_scraper_tool.oxylabs_google_search_scraper_tool import (
+    OxylabsGoogleSearchScraperTool,
+)
+from .oxylabs_amazon_product_scraper_tool.oxylabs_amazon_product_scraper_tool import (
+    OxylabsAmazonProductScraperTool,
+)
+from .oxylabs_amazon_search_scraper_tool.oxylabs_amazon_search_scraper_tool import (
+    OxylabsAmazonSearchScraperTool,
+)
 from .patronus_eval_tool import (
     PatronusEvalTool,
     PatronusLocalEvaluatorTool,
@@ -78,3 +90,4 @@ from .youtube_channel_search_tool.youtube_channel_search_tool import (
     YoutubeChannelSearchTool,
 )
 from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSearchTool
+from .zapier_action_tool.zapier_action_tool import ZapierActionTools
