@@ -48,9 +48,33 @@ def reset_global_mocks():
     # that might be called in your tests to prevent similar issues:
     mock_couchbase.vector_search.VectorSearch.from_vector_query.reset_mock()
     mock_couchbase.search.SearchRequest.create.reset_mock()
-    # Add any other global mocks here if they cause state issues
-    yield # Test runs here
-    # Teardown if needed, but reset_mock is usually sufficient for setup
+
+# Additional fixture to handle import pollution in full test suite
+@pytest.fixture(autouse=True)
+def ensure_couchbase_mocks():
+    """Ensure that couchbase imports are properly mocked even when other tests have run first."""
+    # This fixture ensures our mocks are in place regardless of import order
+    original_modules = {}
+    
+    # Store any existing modules
+    for module_name in ['couchbase', 'couchbase.search', 'couchbase.cluster', 'couchbase.options', 'couchbase.vector_search', 'couchbase.exceptions']:
+        if module_name in sys.modules:
+            original_modules[module_name] = sys.modules[module_name]
+    
+    # Ensure our mocks are active
+    sys.modules['couchbase'] = mock_couchbase
+    sys.modules['couchbase.search'] = mock_couchbase.search
+    sys.modules['couchbase.cluster'] = mock_couchbase.cluster
+    sys.modules['couchbase.options'] = mock_couchbase.options
+    sys.modules['couchbase.vector_search'] = mock_couchbase.vector_search
+    sys.modules['couchbase.exceptions'] = mock_couchbase.exceptions
+    
+    yield
+    
+    # Restore original modules if they existed
+    for module_name, original_module in original_modules.items():
+        if original_module is not None:
+            sys.modules[module_name] = original_module
 
 @pytest.fixture
 def mock_cluster():
@@ -177,35 +201,45 @@ def test_run_success_scoped_index(couchbase_tool, mock_search_iter, tool_config,
 
     # Mock the scope search method
     couchbase_tool._scope.search = MagicMock(return_value=mock_search_iter)
-    # Mock the VectorQuery/VectorSearch/SearchRequest creation
-    mock_vector_query = MagicMock()
-    mock_couchbase.vector_search.VectorQuery.return_value = mock_vector_query
-    mock_vector_search = MagicMock()
-    mock_couchbase.vector_search.VectorSearch.from_vector_query.return_value = mock_vector_search
-    mock_search_req = MagicMock()
-    mock_couchbase.search.SearchRequest.create.return_value = mock_search_req
+    # Mock the VectorQuery/VectorSearch/SearchRequest creation using runtime patching
+    with patch('crewai_tools.tools.couchbase_tool.couchbase_tool.VectorQuery') as mock_vq, \
+         patch('crewai_tools.tools.couchbase_tool.couchbase_tool.VectorSearch') as mock_vs, \
+         patch('crewai_tools.tools.couchbase_tool.couchbase_tool.search.SearchRequest') as mock_sr, \
+         patch('crewai_tools.tools.couchbase_tool.couchbase_tool.SearchOptions') as mock_so:
+        
+        # Set up the mock objects and their return values
+        mock_vector_query = MagicMock()
+        mock_vector_search = MagicMock()
+        mock_search_req = MagicMock()
+        mock_search_options = MagicMock()
+        
+        mock_vq.return_value = mock_vector_query
+        mock_vs.from_vector_query.return_value = mock_vector_search
+        mock_sr.create.return_value = mock_search_req
+        mock_so.return_value = mock_search_options
 
+        result = couchbase_tool._run(query=query)
 
-    result = couchbase_tool._run(query=query)
+        # Check embedding function call
+        tool_config['embedding_function'].assert_called_once_with(query)
 
-    # Check embedding function call
-    tool_config['embedding_function'].assert_called_once_with(query)
+        # Check VectorQuery call
+        mock_vq.assert_called_once_with(
+            tool_config['embedding_key'], mock_embedding_function.return_value, tool_config['limit']
+        )
+        # Check VectorSearch call
+        mock_vs.from_vector_query.assert_called_once_with(mock_vector_query)
+        # Check SearchRequest creation
+        mock_sr.create.assert_called_once_with(mock_vector_search)
+        # Check SearchOptions creation
+        mock_so.assert_called_once_with(limit=tool_config['limit'], fields=["*"])
 
-    # Check VectorQuery call
-    mock_couchbase.vector_search.VectorQuery.assert_called_once_with(
-        tool_config['embedding_key'], mock_embedding_function.return_value, tool_config['limit']
-    )
-    # Check VectorSearch call
-    mock_couchbase.vector_search.VectorSearch.from_vector_query.assert_called_once_with(mock_vector_query)
-    # Check SearchRequest creation
-    mock_couchbase.search.SearchRequest.create.assert_called_once_with(mock_vector_search)
-
-    # Check that scope search was called correctly
-    couchbase_tool._scope.search.assert_called_once_with(
-        tool_config['index_name'],
-        mock_search_req,
-        mock_couchbase.options.SearchOptions(limit=tool_config['limit'], fields=["*"])
-    )
+        # Check that scope search was called correctly
+        couchbase_tool._scope.search.assert_called_once_with(
+            tool_config['index_name'],
+            mock_search_req,
+            mock_search_options
+        )
 
     # Check cluster search was NOT called
     couchbase_tool.cluster.search.assert_not_called()
@@ -226,32 +260,42 @@ def test_run_success_global_index(tool_config, mock_search_iter, mock_embedding_
 
     # Mock the cluster search method
     couchbase_tool.cluster.search = MagicMock(return_value=mock_search_iter)
-    # Mock the VectorQuery/VectorSearch/SearchRequest creation
-    mock_vector_query = MagicMock()
-    mock_couchbase.vector_search.VectorQuery.return_value = mock_vector_query
-    mock_vector_search = MagicMock()
-    mock_couchbase.vector_search.VectorSearch.from_vector_query.return_value = mock_vector_search
-    mock_search_req = MagicMock()
-    mock_couchbase.search.SearchRequest.create.return_value = mock_search_req
+    # Mock the VectorQuery/VectorSearch/SearchRequest creation using runtime patching
+    with patch('crewai_tools.tools.couchbase_tool.couchbase_tool.VectorQuery') as mock_vq, \
+         patch('crewai_tools.tools.couchbase_tool.couchbase_tool.VectorSearch') as mock_vs, \
+         patch('crewai_tools.tools.couchbase_tool.couchbase_tool.search.SearchRequest') as mock_sr, \
+         patch('crewai_tools.tools.couchbase_tool.couchbase_tool.SearchOptions') as mock_so:
+        
+        # Set up the mock objects and their return values
+        mock_vector_query = MagicMock()
+        mock_vector_search = MagicMock()
+        mock_search_req = MagicMock()
+        mock_search_options = MagicMock()
+        
+        mock_vq.return_value = mock_vector_query
+        mock_vs.from_vector_query.return_value = mock_vector_search
+        mock_sr.create.return_value = mock_search_req
+        mock_so.return_value = mock_search_options
 
-    result = couchbase_tool._run(query=query)
+        result = couchbase_tool._run(query=query)
 
-    # Check embedding function call
-    tool_config['embedding_function'].assert_called_once_with(query)
+        # Check embedding function call
+        tool_config['embedding_function'].assert_called_once_with(query)
 
-    # Check VectorQuery/Search call
-    mock_couchbase.vector_search.VectorQuery.assert_called_once_with(
-        tool_config['embedding_key'], mock_embedding_function.return_value, tool_config['limit']
-    )
-    mock_couchbase.search.SearchRequest.create.assert_called_once()
+        # Check VectorQuery/Search call
+        mock_vq.assert_called_once_with(
+            tool_config['embedding_key'], mock_embedding_function.return_value, tool_config['limit']
+        )
+        mock_sr.create.assert_called_once_with(mock_vector_search)
+        # Check SearchOptions creation
+        mock_so.assert_called_once_with(limit=tool_config['limit'], fields=["*"])
 
-
-    # Check that cluster search was called correctly
-    couchbase_tool.cluster.search.assert_called_once_with(
-        tool_config['index_name'],
-        mock_search_req,
-        mock_couchbase.options.SearchOptions(limit=tool_config['limit'], fields=["*"])
-    )
+        # Check that cluster search was called correctly
+        couchbase_tool.cluster.search.assert_called_once_with(
+            tool_config['index_name'],
+            mock_search_req,
+            mock_search_options
+        )
 
     # Check scope search was NOT called
     couchbase_tool._scope.search.assert_not_called()
