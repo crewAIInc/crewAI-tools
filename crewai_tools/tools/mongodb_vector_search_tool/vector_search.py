@@ -4,8 +4,8 @@ from importlib.metadata import version
 from logging import getLogger
 from typing import Any, Dict, Iterable, List, Optional, Type
 
-import openai
 from crewai.tools import BaseTool, EnvVar
+from openai import AzureOpenAI, Client
 from pydantic import BaseModel, Field
 
 from crewai_tools.tools.mongodb_vector_search_tool.utils import (
@@ -119,21 +119,23 @@ class MongoDBVectorSearchTool(BaseTool):
             else:
                 raise ImportError("You are missing the 'mongodb' crewai tool.")
 
-        from pymongo import MongoClient
-        from pymongo.driver_info import DriverInfo
-
-        openai_api_key = os.environ.get("OPENAI_API_KEY")
-        if not openai_api_key:
+        if "AZURE_OPENAI_ENDPOINT" in os.environ:
+            self._openai_client = AzureOpenAI()
+        elif "OPENAI_API_KEY" in os.environ:
+            self._openai_client = Client()
+        else:
             raise ValueError(
                 "OPENAI_API_KEY environment variable is required for MongoDBVectorSearchTool and it is mandatory to use the tool."
             )
+
+        from pymongo import MongoClient
+        from pymongo.driver_info import DriverInfo
 
         self._client = MongoClient(
             self.connection_string,
             driver=DriverInfo(name="CrewAI", version=version("crewai-tools")),
         )
         self._coll = self._client[self.database_name][self.collection_name]
-        self._openai_client = openai.Client(api_key=openai_api_key)
 
     def create_vector_search_index(
         self,
