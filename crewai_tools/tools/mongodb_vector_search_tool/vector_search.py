@@ -1,13 +1,8 @@
 import os
+import json
 from importlib.metadata import version
 from typing import Any, Dict, Iterable, List, Optional, Type
 
-try:
-    import pymongo  # noqa: F403
-
-    MONGODB_AVAILABLE = True
-except ImportError:
-    MONGODB_AVAILABLE = False
 
 import openai
 from crewai.tools import BaseTool
@@ -16,6 +11,16 @@ from pydantic import BaseModel, Field
 from crewai_tools.tools.mongodb_vector_search_tool.utils import (
     create_vector_search_index,
 )
+from logging import getLogger
+
+try:
+    import pymongo  # noqa: F403
+
+    MONGODB_AVAILABLE = True
+except ImportError:
+    MONGODB_AVAILABLE = False
+
+logger = getLogger(__name__)
 
 
 class MongoDBVectorSearchConfig(BaseModel):
@@ -81,6 +86,10 @@ class MongoDBVectorSearchTool(BaseTool):
     connection_string: str = Field(
         ...,
         description="The connection string of the MongoDB cluster",
+    )
+    dimensions: int = Field(
+        default=1536,
+        description="Number of dimensions in the embedding vector",
     )
 
     def __init__(self, **kwargs):
@@ -207,6 +216,7 @@ class MongoDBVectorSearchTool(BaseTool):
             for i in self._openai_client.embeddings.create(
                 input=texts,
                 model=self.embedding_model,
+                dimensions=self.dimensions,
             ).data
         ]
 
@@ -239,70 +249,73 @@ class MongoDBVectorSearchTool(BaseTool):
         assert result.upserted_ids is not None
         return [str(_id) for _id in result.upserted_ids.values()]
 
-    def _run(self, **kwargs) -> list[dict[str, Any]]:
-        # Get the inputs
-        query_config = self.query_config or MongoDBVectorSearchConfig()
-        query = kwargs["query"]
-        limit = kwargs.get("limit", query_config.limit)
-        oversampling_factor = kwargs.get(
-            "oversampling_factor", query_config.oversampling_factor
-        )
-        pre_filter = kwargs.get("pre_filter", query_config.pre_filter)
-        include_embeddings = kwargs.get(
-            "include_embeddings", query_config.include_embeddings
-        )
-        post_filter_pipeline = kwargs.get(
-            "post_filter_pipeline", query_config.post_filter_pipeline
-        )
-
-        # Create the embedding for the query
-        query_vector = self._embed_texts([query])[0]
-
-        # Atlas Vector Search, potentially with filter
-        stage = {
-            "index": self.vector_index_name,
-            "path": self.embedding_key,
-            "queryVector": query_vector,
-            "numCandidates": limit * oversampling_factor,
-            "limit": limit,
-        }
-        if pre_filter:
-            stage["filter"] = pre_filter
-
-        pipeline = [
-            {"$vectorSearch": stage},
-            {"$set": {"score": {"$meta": "vectorSearchScore"}}},
-        ]
-
-        # Remove embeddings unless requested
-        if not include_embeddings:
-            pipeline.append({"$project": {self.embedding_key: 0}})
-
-        # Post-processing
-        if post_filter_pipeline is not None:
-            pipeline.extend(post_filter_pipeline)
-
-        # Execution
-        cursor = self._coll.aggregate(pipeline)  # type: ignore[arg-type]
-        docs = []
-
-        # Format
-        for doc in cursor:
-            if self.text_key not in doc:
-                continue
-            text = doc.pop(self.text_key)
-            score = doc.pop("score")
-            docs.append(
-                dict(
-                    context=text,
-                    id=doc["_id"],
-                    metadata=doc,
-                    score=score,
-                )
+    def _run(self, **kwargs) -> str:
+        try:
+            query_config = self.query_config or MongoDBVectorSearchConfig()
+            query = kwargs["query"]
+            limit = kwargs.get("limit", query_config.limit)
+            oversampling_factor = kwargs.get(
+                "oversampling_factor", query_config.oversampling_factor
             )
-        return docs
+            pre_filter = kwargs.get("pre_filter", query_config.pre_filter)
+            include_embeddings = kwargs.get(
+                "include_embeddings", query_config.include_embeddings
+            )
+            post_filter_pipeline = kwargs.get(
+                "post_filter_pipeline", query_config.post_filter_pipeline
+            )
+
+            # Create the embedding for the query
+            query_vector = self._embed_texts([query])[0]
+
+            # Atlas Vector Search, potentially with filter
+            stage = {
+                "index": self.vector_index_name,
+                "path": self.embedding_key,
+                "queryVector": query_vector,
+                "numCandidates": limit * oversampling_factor,
+                "limit": limit,
+            }
+            if pre_filter:
+                stage["filter"] = pre_filter
+
+            pipeline = [
+                {"$vectorSearch": stage},
+                {"$set": {"score": {"$meta": "vectorSearchScore"}}},
+            ]
+
+            # Remove embeddings unless requested
+            if not include_embeddings:
+                pipeline.append({"$project": {self.embedding_key: 0}})
+
+            # Post-processing
+            if post_filter_pipeline is not None:
+                pipeline.extend(post_filter_pipeline)
+
+            # Execution
+            cursor = self._coll.aggregate(pipeline)  # type: ignore[arg-type]
+            docs = []
+
+            # Format
+            for doc in cursor:
+                docs.append(doc)
+            return json.dumps(docs)
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            return []
 
     def __del__(self):
         """Cleanup clients on deletion."""
-        self._client.close()
-        self._openai_client.close()
+        try:
+            if hasattr(self, "_client") and self._client:
+                self._client.close()
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            pass
+
+        try:
+            if hasattr(self, "_openai_client") and self._openai_client:
+                self._openai_client.close()
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            pass
