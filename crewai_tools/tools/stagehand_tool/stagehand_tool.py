@@ -2,7 +2,6 @@ import asyncio
 import json
 import logging
 from typing import Dict, List, Optional, Type, Union, Any
-
 from pydantic import BaseModel, Field
 
 # Define a flag to track whether stagehand is available
@@ -35,7 +34,7 @@ except ImportError:
     class AvailableModel:
         CLAUDE_3_7_SONNET_LATEST = "anthropic.claude-3-7-sonnet-20240607"
 
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 
 
 class StagehandCommandType(str):
@@ -173,6 +172,13 @@ class StagehandTool(BaseTool):
     _logger: Optional[logging.Logger] = None
     _testing: bool = False
 
+    env_vars: List[EnvVar] = [
+        EnvVar(name="BROWSERBASE_API_KEY", description="API key for Browserbase", required=False),
+        EnvVar(name="BROWSERBASE_PROJECT_ID", description="Project ID for Browserbase", required=False),
+        EnvVar(name="OPENAI_API_KEY", description="Model API key for OpenAI", required=False),
+        EnvVar(name="ANTHROPIC_API_KEY", description="Model API key for Anthropic", required=False),
+    ]
+
     def __init__(
         self,
         api_key: Optional[str] = None,
@@ -197,8 +203,9 @@ class StagehandTool(BaseTool):
         self._logger = logging.getLogger(__name__)
 
         # For backward compatibility
-        browserbase_api_key = kwargs.get("browserbase_api_key")
-        browserbase_project_id = kwargs.get("browserbase_project_id")
+        browserbase_api_key = kwargs.get("browserbase_api_key") or os.getenv("BROWSERBASE_API_KEY")
+        browserbase_project_id = kwargs.get("browserbase_project_id") or os.getenv("BROWSERBASE_PROJECT_ID")
+        model_api_key = model_api_key or os.getenv("OPENAI_API_KEY") or os.getenv("ANTHROPIC_API_KEY")
 
         if api_key:
             self.api_key = api_key
