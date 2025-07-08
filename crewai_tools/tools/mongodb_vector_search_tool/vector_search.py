@@ -1,17 +1,16 @@
-import os
 import json
+import os
 from importlib.metadata import version
+from logging import getLogger
 from typing import Any, Dict, Iterable, List, Optional, Type
 
-
 import openai
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, Field
 
 from crewai_tools.tools.mongodb_vector_search_tool.utils import (
     create_vector_search_index,
 )
-from logging import getLogger
 
 try:
     import pymongo  # noqa: F403
@@ -91,6 +90,19 @@ class MongoDBVectorSearchTool(BaseTool):
         default=1536,
         description="Number of dimensions in the embedding vector",
     )
+    env_vars: List[EnvVar] = [
+        EnvVar(
+            name="BROWSERBASE_API_KEY",
+            description="API key for Browserbase services",
+            required=False,
+        ),
+        EnvVar(
+            name="BROWSERBASE_PROJECT_ID",
+            description="Project ID for Browserbase services",
+            required=False,
+        ),
+    ]
+    package_dependencies: List[str] = ["mongdb"]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -249,21 +261,14 @@ class MongoDBVectorSearchTool(BaseTool):
         assert result.upserted_ids is not None
         return [str(_id) for _id in result.upserted_ids.values()]
 
-    def _run(self, **kwargs) -> str:
+    def _run(self, query: str) -> str:
         try:
             query_config = self.query_config or MongoDBVectorSearchConfig()
-            query = kwargs["query"]
-            limit = kwargs.get("limit", query_config.limit)
-            oversampling_factor = kwargs.get(
-                "oversampling_factor", query_config.oversampling_factor
-            )
-            pre_filter = kwargs.get("pre_filter", query_config.pre_filter)
-            include_embeddings = kwargs.get(
-                "include_embeddings", query_config.include_embeddings
-            )
-            post_filter_pipeline = kwargs.get(
-                "post_filter_pipeline", query_config.post_filter_pipeline
-            )
+            limit = query_config.limit
+            oversampling_factor = query_config.oversampling_factor
+            pre_filter = query_config.pre_filter
+            include_embeddings = query_config.include_embeddings
+            post_filter_pipeline = query_config.post_filter_pipeline
 
             # Create the embedding for the query
             query_vector = self._embed_texts([query])[0]
@@ -302,7 +307,7 @@ class MongoDBVectorSearchTool(BaseTool):
             return json.dumps(docs)
         except Exception as e:
             logger.error(f"Error: {e}")
-            return []
+            return ""
 
     def __del__(self):
         """Cleanup clients on deletion."""
@@ -311,11 +316,9 @@ class MongoDBVectorSearchTool(BaseTool):
                 self._client.close()
         except Exception as e:
             logger.error(f"Error: {e}")
-            pass
 
         try:
             if hasattr(self, "_openai_client") and self._openai_client:
                 self._openai_client.close()
         except Exception as e:
             logger.error(f"Error: {e}")
-            pass
