@@ -392,15 +392,8 @@ class StagehandTool(BaseTool):
 
             # Process according to command type
             if command_type.lower() == "act":
-                # Create act options
-                act_options = ActOptions(
-                    action=instruction,
-                    model_name=self.model_name,
-                    dom_settle_timeout_ms=self.dom_settle_timeout_ms,
-                )
-
                 # Execute the act command
-                result = await page.act(act_options)
+                result = await page.act(instruction)
                 self._logger.info(f"Act operation completed: {result}")
                 return StagehandResult(success=True, data=result.model_dump())
 
@@ -425,30 +418,24 @@ class StagehandTool(BaseTool):
                 )
 
             elif command_type.lower() == "extract":
-                # Create extract options
-                extract_options = ExtractOptions(
+                # Execute the extract command
+                result = await page.extract(
                     instruction=instruction,
                     model_name=self.model_name,
                     dom_settle_timeout_ms=self.dom_settle_timeout_ms,
-                    use_text_extract=True,
+                    use_text_extract=True
                 )
-
-                # Execute the extract command
-                result = await page.extract(extract_options)
                 self._logger.info(f"Extract operation completed successfully {result}")
                 return StagehandResult(success=True, data=result.model_dump())
 
             elif command_type.lower() == "observe":
-                # Create observe options
-                observe_options = ObserveOptions(
+                # Execute the observe command
+                results = await page.observe(
                     instruction=instruction,
                     model_name=self.model_name,
                     only_visible=True,
                     dom_settle_timeout_ms=self.dom_settle_timeout_ms,
                 )
-
-                # Execute the observe command
-                results = await page.observe(observe_options)
 
                 # Format the observation results
                 formatted_results = []
