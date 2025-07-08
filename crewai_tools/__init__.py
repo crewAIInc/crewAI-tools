@@ -68,6 +68,7 @@ from .tools import (
     SpiderTool,
     StagehandTool,
     TXTSearchTool,
+    VertexCambAITool,
     VisionTool,
     WeaviateVectorSearchTool,
     WebsiteSearchTool,

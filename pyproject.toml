@@ -118,6 +118,12 @@ xml = [
 oxylabs = [
     "oxylabs==2.0.0"
 ]
+vertex-cambai = [
+    "google-cloud-aiplatform>=1.98.0",
+    "soundfile>=0.13.1",
+    "python-dotenv>=1.1.0",
+    "numpy>=1.21.0",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
