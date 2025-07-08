@@ -303,7 +303,7 @@ class StagehandTool(BaseTool):
                 # No need to await the init call in test mode
                 self._stagehand.init()
                 self._page = self._stagehand.page
-                self._session_id = self._stagehand.browserbase_session_id
+                self._session_id = self._stagehand.session_id
 
             return self._stagehand, self._page
 
@@ -332,10 +332,10 @@ class StagehandTool(BaseTool):
             # Initialize the Stagehand instance
             await self._stagehand.init()
             self._page = self._stagehand.page
-            self._session_id = self._stagehand.browserbase_session_id
-            self._logger.info(f"Session ID: {self._stagehand.browserbase_session_id}")
+            self._session_id = self._stagehand.session_id
+            self._logger.info(f"Session ID: {self._stagehand.session_id}")
             self._logger.info(
-                f"Browser session: https://www.browserbase.com/sessions/{self._stagehand.browserbase_session_id}"
+                f"Browser session: https://www.browserbase.com/sessions/{self._stagehand.session_id}"
             )
 
         return self._stagehand, self._page
