@@ -98,6 +98,9 @@ apify = [
 databricks-sdk = [
     "databricks-sdk>=0.46.0",
 ]
+couchbase = [
+    "couchbase>=4.3.5",
+]
 mcp = [
     "mcp>=1.6.0",
     "mcpadapt>=0.1.9",
