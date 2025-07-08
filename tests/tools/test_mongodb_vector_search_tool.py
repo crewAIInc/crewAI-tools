@@ -25,7 +25,7 @@ def test_successful_query_execution(mongodb_vector_search_tool):
         results = json.loads(mongodb_vector_search_tool._run(query="sandwiches"))
 
         assert len(results) == 1
-        assert results[0]["context"] == "foo"
+        assert results[0]["context"] == "foo", results[0]
         assert results[0]["id"] == 1
 
 
