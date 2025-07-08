@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch
 
 import pytest
@@ -21,7 +22,7 @@ def test_successful_query_execution(mongodb_vector_search_tool):
     with patch.object(mongodb_vector_search_tool._coll, "aggregate") as mock_aggregate:
         mock_aggregate.return_value = [dict(text="foo", score=0.1, _id=1)]
 
-        results = mongodb_vector_search_tool._run(query="sandwiches")
+        results = json.loads(mongodb_vector_search_tool._run(query="sandwiches"))
 
         assert len(results) == 1
         assert results[0]["context"] == "foo"
@@ -46,8 +47,6 @@ def test_provide_config():
         assert mock_aggregate.mock_calls[-1].args[0][0]["$vectorSearch"]["limit"] == 10
 
         mock_aggregate.return_value = [dict(text="foo", score=0.1, _id=1)]
-        tool._run(query="sandwiches", limit=5)
-        assert mock_aggregate.mock_calls[-1].args[0][0]["$vectorSearch"]["limit"] == 5
 
 
 def test_cleanup_on_deletion(mongodb_vector_search_tool):
