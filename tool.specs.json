@@ -2700,6 +2700,268 @@
       }
     },
     {
+      "description": "A tool to perfrom a vector search on a MongoDB database for relevant information on internal documents.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Browserbase services",
+          "name": "BROWSERBASE_API_KEY",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "Project ID for Browserbase services",
+          "name": "BROWSERBASE_PROJECT_ID",
+          "required": false
+        }
+      ],
+      "humanized_name": "MongoDBVectorSearchTool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          },
+          "MongoDBVectorSearchConfig": {
+            "description": "Configuration for MongoDB vector search queries.",
+            "properties": {
+              "include_embeddings": {
+                "default": false,
+                "description": "Whether to include the embedding vector of each result in metadata.",
+                "title": "Include Embeddings",
+                "type": "boolean"
+              },
+              "limit": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": 4,
+                "description": "number of documents to return.",
+                "title": "Limit"
+              },
+              "oversampling_factor": {
+                "default": 10,
+                "description": "Multiple of limit used when generating number of candidates at each step in the HNSW Vector Search",
+                "title": "Oversampling Factor",
+                "type": "integer"
+              },
+              "post_filter_pipeline": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Pipeline of MongoDB aggregation stages to filter/process results after $vectorSearch.",
+                "title": "Post Filter Pipeline"
+              },
+              "pre_filter": {
+                "anyOf": [
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "List of MQL match expressions comparing an indexed field",
+                "title": "Pre Filter"
+              }
+            },
+            "title": "MongoDBVectorSearchConfig",
+            "type": "object"
+          }
+        },
+        "description": "Tool to perfrom a vector search the MongoDB database",
+        "properties": {
+          "collection_name": {
+            "description": "The name of the MongoDB collection",
+            "title": "Collection Name",
+            "type": "string"
+          },
+          "connection_string": {
+            "description": "The connection string of the MongoDB cluster",
+            "title": "Connection String",
+            "type": "string"
+          },
+          "database_name": {
+            "description": "The name of the MongoDB database",
+            "title": "Database Name",
+            "type": "string"
+          },
+          "dimensions": {
+            "default": 1536,
+            "description": "Number of dimensions in the embedding vector",
+            "title": "Dimensions",
+            "type": "integer"
+          },
+          "embedding_key": {
+            "default": "embedding",
+            "description": "Field that will contain the embedding for each document",
+            "title": "Embedding Key",
+            "type": "string"
+          },
+          "embedding_model": {
+            "default": "text-embedding-3-large",
+            "description": "Text OpenAI embedding model to use",
+            "title": "Embedding Model",
+            "type": "string"
+          },
+          "query_config": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/MongoDBVectorSearchConfig"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "MongoDB Vector Search query configuration"
+          },
+          "text_key": {
+            "default": "text",
+            "description": "MongoDB field that will contain the text for each document",
+            "title": "Text Key",
+            "type": "string"
+          },
+          "vector_index_name": {
+            "default": "vector_index",
+            "description": "Name of the Atlas Search vector index",
+            "title": "Vector Index Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "database_name",
+          "collection_name",
+          "connection_string"
+        ],
+        "title": "MongoDBVectorSearchTool",
+        "type": "object"
+      },
+      "name": "MongoDBVectorSearchTool",
+      "package_dependencies": [
+        "mongdb"
+      ],
+      "run_params_schema": {
+        "description": "Input for MongoDBTool.",
+        "properties": {
+          "include_embeddings": {
+            "default": false,
+            "description": "Whether to include the embedding vector of each result in metadata.",
+            "title": "Include Embeddings",
+            "type": "boolean"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 4,
+            "description": "number of documents to return.",
+            "title": "Limit"
+          },
+          "oversampling_factor": {
+            "default": 10,
+            "description": "Multiple of limit used when generating number of candidates at each step in the HNSW Vector Search",
+            "title": "Oversampling Factor",
+            "type": "integer"
+          },
+          "post_filter_pipeline": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Pipeline of MongoDB aggregation stages to filter/process results after $vectorSearch.",
+            "title": "Post Filter Pipeline"
+          },
+          "pre_filter": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "List of MQL match expressions comparing an indexed field",
+            "title": "Pre Filter"
+          },
+          "query": {
+            "description": "The query to search retrieve relevant information from the MongoDB database. Pass only the query, not the question.",
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "MongoDBToolSchema",
+        "type": "object"
+      }
+    },
+    {
       "description": "Multion gives the ability for LLMs to control web browsers using natural language instructions.\n            If the status is 'CONTINUE', reissue the same instruction to continue execution",
       "env_vars": [],
       "humanized_name": "Multion Browse Tool",
@@ -6433,7 +6695,8 @@
               "gpt-4o-mini",
               "claude-3-5-sonnet-latest",
               "claude-3-7-sonnet-latest",
-              "computer-use-preview"
+              "computer-use-preview",
+              "gemini-2.0-flash"
             ],
             "title": "AvailableModel",
             "type": "string"
@@ -6824,9 +7087,10 @@
             "type": "object"
           },
           "Vectorizers": {
-            "description": "The available vectorization modules in Weaviate.\n\nThese modules encode binary data into lists of floats called vectors.\nSee the [docs](https://weaviate.io/developers/weaviate/modules/retriever-vectorizer-modules) for more details.\n\nAttributes:\n    `NONE`\n        No vectorizer.\n    `TEXT2VEC_AWS`\n        Weaviate module backed by AWS text-based embedding models.\n    `TEXT2VEC_COHERE`\n        Weaviate module backed by Cohere text-based embedding models.\n    `TEXT2VEC_CONTEXTIONARY`\n        Weaviate module backed by Contextionary text-based embedding models.\n    `TEXT2VEC_GPT4ALL`\n        Weaviate module backed by GPT-4-All text-based embedding models.\n    `TEXT2VEC_HUGGINGFACE`\n        Weaviate module backed by HuggingFace text-based embedding models.\n    `TEXT2VEC_OPENAI`\n        Weaviate module backed by OpenAI and Azure-OpenAI text-based embedding models.\n    `TEXT2VEC_PALM`\n        Weaviate module backed by PaLM text-based embedding models.\n    `TEXT2VEC_TRANSFORMERS`\n        Weaviate module backed by Transformers text-based embedding models.\n    `TEXT2VEC_JINAAI`\n        Weaviate module backed by Jina AI text-based embedding models.\n    `TEXT2VEC_VOYAGEAI`\n        Weaviate module backed by Voyage AI text-based embedding models.\n    `TEXT2VEC_WEAVIATE`\n        Weaviate module backed by Weaviate's self-hosted text-based embedding models.\n    `IMG2VEC_NEURAL`\n        Weaviate module backed by a ResNet-50 neural network for images.\n    `MULTI2VEC_CLIP`\n        Weaviate module backed by a Sentence-BERT CLIP model for images and text.\n    `MULTI2VEC_PALM`\n        Weaviate module backed by a palm model for images and text.\n    `MULTI2VEC_BIND`\n        Weaviate module backed by the ImageBind model for images, text, audio, depth, IMU, thermal, and video.\n    `MULTI2VEC_VOYAGEAI`\n        Weaviate module backed by a Voyage AI multimodal embedding models.\n    `REF2VEC_CENTROID`\n        Weaviate module backed by a centroid-based model that calculates an object's vectors from its referenced vectors.",
+            "description": "The available vectorization modules in Weaviate.\n\nThese modules encode binary data into lists of floats called vectors.\nSee the [docs](https://weaviate.io/developers/weaviate/modules/retriever-vectorizer-modules) for more details.\n\nAttributes:\n    NONE: No vectorizer.\n    TEXT2VEC_AWS: Weaviate module backed by AWS text-based embedding models.\n    TEXT2VEC_COHERE: Weaviate module backed by Cohere text-based embedding models.\n    TEXT2VEC_CONTEXTIONARY: Weaviate module backed by Contextionary text-based embedding models.\n    TEXT2VEC_GPT4ALL: Weaviate module backed by GPT-4-All text-based embedding models.\n    TEXT2VEC_HUGGINGFACE: Weaviate module backed by HuggingFace text-based embedding models.\n    TEXT2VEC_OPENAI: Weaviate module backed by OpenAI and Azure-OpenAI text-based embedding models.\n    TEXT2VEC_PALM: Weaviate module backed by PaLM text-based embedding models.\n    TEXT2VEC_TRANSFORMERS: Weaviate module backed by Transformers text-based embedding models.\n    TEXT2VEC_JINAAI: Weaviate module backed by Jina AI text-based embedding models.\n    TEXT2VEC_VOYAGEAI: Weaviate module backed by Voyage AI text-based embedding models.\n    TEXT2VEC_NVIDIA: Weaviate module backed by NVIDIA text-based embedding models.\n    TEXT2VEC_WEAVIATE: Weaviate module backed by Weaviate's self-hosted text-based embedding models.\n    IMG2VEC_NEURAL: Weaviate module backed by a ResNet-50 neural network for images.\n    MULTI2VEC_CLIP: Weaviate module backed by a Sentence-BERT CLIP model for images and text.\n    MULTI2VEC_PALM: Weaviate module backed by a palm model for images and text.\n    MULTI2VEC_BIND: Weaviate module backed by the ImageBind model for images, text, audio, depth, IMU, thermal, and video.\n    MULTI2VEC_VOYAGEAI: Weaviate module backed by a Voyage AI multimodal embedding models.\n    MULTI2VEC_NVIDIA: Weaviate module backed by NVIDIA multimodal embedding models.\n    REF2VEC_CENTROID: Weaviate module backed by a centroid-based model that calculates an object's vectors from its referenced vectors.",
             "enum": [
               "none",
+              "text2colbert-jinaai",
               "text2vec-aws",
               "text2vec-cohere",
               "text2vec-contextionary",
@@ -6834,6 +7098,7 @@
               "text2vec-gpt4all",
               "text2vec-huggingface",
               "text2vec-mistral",
+              "text2vec-nvidia",
               "text2vec-ollama",
               "text2vec-openai",
               "text2vec-palm",
@@ -6848,6 +7113,7 @@
               "multi2vec-bind",
               "multi2vec-palm",
               "multi2vec-voyageai",
+              "multi2vec-nvidia",
               "ref2vec-centroid"
             ],
             "title": "Vectorizers",
