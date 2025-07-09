@@ -58,7 +58,7 @@ jobs:
         uses: tibdex/github-app-token@v2
         with:
           app_id: ${{ secrets.CREWAI_RELEASE_TOOL_APP_ID }}
-          private_key: ${{ secrets.CREWAI_RELEASE_TOOL_APP_PRIVATE_KEY }}
+          private_key: ${{ secrets.CREWAI_RELEASE_TOOL_PRIVATE_KEY }}
 
       - name: Create Pull Request
         if: steps.check_changes.outputs.specs_changed == 'true'
