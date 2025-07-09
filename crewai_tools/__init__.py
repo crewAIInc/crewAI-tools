@@ -23,6 +23,7 @@ from .tools import (
     DirectoryReadTool,
     DirectorySearchTool,
     DOCXSearchTool,
+    E2BCodeInterpreterTool,
     EXASearchTool,
     FileCompressorTool,
     FileReadTool,
