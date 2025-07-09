@@ -1,12 +1,14 @@
 name: Generate Tool Specifications
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   generate-specs:
@@ -50,11 +52,26 @@ jobs:
             echo "specs_changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit and push if changed
+      - name: Generate GitHub App token
         if: steps.check_changes.outputs.specs_changed == 'true'
-        run: |
-          git commit -m "Update tool specifications for $(git describe --tags --abbrev=0)"
-          git push
+        id: app-token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.CREWAI_RELEASE_TOOL_APP_ID }}
+          private_key: ${{ secrets.CREWAI_RELEASE_TOOL_APP_PRIVATE_KEY }}
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.specs_changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          title: "Automatically update tool specifications"
+          base: main
+          branch: update-tool-specs
+          commit-message: "Automatically update tool specifications"
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          delete-branch: false
 
   notify-api:
     needs: generate-specs
