@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   generate-specs:
-    if: github.event.commits[0].author.name != 'github-actions[bot]'
+    if: github.event.pusher.name != 'crewai-tools-spec-generator[bot]'
     runs-on: ubuntu-latest
     outputs:
       specs_changed: ${{ steps.check_changes.outputs.specs_changed }}
@@ -74,7 +74,7 @@ jobs:
           delete-branch: false
 
   notify-api:
-    if: github.event.commits[0].author.name == 'github-actions[bot]'
+    if: github.event.pusher.name == 'crewai-tools-spec-generator[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Notify API about tool specification update
