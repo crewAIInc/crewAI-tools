@@ -7,7 +7,7 @@ This example demonstrates how to build a simple CrewAI workflow that automatical
 * A `Task` to define the data retrieval and download process
 * A sequential `Crew` to orchestrate execution
 
-The downloaded PDFs are saved to a local directory (`./DOWNLOADS_3`). Filenames are optionally based on sanitized paper titles, ensuring compatibility with your operating system.
+The downloaded PDFs are saved to a local directory (`./DOWNLOADS`). Filenames are optionally based on sanitized paper titles, ensuring compatibility with your operating system.
 
 > The saved PDFs can be further used in **downstream tasks**, such as:
 >
@@ -34,7 +34,7 @@ llm = LLM(
 
 topic = "Crew AI"
 max_results = 3
-save_dir = "./DOWNLOADs"
+save_dir = "./DOWNLOADS"
 use_title_as_filename = True
 
 tool = ArxivPaperTool(
