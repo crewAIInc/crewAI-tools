@@ -14,7 +14,8 @@ env:
   SNOWFLAKE_WAREHOUSE: fake-snowflake-warehouse
   SNOWFLAKE_DATABASE: fake-snowflake-database
   SNOWFLAKE_SCHEMA: fake-snowflake-schema
-  EMBEDCHAIN_DB_URI: sqlite:///test.db
+  EMBEDCHAIN_DB_URI: sqlite:////tmp/test_embedchain.db
+  CHROMA_PERSIST_PATH: /tmp/chroma_test_db
 
 jobs:
   tests:
@@ -39,5 +40,4 @@ jobs:
         run: uv sync --dev --all-extras
 
       - name: Run tests
-        run: uv run pytest tests -vv 
-
+        run: uv run pytest tests -vv
