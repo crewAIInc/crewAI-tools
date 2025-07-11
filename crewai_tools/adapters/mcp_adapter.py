@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
 from datetime import timedelta
+from typing import TYPE_CHECKING, Any
 
 from crewai.tools import BaseTool
+
 from crewai_tools.adapters.tool_collection import ToolCollection
 
 """
