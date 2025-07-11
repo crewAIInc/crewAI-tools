@@ -1,6 +1,7 @@
 from textwrap import dedent
 
 import pytest
+from datetime import timedelta
 from mcp import StdioServerParameters
 
 from crewai_tools import MCPServerAdapter
@@ -187,3 +188,50 @@ def test_filter_with_only_nonexistent_tools(echo_server_script):
         # Should return an empty tool collection
         assert isinstance(tools, ToolCollection)
         assert len(tools) == 0
+
+
+def test_timeout_parameters_are_set(echo_server_script):
+    """Test that connect_timeout and client_session_timeout_seconds are properly set."""
+    from datetime import timedelta
+
+    serverparams = StdioServerParameters(
+        command="uv", args=["run", "python", "-c", echo_server_script]
+    )
+
+    # Test with custom timeout values
+    connect_timeout = 45
+    client_session_timeout_seconds = 10.5
+
+    try:
+        mcp_server_adapter = MCPServerAdapter(
+            serverparams,
+            connect_timeout=connect_timeout,
+            client_session_timeout_seconds=client_session_timeout_seconds,
+        )
+
+        # Verify the timeout parameters are set on the adapter
+        assert mcp_server_adapter._adapter.connect_timeout == connect_timeout
+        assert (
+            mcp_server_adapter._adapter.client_session_timeout_seconds
+            == client_session_timeout_seconds
+        )
+
+        # Test with timedelta for client_session_timeout_seconds
+        client_session_timeout_timedelta = timedelta(seconds=15)
+        mcp_server_adapter_timedelta = MCPServerAdapter(
+            serverparams,
+            connect_timeout=60,
+            client_session_timeout_seconds=client_session_timeout_timedelta,
+        )
+
+        assert mcp_server_adapter_timedelta._adapter.connect_timeout == 60
+        assert (
+            mcp_server_adapter_timedelta._adapter.client_session_timeout_seconds
+            == client_session_timeout_timedelta
+        )
+
+    finally:
+        if "mcp_server_adapter" in locals():
+            mcp_server_adapter.stop()
+        if "mcp_server_adapter_timedelta" in locals():
+            mcp_server_adapter_timedelta.stop()
