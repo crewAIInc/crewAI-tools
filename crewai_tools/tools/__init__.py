@@ -2,6 +2,7 @@ from .ai_mind_tool.ai_mind_tool import AIMindTool
 from .apify_actors_tool.apify_actors_tool import ApifyActorsTool
 from .brave_search_tool.brave_search_tool import BraveSearchTool
 from .browserbase_load_tool.browserbase_load_tool import BrowserbaseLoadTool
+from .cambai_tool.cambai_tts_tool import CambAITTSTool
 from .code_docs_search_tool.code_docs_search_tool import CodeDocsSearchTool
 from .code_interpreter_tool.code_interpreter_tool import CodeInterpreterTool
 from .composio_tool.composio_tool import ComposioTool
