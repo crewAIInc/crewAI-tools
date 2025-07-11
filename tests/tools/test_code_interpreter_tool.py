@@ -175,49 +175,66 @@ result = eval("5/1")
     assert 5.0 == result
 
 
-@patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.docker_from_env")
-def test_docker_connection_error_in_verify_image(docker_mock, printer_mock):
-    """Test that Docker connection errors in _verify_docker_image are handled gracefully."""
-    from requests.exceptions import ConnectionError as RequestsConnectionError
+class TestDockerConnectionHandling:
+    """Test class for Docker connection error handling scenarios."""
     
-    docker_mock.side_effect = RequestsConnectionError("('Connection aborted.', FileNotFoundError(2, 'No such file or directory'))")
-    
-    tool = CodeInterpreterTool()
-    
-    with pytest.raises(RuntimeError) as exc_info:
-        tool._verify_docker_image()
-    
-    assert "docker.sock connection unsuccessful" in str(exc_info.value)
-    assert "Docker Desktop is running and properly configured" in str(exc_info.value)
+    @patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.docker_from_env")
+    def test_docker_connection_error_in_verify_image(self, docker_mock, printer_mock):
+        """Test that Docker connection errors in _verify_docker_image are handled gracefully."""
+        from requests.exceptions import ConnectionError as RequestsConnectionError
+        
+        docker_mock.side_effect = RequestsConnectionError("('Connection aborted.', FileNotFoundError(2, 'No such file or directory'))")
+        
+        tool = CodeInterpreterTool()
+        
+        with pytest.raises(RuntimeError) as exc_info:
+            tool._verify_docker_image()
+        
+        assert "docker.sock connection unsuccessful" in str(exc_info.value)
+        assert "Docker Desktop is running and properly configured" in str(exc_info.value)
 
+    @patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.docker_from_env")
+    def test_docker_connection_error_in_init_container(self, docker_mock, printer_mock):
+        """Test that Docker connection errors in _init_docker_container are handled gracefully."""
+        from requests.exceptions import ConnectionError as RequestsConnectionError
+        
+        docker_mock.side_effect = RequestsConnectionError("('Connection aborted.', FileNotFoundError(2, 'No such file or directory'))")
+        
+        tool = CodeInterpreterTool()
+        
+        with pytest.raises(RuntimeError) as exc_info:
+            tool._init_docker_container()
+        
+        assert "docker.sock connection unsuccessful" in str(exc_info.value)
+        assert "Docker Desktop is running and properly configured" in str(exc_info.value)
 
-@patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.docker_from_env")
-def test_docker_connection_error_in_init_container(docker_mock, printer_mock):
-    """Test that Docker connection errors in _init_docker_container are handled gracefully."""
-    from requests.exceptions import ConnectionError as RequestsConnectionError
-    
-    docker_mock.side_effect = RequestsConnectionError("('Connection aborted.', FileNotFoundError(2, 'No such file or directory'))")
-    
-    tool = CodeInterpreterTool()
-    
-    with pytest.raises(RuntimeError) as exc_info:
-        tool._init_docker_container()
-    
-    assert "docker.sock connection unsuccessful" in str(exc_info.value)
-    assert "Docker Desktop is running and properly configured" in str(exc_info.value)
+    @patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.docker_from_env")
+    def test_docker_api_error_handling(self, docker_mock, printer_mock):
+        """Test that other Docker API errors are handled with generic error message."""
+        from docker.errors import APIError
+        
+        docker_mock.side_effect = APIError("Some other Docker API error")
+        
+        tool = CodeInterpreterTool()
+        
+        with pytest.raises(RuntimeError) as exc_info:
+            tool._verify_docker_image()
+        
+        assert "Error connecting to Docker" in str(exc_info.value)
+        assert "Some other Docker API error" in str(exc_info.value)
 
-
-@patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.docker_from_env")
-def test_docker_api_error_handling(docker_mock, printer_mock):
-    """Test that other Docker API errors are handled with generic error message."""
-    from docker.errors import APIError
-    
-    docker_mock.side_effect = APIError("Some other Docker API error")
-    
-    tool = CodeInterpreterTool()
-    
-    with pytest.raises(RuntimeError) as exc_info:
-        tool._verify_docker_image()
-    
-    assert "Error connecting to Docker" in str(exc_info.value)
-    assert "Some other Docker API error" in str(exc_info.value)
+    @patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.DockerClient")
+    @patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.docker_from_env")
+    def test_custom_docker_url_connection_error(self, docker_from_env_mock, docker_client_mock, printer_mock):
+        """Test that Docker connection errors with custom URLs are handled gracefully."""
+        from requests.exceptions import ConnectionError as RequestsConnectionError
+        
+        docker_client_mock.side_effect = RequestsConnectionError("('Connection aborted.', FileNotFoundError(2, 'No such file or directory'))")
+        
+        tool = CodeInterpreterTool(user_docker_base_url="tcp://localhost:2376")
+        
+        with pytest.raises(RuntimeError) as exc_info:
+            tool._verify_docker_image()
+        
+        assert "docker.sock connection unsuccessful" in str(exc_info.value)
+        assert "Docker Desktop is running and properly configured" in str(exc_info.value)

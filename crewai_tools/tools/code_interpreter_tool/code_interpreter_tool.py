@@ -138,6 +138,10 @@ class CodeInterpreterTool(BaseTool):
     name: str = "Code Interpreter"
     description: str = "Interprets Python3 code strings with a final print statement."
     args_schema: Type[BaseModel] = CodeInterpreterSchema
+    
+    DOCKER_CONNECTION_ERROR: str = "Error: docker.sock connection unsuccessful. Please ensure Docker Desktop is running and properly configured."
+    DOCKER_GENERIC_ERROR: str = "Error connecting to Docker: {}"
+    
     default_image_tag: str = "code-interpreter:latest"
     code: Optional[str] = None
     user_dockerfile_path: Optional[str] = None
@@ -154,6 +158,30 @@ class CodeInterpreterTool(BaseTool):
         spec = importlib.util.find_spec("crewai_tools")
         return os.path.dirname(spec.origin)
 
+    def _get_docker_client(self, custom_url: Optional[str] = None) -> DockerClient:
+        """Gets a Docker client with proper error handling for connection failures.
+        
+        Args:
+            custom_url: Optional custom Docker base URL to use instead of default.
+            
+        Returns:
+            A Docker client instance.
+            
+        Raises:
+            RuntimeError: If Docker connection fails.
+        """
+        try:
+            return (
+                docker_from_env()
+                if custom_url is None
+                else DockerClient(base_url=custom_url)
+            )
+        except (APIError, RequestsConnectionError, Exception) as e:
+            if "Connection aborted" in str(e) or "No such file or directory" in str(e):
+                raise RuntimeError(self.DOCKER_CONNECTION_ERROR)
+            else:
+                raise RuntimeError(self.DOCKER_GENERIC_ERROR.format(str(e)))
+
     def _verify_docker_image(self) -> None:
         """Verifies if the Docker image is available or builds it if necessary.
 
@@ -164,18 +192,7 @@ class CodeInterpreterTool(BaseTool):
             FileNotFoundError: If the Dockerfile cannot be found.
             RuntimeError: If Docker connection fails.
         """
-
-        try:
-            client = (
-                docker_from_env()
-                if self.user_docker_base_url is None
-                else DockerClient(base_url=self.user_docker_base_url)
-            )
-        except (APIError, RequestsConnectionError, Exception) as e:
-            if "Connection aborted" in str(e) or "No such file or directory" in str(e):
-                raise RuntimeError("Error: docker.sock connection unsuccessful. Please ensure Docker Desktop is running and properly configured.")
-            else:
-                raise RuntimeError(f"Error connecting to Docker: {str(e)}")
+        client = self._get_docker_client(self.user_docker_base_url)
 
         try:
             client.images.get(self.default_image_tag)
@@ -239,13 +256,7 @@ class CodeInterpreterTool(BaseTool):
             RuntimeError: If Docker connection fails.
         """
         container_name = "code-interpreter"
-        try:
-            client = docker_from_env()
-        except (APIError, RequestsConnectionError, Exception) as e:
-            if "Connection aborted" in str(e) or "No such file or directory" in str(e):
-                raise RuntimeError("Error: docker.sock connection unsuccessful. Please ensure Docker Desktop is running and properly configured.")
-            else:
-                raise RuntimeError(f"Error connecting to Docker: {str(e)}")
+        client = self._get_docker_client()
         current_path = os.getcwd()
 
         # Check if the container is already running
