@@ -13,9 +13,10 @@ from typing import Any, Dict, List, Optional, Type
 from crewai.tools import BaseTool
 from docker import DockerClient
 from docker import from_env as docker_from_env
-from docker.errors import ImageNotFound, NotFound
+from docker.errors import ImageNotFound, NotFound, APIError
 from docker.models.containers import Container
 from pydantic import BaseModel, Field
+from requests.exceptions import ConnectionError as RequestsConnectionError
 
 from crewai_tools.printer import Printer
 
@@ -161,13 +162,20 @@ class CodeInterpreterTool(BaseTool):
 
         Raises:
             FileNotFoundError: If the Dockerfile cannot be found.
+            RuntimeError: If Docker connection fails.
         """
 
-        client = (
-            docker_from_env()
-            if self.user_docker_base_url is None
-            else DockerClient(base_url=self.user_docker_base_url)
-        )
+        try:
+            client = (
+                docker_from_env()
+                if self.user_docker_base_url is None
+                else DockerClient(base_url=self.user_docker_base_url)
+            )
+        except (APIError, RequestsConnectionError, Exception) as e:
+            if "Connection aborted" in str(e) or "No such file or directory" in str(e):
+                raise RuntimeError("Error: docker.sock connection unsuccessful. Please ensure Docker Desktop is running and properly configured.")
+            else:
+                raise RuntimeError(f"Error connecting to Docker: {str(e)}")
 
         try:
             client.images.get(self.default_image_tag)
@@ -226,9 +234,18 @@ class CodeInterpreterTool(BaseTool):
 
         Returns:
             A Docker container object ready for code execution.
+            
+        Raises:
+            RuntimeError: If Docker connection fails.
         """
         container_name = "code-interpreter"
-        client = docker_from_env()
+        try:
+            client = docker_from_env()
+        except (APIError, RequestsConnectionError, Exception) as e:
+            if "Connection aborted" in str(e) or "No such file or directory" in str(e):
+                raise RuntimeError("Error: docker.sock connection unsuccessful. Please ensure Docker Desktop is running and properly configured.")
+            else:
+                raise RuntimeError(f"Error connecting to Docker: {str(e)}")
         current_path = os.getcwd()
 
         # Check if the container is already running
