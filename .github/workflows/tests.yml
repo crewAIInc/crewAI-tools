@@ -18,7 +18,7 @@ env:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     strategy:
       matrix:
@@ -39,5 +39,4 @@ jobs:
         run: uv sync --dev --all-extras
 
       - name: Run tests
-        run: uv run pytest tests -vv 
-
+        run: uv run pytest tests -vv
