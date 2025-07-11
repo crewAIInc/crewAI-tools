@@ -44,7 +44,7 @@ jobs:
           # This is a temporary fix until the runner includes SQLite with FTS5 or Python's sqlite3
           # module is compiled with FTS5 support by default.
           # TODO: Remove this workaround once GitHub Actions runners include SQLite FTS5 support
-          
+
           # Install pysqlite3-binary which has FTS5 support
           uv pip install pysqlite3-binary
           # Create a sitecustomize.py to override sqlite3 with pysqlite3
@@ -55,5 +55,4 @@ jobs:
           PYTHONPATH=.pytest_sqlite_override uv run python -c "import sqlite3; conn = sqlite3.connect(':memory:'); conn.execute('CREATE VIRTUAL TABLE test USING fts5(content)'); print('FTS5 module available')"
 
       - name: Run tests
-        run: PYTHONPATH=.pytest_sqlite_override uv run pytest tests -vv 
-
+        run: PYTHONPATH=.pytest_sqlite_override uv run pytest tests -vv

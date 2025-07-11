@@ -994,7 +994,7 @@ dev = [
 requires-dist = [
     { name = "beautifulsoup4", marker = "extra == 'beautifulsoup4'", specifier = ">=4.12.3" },
     { name = "browserbase", marker = "extra == 'browserbase'", specifier = ">=1.0.5" },
-    { name = "chromadb", specifier = ">=0.4.22" },
+    { name = "chromadb", specifier = "==0.5.23" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
