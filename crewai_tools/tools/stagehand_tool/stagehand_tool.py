@@ -310,8 +310,6 @@ class StagehandTool(BaseTool):
         # Normal initialization for non-testing mode
         if not self._stagehand:
             self._logger.debug("Initializing Stagehand")
-            # Create model client options with the API key
-            model_client_options = {"apiKey": self.model_api_key}
 
             # Build the StagehandConfig object
             config = StagehandConfig(
@@ -323,7 +321,7 @@ class StagehandTool(BaseTool):
                 model_name=self.model_name,
                 self_heal=self.self_heal,
                 wait_for_captcha_solves=self.wait_for_captcha_solves,
-                model_client_options=model_client_options,
+                model_api_key=self.model_api_key,
                 verbose=self.verbose,
                 session_id=session_id or self._session_id,
             )
