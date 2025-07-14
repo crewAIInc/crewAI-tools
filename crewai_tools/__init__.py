@@ -12,6 +12,7 @@ from .tools import (
     ApifyActorsTool,
     BraveSearchTool,
     BrowserbaseLoadTool,
+    CambAITTSTool,
     CodeDocsSearchTool,
     CodeInterpreterTool,
     ComposioTool,
