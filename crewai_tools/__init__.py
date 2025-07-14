@@ -78,4 +78,6 @@ from .tools import (
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
     ZapierActionTools,
+    TavilySearchTool,
+    TavilyExtractorTool,
 )

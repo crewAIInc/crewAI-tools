@@ -96,3 +96,5 @@ from .youtube_channel_search_tool.youtube_channel_search_tool import (
 )
 from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSearchTool
 from .zapier_action_tool.zapier_action_tool import ZapierActionTools
+from .tavily_search_tool.tavily_search_tool import TavilySearchTool
+from .tavily_extractor_tool.tavily_extractor_tool import TavilyExtractorTool
