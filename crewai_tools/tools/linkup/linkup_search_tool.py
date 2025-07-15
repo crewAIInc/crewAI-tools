@@ -1,13 +1,14 @@
-from typing import Any, Type
 from pydantic import BaseModel, Field
-from crewai.tools import BaseTool
+import os
+from typing import Any, List
+from crewai.tools import BaseTool, EnvVar
+
 try:
     from linkup import LinkupClient
     LINKUP_AVAILABLE = True
 except ImportError:
     LINKUP_AVAILABLE = False
     LinkupClient = Any
-
 
 class LinkupSearchToolSchema(BaseModel):
     """Input for LinkupBaseTool."""
@@ -19,9 +20,29 @@ class LinkupSearchToolSchema(BaseModel):
 
 class LinkupSearchTool(BaseTool):
     name: str = "Linkup Search Tool"
-    description: str = "A tool to search and retrieve trends or insights using the Linkup API."
-    args_schema: Type[BaseModel] = LinkupSearchToolSchema
 
+    description: str = (
+        "Performs an API call to Linkup to retrieve contextual information."
+    )
+    _client: LinkupClient = PrivateAttr()  # type: ignore
+    description: str = (
+        "Performs an API call to Linkup to retrieve contextual information."
+    )
+    _client: LinkupClient = PrivateAttr()  # type: ignore
+    package_dependencies: List[str] = ["linkup-sdk"]
+    env_vars: List[EnvVar] = [
+        EnvVar(name="LINKUP_API_KEY", description="API key for Linkup", required=True),
+    ]
+
+    def __init__(self, api_key: str | None = None):
+        """
+        Initialize the tool with an API key.
+        """
+        super().__init__()
+        try:
+            from linkup import LinkupClient
+        except ImportError:
+            import click
 
     def __init__(self, api_key: str, depth: str, output_type: str, structured_output_schema:str = None, **kwargs):
         from linkup import LinkupClient
@@ -33,12 +54,19 @@ class LinkupSearchTool(BaseTool):
                 "Please install it with: pip install linkup"
             )
 
+
         self._client = LinkupClient(api_key=api_key)
         self._default_depth = depth
         self._default_output_type = output_type
         self._default_structured_schema = structured_output_schema
 
     def _run(self, query: str ) :
+            else:
+                raise ImportError(
+                    "The 'linkup-sdk' package is required to use the LinkupSearchTool. "
+                    "Please install it with: uv add linkup-sdk"
+                )
+        self._client = LinkupClient(api_key=api_key or os.getenv("LINKUP_API_KEY"))
 
         """
         Executes a search using the Linkup API.

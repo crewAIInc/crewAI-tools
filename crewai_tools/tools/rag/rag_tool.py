@@ -2,12 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from crewai.tools import BaseTool
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class Adapter(BaseModel, ABC):
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @abstractmethod
     def query(self, question: str) -> str:
@@ -60,11 +59,5 @@ class RagTool(BaseTool):
     def _run(
         self,
         query: str,
-        **kwargs: Any,
-    ) -> Any:
-        self._before_run(query, **kwargs)
-
+    ) -> str:
         return f"Relevant Content:\n{self.adapter.query(query)}"
-
-    def _before_run(self, query, **kwargs):
-        pass

@@ -1,10 +1,11 @@
 import os
-from typing import Any, Optional, Type
+from typing import Any, List, Optional, Type
 from urllib.parse import urlencode
 
 import requests
 from pydantic import BaseModel, Field
 
+from crewai.tools import EnvVar
 from crewai_tools.tools.rag.rag_tool import RagTool
 
 
@@ -30,6 +31,9 @@ class SerplyJobSearchTool(RagTool):
             - Currently only supports US
     """
     headers: Optional[dict] = {}
+    env_vars: List[EnvVar] = [
+        EnvVar(name="SERPLY_API_KEY", description="API key for Serply services", required=True),
+    ]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -41,14 +45,15 @@ class SerplyJobSearchTool(RagTool):
 
     def _run(
         self,
-        **kwargs: Any,
-    ) -> Any:
+        query: Optional[str] = None,
+        search_query: Optional[str] = None,
+    ) -> str:
         query_payload = {}
 
-        if "query" in kwargs:
-            query_payload["q"] = kwargs["query"]
-        elif "search_query" in kwargs:
-            query_payload["q"] = kwargs["search_query"]
+        if query is not None:
+            query_payload["q"] = query
+        elif search_query is not None:
+            query_payload["q"] = search_query
 
         # build the url
         url = f"{self.request_url}{urlencode(query_payload)}"

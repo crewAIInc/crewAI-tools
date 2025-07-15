@@ -4,6 +4,10 @@
 
 [Firecrawl](https://firecrawl.dev) is a platform for crawling and convert any website into clean markdown or structured data.
 
+## Version Compatibility
+
+This implementation is compatible with FireCrawl API v1
+
 ## Installation
 
 - Get an API key from [firecrawl.dev](https://firecrawl.dev) and set it in environment variables (`FIRECRAWL_API_KEY`).
@@ -19,24 +23,38 @@ Utilize the FirecrawlScrapeFromWebsiteTool as follows to allow your agent to loa
 
 ```python
 from crewai_tools import FirecrawlCrawlWebsiteTool
+from firecrawl import ScrapeOptions
 
-tool = FirecrawlCrawlWebsiteTool(url='firecrawl.dev')
+tool = FirecrawlCrawlWebsiteTool(
+    config={
+        "limit": 100,
+        "scrape_options": ScrapeOptions(formats=["markdown", "html"]),
+        "poll_interval": 30,
+    }
+)
+tool.run(url="firecrawl.dev")
 ```
 
 ## Arguments
 
 - `api_key`: Optional. Specifies Firecrawl API key. Defaults is the `FIRECRAWL_API_KEY` environment variable.
-- `url`: The base URL to start crawling from.
-- `page_options`: Optional. 
-  - `onlyMainContent`: Optional. Only return the main content of the page excluding headers, navs, footers, etc.
-  - `includeHtml`: Optional. Include the raw HTML content of the page. Will output a html key in the response.
-- `crawler_options`: Optional. Options for controlling the crawling behavior.
-  - `includes`: Optional. URL patterns to include in the crawl.
-  - `exclude`: Optional. URL patterns to exclude from the crawl.
-  - `generateImgAltText`: Optional. Generate alt text for images using LLMs (requires a paid plan).
-  - `returnOnlyUrls`: Optional. If true, returns only the URLs as a list in the crawl status. Note: the response will be a list of URLs inside the data, not a list of documents.
-  - `maxDepth`: Optional. Maximum depth to crawl. Depth 1 is the base URL, depth 2 includes the base URL and its direct children, and so on.
-  - `mode`: Optional. The crawling mode to use. Fast mode crawls 4x faster on websites without a sitemap but may not be as accurate and shouldn't be used on heavily JavaScript-rendered websites.
-  - `limit`: Optional. Maximum number of pages to crawl.
-  - `timeout`: Optional. Timeout in milliseconds for the crawling operation.
+- `config`: Optional. It contains Firecrawl API parameters.
 
+This is the default configuration
+
+```python
+from firecrawl import ScrapeOptions
+
+{
+    "max_depth": 2,
+    "ignore_sitemap": True,
+    "limit": 100,
+    "allow_backward_links": False,
+    "allow_external_links": False,
+    "scrape_options": ScrapeOptions(
+        formats=["markdown", "screenshot", "links"],
+        only_main_content=True,
+        timeout=30000,
+    ),
+}
+```

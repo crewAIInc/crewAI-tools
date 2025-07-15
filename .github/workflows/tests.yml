@@ -1,0 +1,58 @@
+name: Run Tests
+
+on: [pull_request]
+
+permissions:
+  contents: write
+
+env:
+  OPENAI_API_KEY: fake-openai-key
+  BRAVE_API_KEY: fake-brave-key
+  SNOWFLAKE_USER: fake-snowflake-user
+  SNOWFLAKE_PASSWORD: fake-snowflake-password
+  SNOWFLAKE_ACCOUNT: fake-snowflake-account
+  SNOWFLAKE_WAREHOUSE: fake-snowflake-warehouse
+  SNOWFLAKE_DATABASE: fake-snowflake-database
+  SNOWFLAKE_SCHEMA: fake-snowflake-schema
+  EMBEDCHAIN_DB_URI: sqlite:///test.db
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install the project
+        run: uv sync --dev --all-extras
+
+      - name: Install SQLite with FTS5 support
+        run: |
+          # WORKAROUND: GitHub Actions' Ubuntu runner uses SQLite without FTS5 support compiled in.
+          # This is a temporary fix until the runner includes SQLite with FTS5 or Python's sqlite3
+          # module is compiled with FTS5 support by default.
+          # TODO: Remove this workaround once GitHub Actions runners include SQLite FTS5 support
+
+          # Install pysqlite3-binary which has FTS5 support
+          uv pip install pysqlite3-binary
+          # Create a sitecustomize.py to override sqlite3 with pysqlite3
+          mkdir -p .pytest_sqlite_override
+          echo "import sys; import pysqlite3; sys.modules['sqlite3'] = pysqlite3" > .pytest_sqlite_override/sitecustomize.py
+          # Test FTS5 availability
+          PYTHONPATH=.pytest_sqlite_override uv run python -c "import sqlite3; print(f'SQLite version: {sqlite3.sqlite_version}')"
+          PYTHONPATH=.pytest_sqlite_override uv run python -c "import sqlite3; conn = sqlite3.connect(':memory:'); conn.execute('CREATE VIRTUAL TABLE test USING fts5(content)'); print('FTS5 module available')"
+
+      - name: Run tests
+        run: PYTHONPATH=.pytest_sqlite_override uv run pytest tests -vv

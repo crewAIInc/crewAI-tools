@@ -4,140 +4,226 @@
 
 <div align="left">
 
-# **crewAI Tools**
-Welcome to crewAI Tools! This repository provides a comprehensive guide for setting up sophisticated tools for [crewAI](https://github.com/crewAIInc/crewAI) agents, empowering your AI solutions with bespoke tooling.
+# CrewAI Tools
 
-In the realm of CrewAI agents, tools are pivotal for enhancing functionality. This guide outlines the steps to equip your agents with an arsenal of ready-to-use tools and the methodology to craft your own.
+Empower your CrewAI agents with powerful, customizable tools to elevate their capabilities and tackle sophisticated, real-world tasks.
 
-</div>
+CrewAI Tools provide the essential functionality to extend your agents, helping you rapidly enhance your automations with reliable, ready-to-use tools or custom-built solutions tailored precisely to your needs.
 
-<h3>
+---
 
-[Homepage](https://www.crewai.io/) | [Documentation](https://docs.crewai.com/) | [Chat with Docs](https://chatg.pt/DWjSBZn) | [Examples](https://github.com/crewAIInc/crewAI-examples) | [Discord](https://discord.com/invite/X4JWnZnxPb) | [Discourse](https://community.crewai.com/)
+## Quick Links
 
-</h3>
+[Homepage](https://www.crewai.com/) | [Documentation](https://docs.crewai.com/) | [Examples](https://github.com/crewAIInc/crewAI-examples) | [Community](https://community.crewai.com/)
 
-</div>
-
-## Table of contents
-
-- [Creating Your Tools](#creating-your-tools)
-	- [Subclassing `BaseTool`](#subclassing-basetool)
-	- [Utilizing the `tool` Decorator](#utilizing-the-tool-decorator)
-- [Contribution Guidelines](#contribution-guidelines)
-- [Development Setup](#development-setup)
+---
 
 ## Available Tools
 
-crewAI Tools provides a wide range of pre-built tools, including:
+CrewAI provides an extensive collection of powerful tools ready to enhance your agents:
 
-- File operations (FileWriterTool, FileReadTool)
-- Web scraping (ScrapeWebsiteTool, SeleniumScrapingTool)
-- Database interactions (PGSearchTool, MySQLSearchTool)
-- API integrations (SerperApiTool, EXASearchTool)
-- AI-powered tools (DallETool, VisionTool)
-- And many more!
+- **File Management**: `FileReadTool`, `FileWriteTool`
+- **Web Scraping**: `ScrapeWebsiteTool`, `SeleniumScrapingTool`
+- **Database Integrations**: `PGSearchTool`, `MySQLSearchTool`
+- **Vector Database Integrations**: `MongoDBVectorSearchTool`, `QdrantVectorSearchTool`, `WeaviateVectorSearchTool`
+- **API Integrations**: `SerperApiTool`, `EXASearchTool`
+- **AI-powered Tools**: `DallETool`, `VisionTool`, `StagehandTool`
 
-For a complete list and detailed documentation of each tool, please refer to the individual tool README files in the repository.
+And many more robust tools to simplify your agent integrations.
 
-## Creating Your Tools
+---
 
-Tools are always expect to return strings, as they are meant to be used by the agents to generate responses.
+## Creating Custom Tools
 
-There are three ways to create tools for crewAI agents:
-- [Subclassing `BaseTool`](#subclassing-basetool)
-- [Using the `tool` decorator](#utilizing-the-tool-decorator)
+CrewAI offers two straightforward approaches to creating custom tools:
 
 ### Subclassing `BaseTool`
+
+Define your tool by subclassing:
 
 ```python
 from crewai.tools import BaseTool
 
 class MyCustomTool(BaseTool):
-    name: str = "Name of my tool"
-    description: str = "Clear description for what this tool is useful for, you agent will need this information to use it."
+    name: str = "Tool Name"
+    description: str = "Detailed description here."
 
-    def _run(self, argument: str) -> str:
-        # Implementation goes here
-        pass
+    def _run(self, *args, **kwargs):
+        # Your tool logic here
 ```
 
-Define a new class inheriting from `BaseTool`, specifying `name`, `description`, and the `_run` method for operational logic.
+### Using the `tool` Decorator
 
-
-### Utilizing the `tool` Decorator
-
-For a simpler approach, create a `Tool` object directly with the required attributes and a functional logic.
+Quickly create lightweight tools using decorators:
 
 ```python
-from crewai.tools import BaseTool
-@tool("Name of my tool")
-def my_tool(question: str) -> str:
-    """Clear description for what this tool is useful for, you agent will need this information to use it."""
-    # Function logic here
+from crewai import tool
+
+@tool("Tool Name")
+def my_custom_function(input):
+    # Tool logic here
+    return output
 ```
 
-The `tool` decorator simplifies the process, transforming functions into tools with minimal overhead.
+---
+
+## CrewAI Tools and MCP
+
+CrewAI Tools supports the Model Context Protocol (MCP). It gives you access to thousands of tools from the hundreds of MCP servers out there built by the community.
+
+Before you start using MCP with CrewAI tools, you need to install the `mcp` extra dependencies:
+
+```bash
+pip install crewai-tools[mcp]
+# or
+uv add crewai-tools --extra mcp
+```
+
+To quickly get started with MCP in CrewAI you have 2 options:
+
+### Option 1: Fully managed connection
+
+In this scenario we use a contextmanager (`with` statement) to start and stop the the connection with the MCP server.
+This is done in the background and you only get to interact with the CrewAI tools corresponding to the MCP server's tools.
+
+For an STDIO based MCP server:
+
+```python
+from mcp import StdioServerParameters
+from crewai_tools import MCPServerAdapter
+
+serverparams = StdioServerParameters(
+    command="uvx",
+    args=["--quiet", "pubmedmcp@0.1.3"],
+    env={"UV_PYTHON": "3.12", **os.environ},
+)
+
+with MCPServerAdapter(serverparams) as tools:
+    # tools is now a list of CrewAI Tools matching 1:1 with the MCP server's tools
+    agent = Agent(..., tools=tools)
+    task = Task(...)
+    crew = Crew(..., agents=[agent], tasks=[task])
+    crew.kickoff(...)
+```
+For an SSE based MCP server:
+
+```python
+serverparams = {"url": "http://localhost:8000/sse"}
+with MCPServerAdapter(serverparams) as tools:
+    # tools is now a list of CrewAI Tools matching 1:1 with the MCP server's tools
+    agent = Agent(..., tools=tools)
+    task = Task(...)
+    crew = Crew(..., agents=[agent], tasks=[task])
+    crew.kickoff(...)
+```
+
+### Option 2: More control over the MCP connection
+
+If you need more control over the MCP connection, you can instanciate the MCPServerAdapter into an `mcp_server_adapter` object which can be used to manage the connection with the MCP server and access the available tools.
+
+**important**: in this case you need to call `mcp_server_adapter.stop()` to make sure the connection is correctly stopped. We recommend that you use a `try ... finally` block run to make sure the `.stop()` is called even in case of errors.
+
+Here is the same example for an STDIO MCP Server:
+
+```python
+from mcp import StdioServerParameters
+from crewai_tools import MCPServerAdapter
+
+serverparams = StdioServerParameters(
+    command="uvx",
+    args=["--quiet", "pubmedmcp@0.1.3"],
+    env={"UV_PYTHON": "3.12", **os.environ},
+)
+
+try:
+    mcp_server_adapter = MCPServerAdapter(serverparams)
+    tools = mcp_server_adapter.tools
+    # tools is now a list of CrewAI Tools matching 1:1 with the MCP server's tools
+    agent = Agent(..., tools=tools)
+    task = Task(...)
+    crew = Crew(..., agents=[agent], tasks=[task])
+    crew.kickoff(...)
+
+# ** important ** don't forget to stop the connection
+finally: 
+    mcp_server_adapter.stop()
+```
+
+And finally the same thing but for an SSE MCP Server:
+
+```python
+from mcp import StdioServerParameters
+from crewai_tools import MCPServerAdapter
+
+serverparams = {"url": "http://localhost:8000/sse"}
+
+try:
+    mcp_server_adapter = MCPServerAdapter(serverparams)
+    tools = mcp_server_adapter.tools
+    # tools is now a list of CrewAI Tools matching 1:1 with the MCP server's tools
+    agent = Agent(..., tools=tools)
+    task = Task(...)
+    crew = Crew(..., agents=[agent], tasks=[task])
+    crew.kickoff(...)
+
+# ** important ** don't forget to stop the connection
+finally: 
+    mcp_server_adapter.stop()
+```
+
+### Considerations & Limitations
+
+#### Staying Safe with MCP
+
+Always make sure that you trust the MCP Server before using it. Using an STDIO server will execute code on your machine. Using SSE is still not a silver bullet with many injection possible into your application from a malicious MCP server.
+
+#### Limitations
+
+* At this time we only support tools from MCP Server not other type of primitives like prompts, resources...
+* We only return the first text output returned by the MCP Server tool using `.content[0].text`
+
+---
+
+## Why Use CrewAI Tools?
+
+- **Simplicity & Flexibility**: Easy-to-use yet powerful enough for complex workflows.
+- **Rapid Integration**: Seamlessly incorporate external services, APIs, and databases.
+- **Enterprise Ready**: Built for stability, performance, and consistent results.
+
+---
 
 ## Contribution Guidelines
 
-We welcome contributions! Here's how you can help:
+We welcome contributions from the community!
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork and clone the repository.
+2. Create a new branch (`git checkout -b feature/my-feature`).
+3. Commit your changes (`git commit -m 'Add my feature'`).
+4. Push your branch (`git push origin feature/my-feature`).
+5. Open a pull request.
 
-Please ensure your code adheres to our coding standards and includes appropriate tests.
+---
 
-## **Development Setup**
+## Developer Quickstart
 
-**Installing Dependencies:**
-
-```bash
-uv sync
+```shell
+pip install crewai[tools]
 ```
 
-**Activating Virtual Environment:**
+### Development Setup
 
-```bash
-uv venv
-source .venv/bin/activate
-```
+- Install dependencies: `uv sync`
+- Run tests: `uv run pytest`
+- Run static type checking: `uv run pyright`
+- Set up pre-commit hooks: `pre-commit install`
 
-**Setting Up Pre-commit Hooks:**
+---
 
-```bash
-pre-commit install
-```
+## Support and Community
 
-**Running Tests:**
+Join our rapidly growing community and receive real-time support:
 
-```bash
-uv run pytest
-```
+- [Discourse](https://community.crewai.com/)
+- [Open an Issue](https://github.com/crewAIInc/crewAI/issues)
 
-**Static Type Checking:**
-
-```bash
-uv run pyright
-```
-
-**Packaging:**
-
-```bash
-uv build
-```
-
-**Local Installation:**
-
-```bash
-pip install dist/*.tar.gz
-```
-
-Thank you for your interest in enhancing the capabilities of AI agents through advanced tooling. Your contributions make a significant impact.
-
-## Contact
-
-For questions or support, please join our [Discord community](https://discord.com/invite/X4JWnZnxPb), [Discourse](https://community.crewai.com/) or open an issue in this repository.
+Build smarter, faster, and more powerful AI solutions—powered by CrewAI Tools.
