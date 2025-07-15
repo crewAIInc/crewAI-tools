@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os
 from typing import Dict, List, Optional, Type, Union, Any
 
 from pydantic import BaseModel, Field
@@ -17,6 +18,7 @@ try:
         ObserveOptions,
     )
     from stagehand.utils import configure_logging
+
     _HAS_STAGEHAND = True
 except ImportError:
     # Define type stubs for when stagehand is not installed
@@ -26,14 +28,15 @@ except ImportError:
     ActOptions = Any
     ExtractOptions = Any
     ObserveOptions = Any
-    
+
     # Mock configure_logging function
     def configure_logging(level=None, remove_logger_name=None, quiet_dependencies=None):
         pass
-    
+
     # Define only what's needed for class defaults
     class AvailableModel:
         CLAUDE_3_7_SONNET_LATEST = "anthropic.claude-3-7-sonnet-20240607"
+
 
 from crewai.tools import BaseTool
 
@@ -78,10 +81,10 @@ class StagehandToolSchema(BaseModel):
     )
     command_type: Optional[str] = Field(
         "act",
-        description="""The type of command to execute (choose one): 
+        description="""The type of command to execute (choose one):
         - 'act': Perform an action like clicking buttons, filling forms, etc. (default)
         - 'navigate': Specifically navigate to a URL
-        - 'extract': Extract structured data from the page 
+        - 'extract': Extract structured data from the page
         - 'observe': Identify and analyze elements on the page
         """,
     )
@@ -136,7 +139,7 @@ class StagehandTool(BaseTool):
 
     name: str = "Web Automation Tool"
     description: str = """Use this tool to control a web browser and interact with websites using natural language.
-    
+
     Capabilities:
     - Navigate to websites and follow links
     - Click buttons, links, and other elements
@@ -144,7 +147,7 @@ class StagehandTool(BaseTool):
     - Search within websites
     - Extract information from web pages
     - Identify and analyze elements on a page
-    
+
     To use this tool, provide a natural language instruction describing what you want to do.
     For different types of tasks, specify the command_type:
     - 'act': For performing actions (default)
@@ -200,18 +203,33 @@ class StagehandTool(BaseTool):
         browserbase_api_key = kwargs.get("browserbase_api_key")
         browserbase_project_id = kwargs.get("browserbase_project_id")
 
+        # Handle api_key with environment variable fallback
         if api_key:
             self.api_key = api_key
         elif browserbase_api_key:
             self.api_key = browserbase_api_key
+        else:
+            self.api_key = os.getenv("BROWSERBASE_API_KEY")
 
+        # Handle project_id with environment variable fallback
         if project_id:
             self.project_id = project_id
         elif browserbase_project_id:
             self.project_id = browserbase_project_id
+        else:
+            self.project_id = os.getenv("BROWSERBASE_PROJECT_ID")
 
+        # Handle model_api_key with environment variable fallback
         if model_api_key:
             self.model_api_key = model_api_key
+        else:
+            # Try multiple environment variables for model API key
+            self.model_api_key = (
+                os.getenv("ANTHROPIC_API_KEY")
+                or os.getenv("OPENAI_API_KEY")
+                or os.getenv("MODEL_API_KEY")
+            )
+
         if model_name:
             self.model_name = model_name
         if server_url:
@@ -251,7 +269,7 @@ class StagehandTool(BaseTool):
             raise ImportError(
                 "`stagehand-py` package not found, please run `uv add stagehand-py`"
             )
-            
+
         if not self.api_key:
             raise ValueError("api_key is required (or set BROWSERBASE_API_KEY in env).")
         if not self.project_id:
@@ -265,46 +283,52 @@ class StagehandTool(BaseTool):
 
     async def _setup_stagehand(self, session_id: Optional[str] = None):
         """Initialize Stagehand if not already set up."""
-        
+
         # If we're in testing mode, return mock objects
         if self._testing:
             if not self._stagehand:
                 # Create a minimal mock for testing with non-async methods
                 class MockPage:
                     def act(self, options):
-                        mock_result = type('MockResult', (), {})()
-                        mock_result.model_dump = lambda: {"message": "Action completed successfully"}
+                        mock_result = type("MockResult", (), {})()
+                        mock_result.model_dump = lambda: {
+                            "message": "Action completed successfully"
+                        }
                         return mock_result
-                        
+
                     def goto(self, url):
                         return None
-                        
+
                     def extract(self, options):
-                        mock_result = type('MockResult', (), {})()
+                        mock_result = type("MockResult", (), {})()
                         mock_result.model_dump = lambda: {"data": "Extracted content"}
                         return mock_result
-                        
+
                     def observe(self, options):
-                        mock_result1 = type('MockResult', (), {"description": "Test element", "method": "click"})()
+                        mock_result1 = type(
+                            "MockResult",
+                            (),
+                            {"description": "Test element", "method": "click"},
+                        )()
                         return [mock_result1]
-                
+
                 class MockStagehand:
                     def __init__(self):
                         self.page = MockPage()
                         self.session_id = "test-session-id"
-                        
+
                     def init(self):
                         return None
-                        
+
                     def close(self):
                         return None
-                
+
                 self._stagehand = MockStagehand()
                 # No need to await the init call in test mode
                 self._stagehand.init()
                 self._page = self._stagehand.page
                 self._session_id = self._stagehand.session_id
-            
+
             return self._stagehand, self._page
 
         # Normal initialization for non-testing mode
@@ -327,7 +351,11 @@ class StagehandTool(BaseTool):
             )
 
             # Initialize Stagehand with config and server_url
-            self._stagehand = Stagehand(config=config, server_url=self.server_url)
+            self._stagehand = Stagehand(
+                config=config,
+                model_api_key=self.model_api_key,
+                server_url=self.server_url,
+            )
 
             # Initialize the Stagehand instance
             await self._stagehand.init()
@@ -353,8 +381,7 @@ class StagehandTool(BaseTool):
                 # Return predefined mock results based on command type
                 if command_type.lower() == "act":
                     return StagehandResult(
-                        success=True, 
-                        data={"message": "Action completed successfully"}
+                        success=True, data={"message": "Action completed successfully"}
                     )
                 elif command_type.lower() == "navigate":
                     return StagehandResult(
@@ -366,23 +393,30 @@ class StagehandTool(BaseTool):
                     )
                 elif command_type.lower() == "extract":
                     return StagehandResult(
-                        success=True, 
-                        data={"data": "Extracted content", "metadata": {"source": "test"}}
+                        success=True,
+                        data={
+                            "data": "Extracted content",
+                            "metadata": {"source": "test"},
+                        },
                     )
                 elif command_type.lower() == "observe":
                     return StagehandResult(
                         success=True,
                         data=[
-                            {"index": 1, "description": "Test element", "method": "click"}
+                            {
+                                "index": 1,
+                                "description": "Test element",
+                                "method": "click",
+                            }
                         ],
                     )
                 else:
                     return StagehandResult(
-                        success=False, 
-                        data={}, 
-                        error=f"Unknown command type: {command_type}"
+                        success=False,
+                        data={},
+                        error=f"Unknown command type: {command_type}",
                     )
-                    
+
             # Normal execution for non-test mode
             stagehand, page = await self._setup_stagehand(self._session_id)
 
@@ -425,16 +459,8 @@ class StagehandTool(BaseTool):
                 )
 
             elif command_type.lower() == "extract":
-                # Create extract options
-                extract_options = ExtractOptions(
-                    instruction=instruction,
-                    model_name=self.model_name,
-                    dom_settle_timeout_ms=self.dom_settle_timeout_ms,
-                    use_text_extract=True,
-                )
-
-                # Execute the extract command
-                result = await page.extract(extract_options)
+                # Try calling page.extract directly with the instruction string
+                result = await page.extract(instruction)
                 self._logger.info(f"Extract operation completed successfully {result}")
                 return StagehandResult(success=True, data=result.model_dump())
 
@@ -549,7 +575,7 @@ class StagehandTool(BaseTool):
             self._stagehand = None
             self._page = None
             return
-            
+
         if self._stagehand:
             await self._stagehand.close()
             self._stagehand = None
@@ -563,7 +589,7 @@ class StagehandTool(BaseTool):
             self._stagehand = None
             self._page = None
             return
-            
+
         if self._stagehand:
             try:
                 # Handle both synchronous and asynchronous cases
@@ -572,7 +598,9 @@ class StagehandTool(BaseTool):
                         try:
                             loop = asyncio.get_event_loop()
                             if loop.is_running():
-                                asyncio.run_coroutine_threadsafe(self._async_close(), loop).result()
+                                asyncio.run_coroutine_threadsafe(
+                                    self._async_close(), loop
+                                ).result()
                             else:
                                 loop.run_until_complete(self._async_close())
                         except RuntimeError:
@@ -584,9 +612,9 @@ class StagehandTool(BaseTool):
                 # Log but don't raise - we're cleaning up
                 if self._logger:
                     self._logger.error(f"Error closing Stagehand: {str(e)}")
-                    
+
             self._stagehand = None
-            
+
         if self._page:
             self._page = None
 
