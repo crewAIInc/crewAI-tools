@@ -2,7 +2,14 @@
   "tools": [
     {
       "description": "A wrapper around [AI-Minds](https://mindsdb.com/minds). Useful for when you need answers to questions from your data, stored in data sources including PostgreSQL, MySQL, MariaDB, ClickHouse, Snowflake and Google BigQuery. Input should be a question in natural language.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for AI-Minds",
+          "name": "MINDS_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "AIMind Tool",
       "init_params_schema": {
         "$defs": {
@@ -2492,7 +2499,14 @@
     },
     {
       "description": "Performs an API call to Linkup to retrieve contextual information.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Linkup",
+          "name": "LINKUP_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Linkup Search Tool",
       "init_params_schema": {
         "$defs": {
@@ -2963,7 +2977,14 @@
     },
     {
       "description": "Multion gives the ability for LLMs to control web browsers using natural language instructions.\n            If the status is 'CONTINUE', reissue the same instruction to continue execution",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Multion",
+          "name": "MULTION_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Multion Browse Tool",
       "init_params_schema": {
         "$defs": {
@@ -3232,7 +3253,20 @@
     },
     {
       "description": "Scrape Amazon product pages with Oxylabs Amazon Product Scraper",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "Username for Oxylabs",
+          "name": "OXYLABS_USERNAME",
+          "required": true
+        },
+        {
+          "default": null,
+          "description": "Password for Oxylabs",
+          "name": "OXYLABS_PASSWORD",
+          "required": true
+        }
+      ],
       "humanized_name": "Oxylabs Amazon Product Scraper tool",
       "init_params_schema": {
         "$defs": {
@@ -3418,7 +3452,20 @@
     },
     {
       "description": "Scrape Amazon search results with Oxylabs Amazon Search Scraper",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "Username for Oxylabs",
+          "name": "OXYLABS_USERNAME",
+          "required": true
+        },
+        {
+          "default": null,
+          "description": "Password for Oxylabs",
+          "name": "OXYLABS_PASSWORD",
+          "required": true
+        }
+      ],
       "humanized_name": "Oxylabs Amazon Search Scraper tool",
       "init_params_schema": {
         "$defs": {
@@ -3630,7 +3677,20 @@
     },
     {
       "description": "Scrape Google Search results with Oxylabs Google Search Scraper",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "Username for Oxylabs",
+          "name": "OXYLABS_USERNAME",
+          "required": true
+        },
+        {
+          "default": null,
+          "description": "Password for Oxylabs",
+          "name": "OXYLABS_PASSWORD",
+          "required": true
+        }
+      ],
       "humanized_name": "Oxylabs Google Search Scraper tool",
       "init_params_schema": {
         "$defs": {
@@ -3855,7 +3915,20 @@
     },
     {
       "description": "Scrape any url with Oxylabs Universal Scraper",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "Username for Oxylabs",
+          "name": "OXYLABS_USERNAME",
+          "required": true
+        },
+        {
+          "default": null,
+          "description": "Password for Oxylabs",
+          "name": "OXYLABS_PASSWORD",
+          "required": true
+        }
+      ],
       "humanized_name": "Oxylabs Universal Scraper tool",
       "init_params_schema": {
         "$defs": {
@@ -5042,7 +5115,14 @@
     },
     {
       "description": "Scrape a webpage url using Scrapfly and return its content as markdown or text",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Scrapfly",
+          "name": "SCRAPFLY_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "Scrapfly web scraping API tool",
       "init_params_schema": {
         "$defs": {
@@ -6525,7 +6605,14 @@
     },
     {
       "description": "A tool to scrape or crawl a website and return LLM-ready content.",
-      "env_vars": [],
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Spider.cloud",
+          "name": "SPIDER_API_KEY",
+          "required": true
+        }
+      ],
       "humanized_name": "SpiderTool",
       "init_params_schema": {
         "$defs": {
