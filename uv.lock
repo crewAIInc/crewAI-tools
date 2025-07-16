@@ -376,6 +376,15 @@ wheels = [
 ]
 
 [[package]]
+name = "bedrock-agentcore"
+version = "0.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/2d/5d682abcf2a860e8a2e297421e7c6ee31dad9eb510f8559a916c2958d662/bedrock_agentcore-0.0.1.tar.gz", hash = "sha256:2e37d83a6a52ad14cb04f561c0d52776e96b540e3c85bf24689b3c5f5a2b0633", size = 1268, upload-time = "2025-07-08T07:39:37.666Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/65/73/f03bb88b9ec3253b0d8636e4750aa8ded63549939ecac185757bda312169/bedrock_agentcore-0.0.1-py3-none-any.whl", hash = "sha256:5f3d202eefba4cba1d0fcba73f69e31fa7808986740686b084b4f2959707f222", size = 1485, upload-time = "2025-07-08T07:39:36.644Z" },
+]
+
+[[package]]
 name = "blinker"
 version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -900,6 +909,11 @@ apify = [
 beautifulsoup4 = [
     { name = "beautifulsoup4" },
 ]
+bedrock = [
+    { name = "beautifulsoup4" },
+    { name = "bedrock-agentcore" },
+    { name = "playwright" },
+]
 browserbase = [
     { name = "browserbase" },
 ]
@@ -993,6 +1007,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", marker = "extra == 'beautifulsoup4'", specifier = ">=4.12.3" },
+    { name = "beautifulsoup4", marker = "extra == 'bedrock'", specifier = ">=4.13.4" },
+    { name = "bedrock-agentcore", marker = "extra == 'bedrock'", specifier = ">=0.0.1" },
     { name = "browserbase", marker = "extra == 'browserbase'", specifier = ">=1.0.5" },
     { name = "chromadb", specifier = "==0.5.23" },
     { name = "click", specifier = ">=8.1.8" },
@@ -1016,6 +1032,7 @@ requires-dist = [
     { name = "openai", specifier = ">=1.12.0" },
     { name = "oxylabs", marker = "extra == 'oxylabs'", specifier = "==2.0.0" },
     { name = "patronus", marker = "extra == 'patronus'", specifier = ">=0.0.16" },
+    { name = "playwright", marker = "extra == 'bedrock'", specifier = ">=1.52.0" },
     { name = "pydantic", specifier = ">=2.6.1" },
     { name = "pygithub", marker = "extra == 'github'", specifier = "==1.59.1" },
     { name = "pymongo", marker = "extra == 'mongodb'", specifier = ">=4.13" },
@@ -1037,7 +1054,7 @@ requires-dist = [
     { name = "unstructured", extras = ["local-inference", "all-docs"], marker = "extra == 'xml'", specifier = ">=0.17.2" },
     { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.10.2" },
 ]
-provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "composio-core", "browserbase", "weaviate-client", "patronus", "serpapi", "beautifulsoup4", "selenium", "spider-client", "scrapegraph-py", "linkup-sdk", "tavily-python", "hyperbrowser", "snowflake", "exa-py", "qdrant-client", "apify", "databricks-sdk", "couchbase", "mcp", "stagehand", "github", "xml", "oxylabs", "mongodb"]
+provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "composio-core", "browserbase", "weaviate-client", "patronus", "serpapi", "beautifulsoup4", "selenium", "spider-client", "scrapegraph-py", "linkup-sdk", "tavily-python", "hyperbrowser", "snowflake", "exa-py", "qdrant-client", "apify", "databricks-sdk", "couchbase", "mcp", "stagehand", "github", "xml", "oxylabs", "mongodb", "bedrock"]
 
 [package.metadata.requires-dev]
 dev = [

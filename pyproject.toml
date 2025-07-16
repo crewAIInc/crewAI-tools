@@ -121,6 +121,11 @@ oxylabs = [
 mongodb = [
     "pymongo>=4.13"
 ]
+bedrock = [
+    "beautifulsoup4>=4.13.4",
+    "bedrock-agentcore>=0.0.1",
+    "playwright>=1.52.0",
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

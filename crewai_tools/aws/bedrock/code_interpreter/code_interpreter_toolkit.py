@@ -1,12 +1,15 @@
 """Toolkit for working with AWS Bedrock Code Interpreter."""
+from __future__ import annotations
 
 import json
 import logging
-from typing import Dict, List, Tuple, Optional, Type
+from typing import TYPE_CHECKING, Dict, List, Tuple, Optional, Type
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-from bedrock_agentcore.tools.code_interpreter_client import CodeInterpreter
+
+if TYPE_CHECKING:
+    from bedrock_agentcore.tools.code_interpreter_client import CodeInterpreter
 
 logger = logging.getLogger(__name__)
 
@@ -450,6 +453,7 @@ class CodeInterpreterToolkit:
             return self._code_interpreters[thread_id]
 
         # Create a new code interpreter for this thread
+        from bedrock_agentcore.tools.code_interpreter_client import CodeInterpreter
         code_interpreter = CodeInterpreter(region=self.region)
         code_interpreter.start()
         logger.info(

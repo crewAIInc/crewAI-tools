@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING, Dict, Tuple
 if TYPE_CHECKING:
     from playwright.async_api import Browser as AsyncBrowser
     from playwright.sync_api import Browser as SyncBrowser
-
-from bedrock_agentcore.tools.browser_client import BrowserClient
+    from bedrock_agentcore.tools.browser_client import BrowserClient
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +74,7 @@ class BrowserSessionManager:
         Raises:
             Exception: If browser session creation fails
         """
+        from bedrock_agentcore.tools.browser_client import BrowserClient
         browser_client = BrowserClient(region=self.region)
 
         try:
@@ -131,6 +131,7 @@ class BrowserSessionManager:
         Raises:
             Exception: If browser session creation fails
         """
+        from bedrock_agentcore.tools.browser_client import BrowserClient
         browser_client = BrowserClient(region=self.region)
 
         try:
