@@ -377,11 +377,20 @@ wheels = [
 
 [[package]]
 name = "bedrock-agentcore"
-version = "0.0.1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/5e/2d/5d682abcf2a860e8a2e297421e7c6ee31dad9eb510f8559a916c2958d662/bedrock_agentcore-0.0.1.tar.gz", hash = "sha256:2e37d83a6a52ad14cb04f561c0d52776e96b540e3c85bf24689b3c5f5a2b0633", size = 1268, upload-time = "2025-07-08T07:39:37.666Z" }
+dependencies = [
+    { name = "boto3" },
+    { name = "botocore" },
+    { name = "pydantic" },
+    { name = "starlette" },
+    { name = "typing-extensions" },
+    { name = "urllib3" },
+    { name = "uvicorn" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/07/67/f07523e943d2e68be3dc2f256b0adb1027da521ad31d5a2caba6f158bd2b/bedrock_agentcore-0.1.0.tar.gz", hash = "sha256:05eea20588e8794cb51b1c76c064fa70d01d0a4bfb404b50e680ddccf10c85d0", size = 269981, upload-time = "2025-07-16T18:32:10.763Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/65/73/f03bb88b9ec3253b0d8636e4750aa8ded63549939ecac185757bda312169/bedrock_agentcore-0.0.1-py3-none-any.whl", hash = "sha256:5f3d202eefba4cba1d0fcba73f69e31fa7808986740686b084b4f2959707f222", size = 1485, upload-time = "2025-07-08T07:39:36.644Z" },
+    { url = "https://files.pythonhosted.org/packages/22/ce/30a61ad1e18b5ee7aeaa997cfcd6cb5cbe449cb90d3669e40d458c94b007/bedrock_agentcore-0.1.0-py3-none-any.whl", hash = "sha256:2356661f0ce5012871ac0f22ad3741654e2accb1acdf21b7f78ff19ef278643a", size = 48710, upload-time = "2025-07-16T18:32:09.363Z" },
 ]
 
 [[package]]
@@ -1008,7 +1017,7 @@ dev = [
 requires-dist = [
     { name = "beautifulsoup4", marker = "extra == 'beautifulsoup4'", specifier = ">=4.12.3" },
     { name = "beautifulsoup4", marker = "extra == 'bedrock'", specifier = ">=4.13.4" },
-    { name = "bedrock-agentcore", marker = "extra == 'bedrock'", specifier = ">=0.0.1" },
+    { name = "bedrock-agentcore", marker = "extra == 'bedrock'", specifier = ">=0.1.0" },
     { name = "browserbase", marker = "extra == 'browserbase'", specifier = ">=1.0.5" },
     { name = "chromadb", specifier = "==0.5.23" },
     { name = "click", specifier = ">=8.1.8" },
