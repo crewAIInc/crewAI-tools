@@ -876,7 +876,7 @@ wheels = [
 
 [[package]]
 name = "crewai-tools"
-version = "0.51.1"
+version = "0.55.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
