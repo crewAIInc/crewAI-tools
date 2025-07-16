@@ -73,7 +73,7 @@ The toolkit provides the following tools:
 
 ```python
 from crewai import Agent, Task, Crew
-from crewai_tools.aws.bedrock.browser import create_browser_toolkit
+from crewai_tools.aws import create_browser_toolkit
 
 # Create the browser toolkit with specific AWS region
 toolkit, browser_tools = create_browser_toolkit(region="us-east-1")

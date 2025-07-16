@@ -24,7 +24,7 @@ pip install crewai-tools
 
 ```python
 from crewai import Agent, Task, Crew
-from crewai_tools.aws.bedrock.code_interpreter import create_code_interpreter_toolkit
+from crewai_tools.aws import create_code_interpreter_toolkit
 
 # Create the code interpreter toolkit
 toolkit, code_tools = create_code_interpreter_toolkit(region="us-west-2")
