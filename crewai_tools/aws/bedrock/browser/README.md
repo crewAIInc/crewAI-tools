@@ -25,23 +25,31 @@ pip install bedrock-agentcore beautifulsoup4 playwright
 ### Basic Usage
 
 ```python
-from crewai import Agent, Task, Crew
+from crewai import Agent, Task, Crew, LLM
 from crewai_tools.aws.bedrock.browser import create_browser_toolkit
 
 # Create the browser toolkit
 toolkit, browser_tools = create_browser_toolkit(region="us-west-2")
+
+# Create the Bedrock LLM
+llm = LLM(
+    model="bedrock/us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+    region_name="us-west-2",
+)
 
 # Create a CrewAI agent that uses the browser tools
 research_agent = Agent(
     role="Web Researcher",
     goal="Research and summarize web content",
     backstory="You're an expert at finding information online.",
-    tools=browser_tools
+    tools=browser_tools,
+    llm=llm
 )
 
 # Create a task for the agent
 research_task = Task(
     description="Navigate to https://example.com and extract all text content. Summarize the main points.",
+    expected_output="A list of bullet points containing the most important information on https://example.com. Plus, a description of the tool calls used, and actions performed to get to the page.",
     agent=research_agent
 )
 
@@ -52,9 +60,10 @@ crew = Crew(
 )
 result = crew.kickoff()
 
+print(result)
+
 # Clean up browser resources when done
-import asyncio
-asyncio.run(toolkit.cleanup())
+toolkit.sync_cleanup()
 ```
 
 ### Available Tools
@@ -72,12 +81,18 @@ The toolkit provides the following tools:
 ### Advanced Usage
 
 ```python
-from crewai import Agent, Task, Crew
-from crewai_tools.aws import create_browser_toolkit
+from crewai import Agent, Task, Crew, LLM
+from crewai_tools.aws.bedrock.browser import create_browser_toolkit
 
 # Create the browser toolkit with specific AWS region
-toolkit, browser_tools = create_browser_toolkit(region="us-east-1")
+toolkit, browser_tools = create_browser_toolkit(region="us-west-2")
 tools_by_name = toolkit.get_tools_by_name()
+
+# Create the Bedrock LLM
+llm = LLM(
+    model="bedrock/us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+    region_name="us-west-2",
+)
 
 # Create agents with specific tools
 navigator_agent = Agent(
@@ -85,11 +100,11 @@ navigator_agent = Agent(
     goal="Find specific information across websites",
     backstory="You navigate through websites to locate information.",
     tools=[
-        # Use specific tools by name
         tools_by_name["navigate_browser"],
         tools_by_name["click_element"],
         tools_by_name["navigate_back"]
-    ]
+    ],
+    llm=llm
 )
 
 content_agent = Agent(
@@ -97,21 +112,23 @@ content_agent = Agent(
     goal="Extract and analyze webpage content",
     backstory="You extract and analyze content from webpages.",
     tools=[
-        # Use specific tools by name
-        tools_by_name()["extract_text"],
-        tools_by_name()["extract_hyperlinks"],
-        tools_by_name()["get_elements"]
-    ]
+        tools_by_name["extract_text"],
+        tools_by_name["extract_hyperlinks"],
+        tools_by_name["get_elements"]
+    ],
+    llm=llm
 )
 
 # Create tasks for the agents
 navigation_task = Task(
     description="Navigate to https://example.com, then click on the 'About' link.",
+    expected_output="The outcome of the task, plus a description of the tool calls used, and actions performed to get to the page.",
     agent=navigator_agent
 )
 
 extraction_task = Task(
     description="Extract all text from the current page and summarize it.",
+    expected_output="The summary of the page, plus a description of the tool calls used, and actions performed to get to the page.",
     agent=content_agent
 )
 
@@ -122,9 +139,10 @@ crew = Crew(
 )
 result = crew.kickoff()
 
+print(result)
+
 # Clean up browser resources when done
-import asyncio
-asyncio.run(toolkit.cleanup())
+toolkit.sync_cleanup()
 ```
 
 ## Requirements
