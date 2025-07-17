@@ -514,9 +514,22 @@ class BrowserToolkit:
         return {tool.name: tool for tool in self.tools}
 
     async def cleanup(self) -> None:
-        """Clean up all browser sessions"""
+        """Clean up all browser sessions asynchronously"""
         await self.session_manager.close_all_browsers()
         logger.info("All browser sessions cleaned up")
+        
+    def sync_cleanup(self) -> None:
+        """Clean up all browser sessions from synchronous code"""
+        import asyncio
+        
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                asyncio.create_task(self.cleanup())
+            else:
+                loop.run_until_complete(self.cleanup())
+        except RuntimeError:
+            asyncio.run(self.cleanup())
 
 
 def create_browser_toolkit(
