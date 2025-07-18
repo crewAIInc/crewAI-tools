@@ -16,8 +16,7 @@ This toolkit provides a set of tools for interacting with web browsers through A
 Ensure you have the necessary dependencies:
 
 ```bash
-pip install crewai-tools
-pip install bedrock-agentcore beautifulsoup4 playwright nest-asyncio
+uv add crewai-tools bedrock-agentcore beautifulsoup4 playwright nest-asyncio
 ```
 
 ## Usage

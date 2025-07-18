@@ -15,7 +15,7 @@ This toolkit provides a set of tools for interacting with the AWS Bedrock Code I
 Ensure you have the necessary dependencies:
 
 ```bash
-pip install crewai-tools
+uv add crewai-tools bedrock-agentcore
 ```
 
 ## Usage
