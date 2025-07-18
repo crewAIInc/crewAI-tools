@@ -3,8 +3,7 @@
 import json
 import logging
 import asyncio
-import nest_asyncio
-from typing import Dict, List, Tuple, Any, Optional, Type
+from typing import Dict, List, Tuple, Any, Type
 from urllib.parse import urlparse
 
 from crewai.tools import BaseTool
@@ -69,6 +68,7 @@ class BrowserBaseTool(BaseTool):
             # Override _run to use _arun when in an asyncio loop
             def patched_run(*args, **kwargs):
                 try:
+                    import nest_asyncio
                     loop = asyncio.get_event_loop()
                     nest_asyncio.apply(loop)
                     return asyncio.get_event_loop().run_until_complete(
@@ -514,6 +514,7 @@ class BrowserToolkit:
             loop = asyncio.get_event_loop()
             if loop.is_running():
                 try:
+                    import nest_asyncio
                     nest_asyncio.apply(loop)
                 except Exception as e:
                     logger.warning(f"Failed to apply nest_asyncio: {str(e)}")
