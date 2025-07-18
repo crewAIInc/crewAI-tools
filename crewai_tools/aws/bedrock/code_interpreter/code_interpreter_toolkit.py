@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import TYPE_CHECKING, Dict, List, Tuple, Optional, Type
+from typing import TYPE_CHECKING, Dict, List, Tuple, Optional, Type, Any
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
@@ -106,6 +106,7 @@ class ExecuteCodeTool(BaseTool):
     name: str = "execute_code"
     description: str = "Execute code in various languages (primarily Python)"
     args_schema: Type[BaseModel] = ExecuteCodeInput
+    toolkit: Any = Field(default=None, exclude=True)
     
     def __init__(self, toolkit):
         super().__init__()
@@ -136,6 +137,7 @@ class ExecuteCommandTool(BaseTool):
     name: str = "execute_command"
     description: str = "Run shell commands in the code interpreter environment"
     args_schema: Type[BaseModel] = ExecuteCommandInput
+    toolkit: Any = Field(default=None, exclude=True)
     
     def __init__(self, toolkit):
         super().__init__()
@@ -165,6 +167,7 @@ class ReadFilesTool(BaseTool):
     name: str = "read_files"
     description: str = "Read content of files in the environment"
     args_schema: Type[BaseModel] = ReadFilesInput
+    toolkit: Any = Field(default=None, exclude=True)
     
     def __init__(self, toolkit):
         super().__init__()
@@ -192,6 +195,7 @@ class ListFilesTool(BaseTool):
     name: str = "list_files"
     description: str = "List files in directories in the environment"
     args_schema: Type[BaseModel] = ListFilesInput
+    toolkit: Any = Field(default=None, exclude=True)
     
     def __init__(self, toolkit):
         super().__init__()
@@ -221,6 +225,7 @@ class DeleteFilesTool(BaseTool):
     name: str = "delete_files"
     description: str = "Remove files from the environment"
     args_schema: Type[BaseModel] = DeleteFilesInput
+    toolkit: Any = Field(default=None, exclude=True)
     
     def __init__(self, toolkit):
         super().__init__()
@@ -250,6 +255,7 @@ class WriteFilesTool(BaseTool):
     name: str = "write_files"
     description: str = "Create or update files in the environment"
     args_schema: Type[BaseModel] = WriteFilesInput
+    toolkit: Any = Field(default=None, exclude=True)
     
     def __init__(self, toolkit):
         super().__init__()
@@ -279,6 +285,7 @@ class StartCommandTool(BaseTool):
     name: str = "start_command_execution"
     description: str = "Start long-running commands asynchronously"
     args_schema: Type[BaseModel] = StartCommandInput
+    toolkit: Any = Field(default=None, exclude=True)
     
     def __init__(self, toolkit):
         super().__init__()
@@ -308,6 +315,7 @@ class GetTaskTool(BaseTool):
     name: str = "get_task"
     description: str = "Check status of async tasks"
     args_schema: Type[BaseModel] = GetTaskInput
+    toolkit: Any = Field(default=None, exclude=True)
     
     def __init__(self, toolkit):
         super().__init__()
@@ -335,6 +343,7 @@ class StopTaskTool(BaseTool):
     name: str = "stop_task"
     description: str = "Stop running tasks"
     args_schema: Type[BaseModel] = StopTaskInput
+    toolkit: Any = Field(default=None, exclude=True)
     
     def __init__(self, toolkit):
         super().__init__()
