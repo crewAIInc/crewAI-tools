@@ -125,6 +125,7 @@ bedrock = [
     "beautifulsoup4>=4.13.4",
     "bedrock-agentcore>=0.1.0",
     "playwright>=1.52.0",
+    "nest-asyncio>=1.6.0",
 ]
 
 [tool.pytest.ini_options]

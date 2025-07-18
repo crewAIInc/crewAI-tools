@@ -2,6 +2,8 @@
 
 import json
 import logging
+import asyncio
+import nest_asyncio
 from typing import Dict, List, Tuple, Any, Optional, Type
 from urllib.parse import urlparse
 
@@ -62,6 +64,20 @@ class BrowserBaseTool(BaseTool):
         super().__init__()
         self._session_manager = session_manager
         
+        if self._is_in_asyncio_loop() and hasattr(self, '_arun'):
+            self._original_run = self._run
+            # Override _run to use _arun when in an asyncio loop
+            def patched_run(*args, **kwargs):
+                try:
+                    loop = asyncio.get_event_loop()
+                    nest_asyncio.apply(loop)
+                    return asyncio.get_event_loop().run_until_complete(
+                        self._arun(*args, **kwargs)
+                    )
+                except Exception as e:
+                    return f"Error in patched _run: {str(e)}"
+            self._run = patched_run
+        
     async def get_async_page(self, thread_id: str) -> Any:
         """Get or create a page for the specified thread."""
         browser = await self._session_manager.get_async_browser(thread_id)
@@ -73,6 +89,14 @@ class BrowserBaseTool(BaseTool):
         browser = self._session_manager.get_sync_browser(thread_id)
         page = get_current_page(browser)
         return page
+    
+    def _is_in_asyncio_loop(self) -> bool:
+        """Check if we're currently in an asyncio event loop."""
+        try:
+            loop = asyncio.get_event_loop()
+            return loop.is_running()
+        except RuntimeError:
+            return False
 
 
 # Tool classes
@@ -481,7 +505,20 @@ class BrowserToolkit:
         self.region = region
         self.session_manager = BrowserSessionManager(region=region)
         self.tools: List[BaseTool] = []
+        self._nest_current_loop()
         self._setup_tools()
+    
+    def _nest_current_loop(self):
+        """Apply nest_asyncio if we're in an asyncio loop."""
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                try:
+                    nest_asyncio.apply(loop)
+                except Exception as e:
+                    logger.warning(f"Failed to apply nest_asyncio: {str(e)}")
+        except RuntimeError:
+            pass
 
     def _setup_tools(self) -> None:
         """Initialize tools without creating any browsers."""
