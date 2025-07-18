@@ -921,6 +921,7 @@ beautifulsoup4 = [
 bedrock = [
     { name = "beautifulsoup4" },
     { name = "bedrock-agentcore" },
+    { name = "nest-asyncio" },
     { name = "playwright" },
 ]
 browserbase = [
@@ -1038,6 +1039,7 @@ requires-dist = [
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.6.0" },
     { name = "mcpadapt", marker = "extra == 'mcp'", specifier = ">=0.1.9" },
     { name = "multion", marker = "extra == 'multion'", specifier = ">=1.1.0" },
+    { name = "nest-asyncio", marker = "extra == 'bedrock'", specifier = ">=1.6.0" },
     { name = "openai", specifier = ">=1.12.0" },
     { name = "oxylabs", marker = "extra == 'oxylabs'", specifier = "==2.0.0" },
     { name = "patronus", marker = "extra == 'patronus'", specifier = ">=0.0.16" },
