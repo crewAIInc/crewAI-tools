@@ -376,6 +376,24 @@ wheels = [
 ]
 
 [[package]]
+name = "bedrock-agentcore"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "boto3" },
+    { name = "botocore" },
+    { name = "pydantic" },
+    { name = "starlette" },
+    { name = "typing-extensions" },
+    { name = "urllib3" },
+    { name = "uvicorn" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/07/67/f07523e943d2e68be3dc2f256b0adb1027da521ad31d5a2caba6f158bd2b/bedrock_agentcore-0.1.0.tar.gz", hash = "sha256:05eea20588e8794cb51b1c76c064fa70d01d0a4bfb404b50e680ddccf10c85d0", size = 269981, upload-time = "2025-07-16T18:32:10.763Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/22/ce/30a61ad1e18b5ee7aeaa997cfcd6cb5cbe449cb90d3669e40d458c94b007/bedrock_agentcore-0.1.0-py3-none-any.whl", hash = "sha256:2356661f0ce5012871ac0f22ad3741654e2accb1acdf21b7f78ff19ef278643a", size = 48710, upload-time = "2025-07-16T18:32:09.363Z" },
+]
+
+[[package]]
 name = "blinker"
 version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -900,6 +918,12 @@ apify = [
 beautifulsoup4 = [
     { name = "beautifulsoup4" },
 ]
+bedrock = [
+    { name = "beautifulsoup4" },
+    { name = "bedrock-agentcore" },
+    { name = "nest-asyncio" },
+    { name = "playwright" },
+]
 browserbase = [
     { name = "browserbase" },
 ]
@@ -993,6 +1017,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", marker = "extra == 'beautifulsoup4'", specifier = ">=4.12.3" },
+    { name = "beautifulsoup4", marker = "extra == 'bedrock'", specifier = ">=4.13.4" },
+    { name = "bedrock-agentcore", marker = "extra == 'bedrock'", specifier = ">=0.1.0" },
     { name = "browserbase", marker = "extra == 'browserbase'", specifier = ">=1.0.5" },
     { name = "chromadb", specifier = "==0.5.23" },
     { name = "click", specifier = ">=8.1.8" },
@@ -1013,9 +1039,11 @@ requires-dist = [
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.6.0" },
     { name = "mcpadapt", marker = "extra == 'mcp'", specifier = ">=0.1.9" },
     { name = "multion", marker = "extra == 'multion'", specifier = ">=1.1.0" },
+    { name = "nest-asyncio", marker = "extra == 'bedrock'", specifier = ">=1.6.0" },
     { name = "openai", specifier = ">=1.12.0" },
     { name = "oxylabs", marker = "extra == 'oxylabs'", specifier = "==2.0.0" },
     { name = "patronus", marker = "extra == 'patronus'", specifier = ">=0.0.16" },
+    { name = "playwright", marker = "extra == 'bedrock'", specifier = ">=1.52.0" },
     { name = "pydantic", specifier = ">=2.6.1" },
     { name = "pygithub", marker = "extra == 'github'", specifier = "==1.59.1" },
     { name = "pymongo", marker = "extra == 'mongodb'", specifier = ">=4.13" },
@@ -1037,7 +1065,7 @@ requires-dist = [
     { name = "unstructured", extras = ["local-inference", "all-docs"], marker = "extra == 'xml'", specifier = ">=0.17.2" },
     { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.10.2" },
 ]
-provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "composio-core", "browserbase", "weaviate-client", "patronus", "serpapi", "beautifulsoup4", "selenium", "spider-client", "scrapegraph-py", "linkup-sdk", "tavily-python", "hyperbrowser", "snowflake", "exa-py", "qdrant-client", "apify", "databricks-sdk", "couchbase", "mcp", "stagehand", "github", "xml", "oxylabs", "mongodb"]
+provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "composio-core", "browserbase", "weaviate-client", "patronus", "serpapi", "beautifulsoup4", "selenium", "spider-client", "scrapegraph-py", "linkup-sdk", "tavily-python", "hyperbrowser", "snowflake", "exa-py", "qdrant-client", "apify", "databricks-sdk", "couchbase", "mcp", "stagehand", "github", "xml", "oxylabs", "mongodb", "bedrock"]
 
 [package.metadata.requires-dev]
 dev = [
