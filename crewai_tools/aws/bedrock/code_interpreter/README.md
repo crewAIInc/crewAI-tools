@@ -23,23 +23,31 @@ uv add crewai-tools bedrock-agentcore
 ### Basic Usage
 
 ```python
-from crewai import Agent, Task, Crew
+from crewai import Agent, Task, Crew, LLM
 from crewai_tools.aws import create_code_interpreter_toolkit
 
 # Create the code interpreter toolkit
 toolkit, code_tools = create_code_interpreter_toolkit(region="us-west-2")
 
+# Create the Bedrock LLM
+llm = LLM(
+    model="bedrock/us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+    region_name="us-west-2",
+)
+
 # Create a CrewAI agent that uses the code interpreter tools
 developer_agent = Agent(
     role="Python Developer",
-    goal="Create and execute Python code to solve problems",
+    goal="Create and execute Python code to solve problems.",
     backstory="You're a skilled Python developer with expertise in data analysis.",
-    tools=code_tools
+    tools=code_tools,
+    llm=llm
 )
 
 # Create a task for the agent
 coding_task = Task(
-    description="Write a Python function that calculates the factorial of a number and test it.",
+    description="Write a Python function that calculates the factorial of a number and test it. Do not use any imports from outside the Python standard library.",
+    expected_output="The Python function created, and the test results.",
     agent=developer_agent
 )
 
@@ -49,6 +57,8 @@ crew = Crew(
     tasks=[coding_task]
 )
 result = crew.kickoff()
+
+print(f"\n***Final result:***\n\n{result}")
 
 # Clean up resources when done
 import asyncio
@@ -72,12 +82,18 @@ The toolkit provides the following tools:
 ### Advanced Usage
 
 ```python
-from crewai import Agent, Task, Crew
-from crewai_tools.aws.bedrock.code_interpreter import create_code_interpreter_toolkit
+from crewai import Agent, Task, Crew, LLM
+from crewai_tools.aws import create_code_interpreter_toolkit
 
-# Create the code interpreter toolkit with specific AWS region
-toolkit, code_tools = create_code_interpreter_toolkit(region="us-east-1")
+# Create the code interpreter toolkit
+toolkit, code_tools = create_code_interpreter_toolkit(region="us-west-2")
 tools_by_name = toolkit.get_tools_by_name()
+
+# Create the Bedrock LLM
+llm = LLM(
+    model="bedrock/us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+    region_name="us-west-2",
+)
 
 # Create agents with specific tools
 code_agent = Agent(
@@ -90,7 +106,8 @@ code_agent = Agent(
         tools_by_name["execute_command"],
         tools_by_name["read_files"],
         tools_by_name["write_files"]
-    ]
+    ],
+    llm=llm
 )
 
 file_agent = Agent(
@@ -103,12 +120,14 @@ file_agent = Agent(
         tools_by_name["read_files"],
         tools_by_name["write_files"],
         tools_by_name["delete_files"]
-    ]
+    ],
+    llm=llm
 )
 
 # Create tasks for the agents
 coding_task = Task(
-    description="Write a Python script to analyze data from a CSV file.",
+    description="Write a Python script to analyze data from a CSV file. Do not use any imports from outside the Python standard library.",
+    expected_output="The Python function created.",
     agent=code_agent
 )
 
@@ -124,6 +143,8 @@ crew = Crew(
 )
 result = crew.kickoff()
 
+print(f"\n***Final result:***\n\n{result}")
+
 # Clean up code interpreter resources when done
 import asyncio
 asyncio.run(toolkit.cleanup())
@@ -132,23 +153,31 @@ asyncio.run(toolkit.cleanup())
 ### Example: Data Analysis with Python
 
 ```python
-from crewai import Agent, Task, Crew
-from crewai_tools.aws.bedrock.code_interpreter import create_code_interpreter_toolkit
+from crewai import Agent, Task, Crew, LLM
+from crewai_tools.aws import create_code_interpreter_toolkit
 
 # Create toolkit and tools
-toolkit, code_tools = create_code_interpreter_toolkit()
+toolkit, code_tools = create_code_interpreter_toolkit(region="us-west-2")
+
+# Create the Bedrock LLM
+llm = LLM(
+    model="bedrock/us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+    region_name="us-west-2",
+)
 
 # Create a data analyst agent
 analyst_agent = Agent(
     role="Data Analyst",
     goal="Analyze data using Python",
     backstory="You're an expert data analyst who uses Python for data processing.",
-    tools=code_tools
+    tools=code_tools,
+    llm=llm
 )
 
 # Create a task for the agent
 analysis_task = Task(
     description="""
+    For all of the below, do not use any imports from outside the Python standard library.
     1. Create a sample dataset with random data
     2. Perform statistical analysis on the dataset
     3. Generate visualizations of the results
@@ -163,6 +192,8 @@ crew = Crew(
     tasks=[analysis_task]
 )
 result = crew.kickoff()
+
+print(f"\n***Final result:***\n\n{result}")
 
 # Clean up resources
 import asyncio

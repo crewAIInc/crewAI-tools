@@ -59,7 +59,7 @@ crew = Crew(
 )
 result = crew.kickoff()
 
-print(result)
+print(f"\n***Final result:***\n\n{result}")
 
 # Clean up browser resources when done
 toolkit.sync_cleanup()
