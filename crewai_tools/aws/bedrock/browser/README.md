@@ -17,7 +17,7 @@ Ensure you have the necessary dependencies:
 
 ```bash
 pip install crewai-tools
-pip install bedrock-agentcore beautifulsoup4 playwright
+pip install bedrock-agentcore beautifulsoup4 playwright nest-asyncio
 ```
 
 ## Usage
@@ -78,71 +78,79 @@ The toolkit provides the following tools:
 6. `navigate_back` - Navigate to the previous page
 7. `current_webpage` - Get information about the current webpage
 
-### Advanced Usage
+### Advanced Usage (with async)
 
 ```python
+import asyncio
 from crewai import Agent, Task, Crew, LLM
 from crewai_tools.aws.bedrock.browser import create_browser_toolkit
 
-# Create the browser toolkit with specific AWS region
-toolkit, browser_tools = create_browser_toolkit(region="us-west-2")
-tools_by_name = toolkit.get_tools_by_name()
+async def main():
 
-# Create the Bedrock LLM
-llm = LLM(
-    model="bedrock/us.anthropic.claude-3-7-sonnet-20250219-v1:0",
-    region_name="us-west-2",
-)
+    # Create the browser toolkit with specific AWS region
+    toolkit, browser_tools = create_browser_toolkit(region="us-west-2")
+    tools_by_name = toolkit.get_tools_by_name()
 
-# Create agents with specific tools
-navigator_agent = Agent(
-    role="Navigator",
-    goal="Find specific information across websites",
-    backstory="You navigate through websites to locate information.",
-    tools=[
-        tools_by_name["navigate_browser"],
-        tools_by_name["click_element"],
-        tools_by_name["navigate_back"]
-    ],
-    llm=llm
-)
+    # Create the Bedrock LLM
+    llm = LLM(
+        model="bedrock/us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+        region_name="us-west-2",
+    )
 
-content_agent = Agent(
-    role="Content Extractor",
-    goal="Extract and analyze webpage content",
-    backstory="You extract and analyze content from webpages.",
-    tools=[
-        tools_by_name["extract_text"],
-        tools_by_name["extract_hyperlinks"],
-        tools_by_name["get_elements"]
-    ],
-    llm=llm
-)
+    # Create agents with specific tools
+    navigator_agent = Agent(
+        role="Navigator",
+        goal="Find specific information across websites",
+        backstory="You navigate through websites to locate information.",
+        tools=[
+            tools_by_name["navigate_browser"],
+            tools_by_name["click_element"],
+            tools_by_name["navigate_back"]
+        ],
+        llm=llm
+    )
 
-# Create tasks for the agents
-navigation_task = Task(
-    description="Navigate to https://example.com, then click on the 'About' link.",
-    expected_output="The outcome of the task, plus a description of the tool calls used, and actions performed to get to the page.",
-    agent=navigator_agent
-)
+    content_agent = Agent(
+        role="Content Extractor",
+        goal="Extract and analyze webpage content",
+        backstory="You extract and analyze content from webpages.",
+        tools=[
+            tools_by_name["extract_text"],
+            tools_by_name["extract_hyperlinks"],
+            tools_by_name["get_elements"]
+        ],
+        llm=llm
+    )
 
-extraction_task = Task(
-    description="Extract all text from the current page and summarize it.",
-    expected_output="The summary of the page, plus a description of the tool calls used, and actions performed to get to the page.",
-    agent=content_agent
-)
+    # Create tasks for the agents
+    navigation_task = Task(
+        description="Navigate to https://example.com, then click on the the 'More information...' link.",
+        expected_output="The status of the tool calls for this task.",
+        agent=navigator_agent,
+    )
 
-# Create and run the crew
-crew = Crew(
-    agents=[navigator_agent, content_agent],
-    tasks=[navigation_task, extraction_task]
-)
-result = crew.kickoff()
+    extraction_task = Task(
+        description="Extract all text from the current page and summarize it.",
+        expected_output="The summary of the page, and a description of the tool calls used, and actions performed to get to the page.",
+        agent=content_agent,
+    )
 
-print(result)
+    # Create and run the crew
+    crew = Crew(
+        agents=[navigator_agent, content_agent],
+        tasks=[navigation_task, extraction_task]
+    )
 
-# Clean up browser resources when done
-toolkit.sync_cleanup()
+    result = await crew.kickoff_async()
+
+    # Clean up browser resources when done
+    toolkit.sync_cleanup()
+
+    return result
+
+if __name__ == "__main__":
+    result = asyncio.run(main())
+    print(f"\n***Final result:***\n\n{result}")
 ```
 
 ## Requirements
