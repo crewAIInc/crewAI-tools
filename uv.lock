@@ -183,6 +183,24 @@ wheels = [
 ]
 
 [[package]]
+name = "anthropic"
+version = "0.58.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "distro" },
+    { name = "httpx" },
+    { name = "jiter" },
+    { name = "pydantic" },
+    { name = "sniffio" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/95/b9/ab06c586aa5a5e7499017cee5ebab94ee260e75975c45395f32b8592abdd/anthropic-0.58.2.tar.gz", hash = "sha256:86396cc45530a83acea25ae6bca9f86656af81e3d598b4d22a1300e0e4cf8df8", size = 425125, upload-time = "2025-07-18T13:38:55.94Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d0/f2/68d908ff308c9a65af5749ec31952e01d32f19ea073b0268affc616e6ebc/anthropic-0.58.2-py3-none-any.whl", hash = "sha256:3742181c634c725f337b71096839b6404145e33a8e190c75387c4028b825864d", size = 292896, upload-time = "2025-07-18T13:38:54.782Z" },
+]
+
+[[package]]
 name = "antlr4-python3-runtime"
 version = "4.9.3"
 source = { registry = "https://pypi.org/simple" }
@@ -908,6 +926,7 @@ dependencies = [
     { name = "pyright" },
     { name = "pytube" },
     { name = "requests" },
+    { name = "stagehand" },
     { name = "tiktoken" },
 ]
 
@@ -995,7 +1014,7 @@ sqlalchemy = [
     { name = "sqlalchemy" },
 ]
 stagehand = [
-    { name = "stagehand-py" },
+    { name = "stagehand" },
 ]
 tavily-python = [
     { name = "tavily-python" },
@@ -1059,7 +1078,8 @@ requires-dist = [
     { name = "snowflake-sqlalchemy", marker = "extra == 'snowflake'", specifier = ">=1.7.3" },
     { name = "spider-client", marker = "extra == 'spider-client'", specifier = ">=0.1.25" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=2.0.35" },
-    { name = "stagehand-py", marker = "extra == 'stagehand'", specifier = ">=0.3.6" },
+    { name = "stagehand", specifier = ">=0.4.1" },
+    { name = "stagehand", marker = "extra == 'stagehand'", specifier = ">=0.4.1" },
     { name = "tavily-python", marker = "extra == 'tavily-python'", specifier = ">=0.5.4" },
     { name = "tiktoken", specifier = ">=0.8.0" },
     { name = "unstructured", extras = ["local-inference", "all-docs"], marker = "extra == 'xml'", specifier = ">=0.17.2" },
@@ -3785,7 +3805,7 @@ wheels = [
 
 [[package]]
 name = "openai"
-version = "1.75.0"
+version = "1.97.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -3797,9 +3817,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/99/b1/318f5d4c482f19c5fcbcde190801bfaaaec23413cda0b88a29f6897448ff/openai-1.75.0.tar.gz", hash = "sha256:fb3ea907efbdb1bcfd0c44507ad9c961afd7dce3147292b54505ecfd17be8fd1", size = 429492, upload-time = "2025-04-16T16:49:29.25Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e0/c6/b8d66e4f3b95493a8957065b24533333c927dc23817abe397f13fe589c6e/openai-1.97.0.tar.gz", hash = "sha256:0be349569ccaa4fb54f97bb808423fd29ccaeb1246ee1be762e0c81a47bae0aa", size = 493850, upload-time = "2025-07-16T16:37:35.196Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/80/9a/f34f163294345f123673ed03e77c33dee2534f3ac1f9d18120384457304d/openai-1.75.0-py3-none-any.whl", hash = "sha256:fe6f932d2ded3b429ff67cc9ad118c71327db32eb9d32dd723de3acfca337125", size = 646972, upload-time = "2025-04-16T16:49:27.196Z" },
+    { url = "https://files.pythonhosted.org/packages/8a/91/1f1cf577f745e956b276a8b1d3d76fa7a6ee0c2b05db3b001b900f2c71db/openai-1.97.0-py3-none-any.whl", hash = "sha256:a1c24d96f4609f3f7f51c9e1c2606d97cc6e334833438659cfd687e9c972c610", size = 764953, upload-time = "2025-07-16T16:37:33.135Z" },
 ]
 
 [[package]]
@@ -6112,20 +6132,24 @@ wheels = [
 ]
 
 [[package]]
-name = "stagehand-py"
-version = "0.3.10"
+name = "stagehand"
+version = "0.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "anthropic" },
     { name = "browserbase" },
     { name = "httpx" },
+    { name = "litellm" },
+    { name = "openai" },
     { name = "playwright" },
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "requests" },
+    { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/eb/37/0c0e8b7506a58b52958f1ebf8feeb62bff72a0b83aba0dc4bfc38c9bf72f/stagehand_py-0.3.10.tar.gz", hash = "sha256:1671f27c2de31987b4d6edac995f4144e95a4444ad717c007e7626f84cefe555", size = 42095, upload-time = "2025-05-30T21:07:15.086Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/82/24f6ade40784ad51b6e2687ff2e077d02210bb0db35fdb3302d7425c9dc5/stagehand-0.4.1.tar.gz", hash = "sha256:721934b47b0756519ce9920d50879b58a3e919f44fa11ac1b1957490f3903124", size = 89751, upload-time = "2025-07-18T19:51:05.216Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a5/ec/55aeaaad059932a8d80081a0898cd18db0f96a5d219ec73cb68bc6953b8f/stagehand_py-0.3.10-py3-none-any.whl", hash = "sha256:010f1ebcd0bf12032475dd02310a97865e9bf335220f30c9c6a29058afb13c83", size = 39598, upload-time = "2025-05-30T21:07:13.672Z" },
+    { url = "https://files.pythonhosted.org/packages/84/db/594daf76d214ceed02733f1225ea2e66ab7c84e454cbf5da67b3f5e8447b/stagehand-0.4.1-py3-none-any.whl", hash = "sha256:a212f5d018e0e44991c28f27a9140fa841aca0365c72b0d97dd137faa8f1c226", size = 100874, upload-time = "2025-07-18T19:51:03.903Z" },
 ]
 
 [[package]]
