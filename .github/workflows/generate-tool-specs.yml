@@ -7,9 +7,11 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   generate-specs:
+    if: github.event.head_commit.author.name != 'crewai-tools-spec-generator[bot]'
     runs-on: ubuntu-latest
     outputs:
       specs_changed: ${{ steps.check_changes.outputs.specs_changed }}
@@ -50,19 +52,33 @@ jobs:
             echo "specs_changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit and push if changed
+      - name: Generate GitHub App token
         if: steps.check_changes.outputs.specs_changed == 'true'
-        run: |
-          git commit -m "Update tool specifications for $(git describe --tags --abbrev=0)"
-          git push
+        id: app-token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.CREWAI_RELEASE_TOOL_APP_ID }}
+          private_key: ${{ secrets.CREWAI_RELEASE_TOOL_PRIVATE_KEY }}
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.specs_changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          title: "Automatically update tool specifications"
+          base: main
+          branch: update-tool-specs
+          commit-message: "Automatically update tool specifications"
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          delete-branch: false
 
   notify-api:
-    needs: generate-specs
-    if: needs.generate-specs.outputs.specs_changed == 'true'
+    if: github.event.head_commit.author.name == 'crewai-tools-spec-generator[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Notify API about tool specification update
         run: |
           curl -X POST https://app.crewai.com/crewai_plus/api/v1/internal_tool_releases \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.CREWAI_RELEASE_TOOL_API_KEY }}"

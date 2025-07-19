@@ -1,6 +1,6 @@
 [project]
 name = "crewai-tools"
-version = "0.49.0"
+version = "0.55.0"
 description = "Set of tools for the crewAI framework"
 readme = "README.md"
 authors = [
@@ -11,13 +11,13 @@ dependencies = [
     "pydantic>=2.6.1",
     "lancedb>=0.5.4",
     "openai>=1.12.0",
-    "chromadb>=0.4.22",
+    "chromadb==0.5.23",
     "pyright>=1.1.350",
     "pytube>=15.0.0",
     "requests>=2.31.0",
     "docker>=7.1.0",
     "embedchain>=0.1.114",
-    "crewai>=0.134.0",
+    "crewai>=0.140.0",
     "click>=8.1.8",
     "lancedb>=0.5.4",
     "tiktoken>=0.8.0",
@@ -120,6 +120,12 @@ oxylabs = [
 ]
 mongodb = [
     "pymongo>=4.13"
+]
+bedrock = [
+    "beautifulsoup4>=4.13.4",
+    "bedrock-agentcore>=0.1.0",
+    "playwright>=1.52.0",
+    "nest-asyncio>=1.6.0",
 ]
 
 [tool.pytest.ini_options]
