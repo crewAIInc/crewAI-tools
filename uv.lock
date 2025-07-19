@@ -926,6 +926,7 @@ dependencies = [
     { name = "pyright" },
     { name = "pytube" },
     { name = "requests" },
+    { name = "stagehand" },
     { name = "tiktoken" },
 ]
 
@@ -1077,6 +1078,7 @@ requires-dist = [
     { name = "snowflake-sqlalchemy", marker = "extra == 'snowflake'", specifier = ">=1.7.3" },
     { name = "spider-client", marker = "extra == 'spider-client'", specifier = ">=0.1.25" },
     { name = "sqlalchemy", marker = "extra == 'sqlalchemy'", specifier = ">=2.0.35" },
+    { name = "stagehand", specifier = ">=0.4.1" },
     { name = "stagehand", marker = "extra == 'stagehand'", specifier = ">=0.4.1" },
     { name = "tavily-python", marker = "extra == 'tavily-python'", specifier = ">=0.5.4" },
     { name = "tiktoken", specifier = ">=0.8.0" },
