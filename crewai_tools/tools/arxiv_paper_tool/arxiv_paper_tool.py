@@ -6,7 +6,7 @@ import urllib.error
 import xml.etree.ElementTree as ET
 from typing import Type, List, Optional, ClassVar
 from pydantic import BaseModel, Field
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool,EnvVar
 import logging
 from pathlib import Path
 
@@ -26,7 +26,9 @@ class ArxivPaperTool(BaseTool):
     description: str = "Fetches metadata from Arxiv based on a search query and optionally downloads PDFs."
     args_schema: Type[BaseModel] = ArxivToolInput
     model_config = {"extra": "allow"} 
-
+    package_dependencies: List[str] = ["pydantic"]
+    env_vars: List[EnvVar] = []
+    
     def __init__(self, download_pdfs=False, save_dir="./arxiv_pdfs", use_title_as_filename=False):
         super().__init__()
         self.download_pdfs = download_pdfs
