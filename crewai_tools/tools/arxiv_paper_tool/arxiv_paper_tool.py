@@ -10,8 +10,7 @@ from crewai.tools import BaseTool
 import logging
 from pathlib import Path
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__file__)
 
 class ArxivToolInput(BaseModel):
     search_query: str = Field(..., description="Search query for Arxiv, e.g., 'transformer neural network'")
