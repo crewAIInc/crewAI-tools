@@ -788,6 +788,23 @@ wheels = [
 ]
 
 [[package]]
+name = "contextual-client"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "distro" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "sniffio" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/dd/e0/a0c4a48cc725cb09653e77ea560ea05e81981746154285ed28b3967e7e63/contextual_client-0.7.0.tar.gz", hash = "sha256:bf60ff18e40d4192498ec8a4923f3c145637702072c29507fdcb9b34ea1778d3", size = 152506, upload-time = "2025-05-13T05:29:39.834Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f9/8c/eb4618a489185a6d1ce77b7b6abd6f345dcecc3d89bca33ea2ed4757e916/contextual_client-0.7.0-py3-none-any.whl", hash = "sha256:c379053fd682c645a09f0b48897ae8b0ecabbdfbe933932980e3e0ada845e808", size = 175850, upload-time = "2025-05-13T05:29:38.526Z" },
+]
+
+[[package]]
 name = "contourpy"
 version = "1.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1057,6 +1074,9 @@ browserbase = [
 composio-core = [
     { name = "composio-core" },
 ]
+contextual = [
+    { name = "contextual-client" },
+]
 couchbase = [
     { name = "couchbase" },
 ]
@@ -1156,6 +1176,7 @@ requires-dist = [
     { name = "chromadb", specifier = "==0.5.23" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
+    { name = "contextual-client", marker = "extra == 'contextual'", specifier = ">=0.1.0" },
     { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
     { name = "crewai", specifier = ">=0.152.0" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
@@ -1202,7 +1223,11 @@ requires-dist = [
     { name = "unstructured", extras = ["local-inference", "all-docs"], marker = "extra == 'xml'", specifier = ">=0.17.2" },
     { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.10.2" },
 ]
+<<<<<<< HEAD
 provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "composio-core", "browserbase", "weaviate-client", "patronus", "serpapi", "beautifulsoup4", "selenium", "spider-client", "scrapegraph-py", "linkup-sdk", "tavily-python", "hyperbrowser", "snowflake", "singlestore", "exa-py", "qdrant-client", "apify", "databricks-sdk", "couchbase", "mcp", "stagehand", "github", "xml", "oxylabs", "mongodb", "bedrock"]
+=======
+provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "composio-core", "browserbase", "weaviate-client", "patronus", "serpapi", "beautifulsoup4", "selenium", "spider-client", "scrapegraph-py", "linkup-sdk", "tavily-python", "hyperbrowser", "snowflake", "exa-py", "qdrant-client", "apify", "databricks-sdk", "couchbase", "mcp", "stagehand", "github", "xml", "oxylabs", "mongodb", "bedrock", "contextual"]
+>>>>>>> 40b3a19 (feat: Add ContextualTool for Contextual AI integration)
 
 [package.metadata.requires-dev]
 dev = [
