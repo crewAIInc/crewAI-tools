@@ -45,7 +45,7 @@ class MongoDBVectorSearchConfig(BaseModel):
     )
 
 
-class MongoDBToolSchema(MongoDBVectorSearchConfig):
+class MongoDBToolSchema(BaseModel):
     """Input for MongoDBTool."""
 
     query: str = Field(
