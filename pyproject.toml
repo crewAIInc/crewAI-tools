@@ -1,25 +1,27 @@
 [project]
 name = "crewai-tools"
-version = "0.45.0"
+version = "0.55.0"
 description = "Set of tools for the crewAI framework"
 readme = "README.md"
 authors = [
     { name = "João Moura", email = "joaomdmoura@gmail.com" },
 ]
-requires-python = ">=3.10,<=3.13"
+requires-python = ">=3.10,<3.14"
 dependencies = [
     "pydantic>=2.6.1",
     "lancedb>=0.5.4",
     "openai>=1.12.0",
-    "chromadb>=0.4.22",
+    "chromadb==0.5.23",
     "pyright>=1.1.350",
     "pytube>=15.0.0",
     "requests>=2.31.0",
     "docker>=7.1.0",
     "embedchain>=0.1.114",
-    "crewai>=0.119.0",
+    "crewai>=0.140.0",
     "click>=8.1.8",
     "lancedb>=0.5.4",
+    "tiktoken>=0.8.0",
+    "stagehand>=0.4.1",
 ]
 
 [project.urls]
@@ -97,12 +99,15 @@ apify = [
 databricks-sdk = [
     "databricks-sdk>=0.46.0",
 ]
+couchbase = [
+    "couchbase>=4.3.5",
+]
 mcp = [
     "mcp>=1.6.0",
-    "mcpadapt>=0.1.3",
+    "mcpadapt>=0.1.9",
 ]
 stagehand = [
-    "stagehand-py>=0.3.6",
+    "stagehand>=0.4.1",
 ]
 github = [
     "gitpython==3.1.38",
@@ -110,6 +115,18 @@ github = [
 ]
 xml = [
     "unstructured[local-inference, all-docs]>=0.17.2"
+]
+oxylabs = [
+    "oxylabs==2.0.0"
+]
+mongodb = [
+    "pymongo>=4.13"
+]
+bedrock = [
+    "beautifulsoup4>=4.13.4",
+    "bedrock-agentcore>=0.1.0",
+    "playwright>=1.52.0",
+    "nest-asyncio>=1.6.0",
 ]
 
 [tool.pytest.ini_options]

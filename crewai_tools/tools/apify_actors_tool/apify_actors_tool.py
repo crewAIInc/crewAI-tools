@@ -1,4 +1,4 @@
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 from pydantic import Field
 from typing import TYPE_CHECKING, Any, Dict, List
 import os
@@ -7,6 +7,9 @@ if TYPE_CHECKING:
     from langchain_apify import ApifyActorsTool as _ApifyActorsTool
 
 class ApifyActorsTool(BaseTool):
+    env_vars: List[EnvVar] = [
+        EnvVar(name="APIFY_API_TOKEN", description="API token for Apify platform access", required=True),
+    ]
     """Tool that runs Apify Actors.
 
        To use, you should have the environment variable `APIFY_API_TOKEN` set
@@ -38,6 +41,7 @@ class ApifyActorsTool(BaseTool):
                 print(f"Content: {result.get('markdown', 'N/A')[:100]}...")
     """
     actor_tool: '_ApifyActorsTool' = Field(description="Apify Actor Tool")
+    package_dependencies: List[str] = ["langchain-apify"]
 
     def __init__(
         self,
