@@ -62,6 +62,7 @@ from .tools import (
     SerpApiGoogleSearchTool,
     SerpApiGoogleShoppingTool,
     SerperDevTool,
+    SerperScrapeWebsiteTool,
     SerplyJobSearchTool,
     SerplyNewsSearchTool,
     SerplyScholarSearchTool,
