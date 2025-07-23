@@ -1,5 +1,5 @@
-from crewai.tools import BaseTool
-from typing import Type
+from crewai.tools import BaseTool, EnvVar
+from typing import Type, List
 from pydantic import BaseModel, Field
 import requests
 import json
@@ -23,6 +23,9 @@ class SerperScrapeWebsiteTool(BaseTool):
         "optionally including markdown formatting for better structure."
     )
     args_schema: Type[BaseModel] = SerperScrapeWebsiteInput
+    env_vars: List[EnvVar] = [
+        EnvVar(name="SERPER_API_KEY", description="API key for Serper", required=True),
+    ]
 
     def _run(self, url: str, include_markdown: bool = True) -> str:
         """
