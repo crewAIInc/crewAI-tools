@@ -67,6 +67,8 @@ from .tools import (
     SerplyScholarSearchTool,
     SerplyWebpageToMarkdownTool,
     SerplyWebSearchTool,
+    SingleStoreSearchTool,
+    SingleStoreSearchToolSchema,
     SnowflakeConfig,
     SnowflakeSearchTool,
     SpiderTool,
