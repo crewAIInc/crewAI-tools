@@ -12,7 +12,7 @@ pip install 'crewai[tools]' contextual-client
 
 **Note**: You'll also need a Contextual AI API key. Sign up at [app.contextual.ai](https://app.contextual.ai) to get your free API key with $25 in credits.
 
-## Example
+## Agent and Datastore Examples
 
 The following examples demonstrate how to initialize the tool in different scenarios:
 
@@ -135,6 +135,63 @@ document_ids = tool.upload_additional_documents([
 # Check document processing status
 status = tool.get_document_status("your_document_id_here")
 print("Document processing status:", status)
+```
+
+## Component API Examples
+
+### Example 6: Parser
+Parse is Contextual AI's structured data extraction model. It excels at converting unstructured text (PDF, DOCX) into markdown format by identifying and extracting key information:
+
+```python
+from crewai_tools import ContextualTool
+
+# Create a parser-only tool
+parser = ContextualTool.create_parser_only(
+    api_key="your_api_key_here",
+    name="Document Parser",
+    description="Parse documents into structured formats"
+)
+
+# Parse a document
+parse_result = parser.parse_document(
+    file_path="/path/to/document.pdf",
+    parse_mode="standard",
+    page_range="0-5",  # Parse first 6 pages only
+    output_types=["markdown-per-page"]
+)
+
+# Access parsed content
+print("Number of pages parsed:", len(parse_result['pages']))
+print("First page markdown:", parse_result['pages'][0]['markdown'])
+```
+
+### Example 7: Reranker
+Contextual AI's reranker is the first with instruction-following capabilities to handle conflicts in retrieval. It ranks a list of documents according to their relevance to a query primarily and your custom instructions secondarily: 
+
+
+```python
+from crewai_tools import ContextualTool
+
+# Create a reranker-only tool
+reranker = ContextualTool.create_reranker_only(
+    api_key="your_api_key_here"
+)
+
+# Rerank documents
+documents = [
+    "Following detailed cost analysis and market research, we have implemented the following changes: AI training clusters will see a 15% uplift in raw compute performance, enterprise support packages are being restructured, and bulk procurement programs (100+ units) for the RTX 5090 Enterprise series will operate on a $2,899 baseline.",
+    "Enterprise pricing for the RTX 5090 GPU bulk orders (100+ units) is currently set at $3,100-$3,300 per unit. This pricing for RTX 5090 enterprise bulk orders has been confirmed across all major distribution channels.",
+    "RTX 5090 Enterprise GPU requires 450W TDP and 20% cooling overhead."
+]
+
+reranker_result = reranker.rerank_documents(
+    query="What is the enterprise pricing for RTX 5090?",
+    documents=documents,
+    instruction="Prioritize pricing information over technical specs"
+)
+
+# Access reranked result
+print(reranker_result)
 ```
 
 ## Steps to Get Started
