@@ -33,6 +33,7 @@ from .tools import (
     GithubSearchTool,
     HyperbrowserLoadTool,
     JSONSearchTool,
+    KeboolaTableExtractTool,
     LinkupSearchTool,
     LlamaIndexTool,
     MDXSearchTool,
