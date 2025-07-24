@@ -269,3 +269,196 @@ class ContextualTool(BaseTool):
             
         except Exception as e:
             raise RuntimeError(f"Failed to get document status: {str(e)}")
+
+
+    def parse_document(
+        self, 
+        file_path: str, 
+        parse_mode: str = "standard",
+        figure_caption_mode: str = "concise",
+        enable_document_hierarchy: bool = True,
+        page_range: Optional[str] = None,
+        output_types: List[str] = ["markdown-per-page"]
+    ) -> dict:
+        """
+        Parse a document using Contextual AI's parsing service.
+        
+        Args:
+            file_path: Path to the document to parse
+            parse_mode: Parsing mode (default: "standard")
+            figure_caption_mode: Figure caption mode (default: "concise") 
+            enable_document_hierarchy: Enable document hierarchy (default: True)
+            page_range: Page range to parse (e.g., "0-5"), None for all pages
+            output_types: List of output types (default: ["markdown-per-page"])
+            
+        Returns:
+            Dictionary containing parsed document results
+        """
+        try:
+            import requests
+            import json
+            import os
+            from time import sleep
+            
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(f"Document not found: {file_path}")
+            
+            base_url = "https://api.contextual.ai/v1"
+            headers = {
+                "accept": "application/json",
+                "authorization": f"Bearer {self.api_key}"
+            }
+            
+            # Submit parse job
+            url = f"{base_url}/parse"
+            config = {
+                "parse_mode": parse_mode,
+                "figure_caption_mode": figure_caption_mode,
+                "enable_document_hierarchy": enable_document_hierarchy,
+            }
+            
+            if page_range:
+                config["page_range"] = page_range
+            
+            with open(file_path, "rb") as fp:
+                file = {"raw_file": fp}
+                result = requests.post(url, headers=headers, data=config, files=file)
+                response = json.loads(result.text)
+                job_id = response['job_id']
+            
+            # Monitor job status
+            status_url = f"{base_url}/parse/jobs/{job_id}/status"
+            while True:
+                result = requests.get(status_url, headers=headers)
+                parse_response = json.loads(result.text)['status']
+                
+                if parse_response == "completed":
+                    break
+                elif parse_response == "failed":
+                    raise RuntimeError("Document parsing failed")
+                
+                sleep(5)  # Check every 5 seconds
+            
+            # Get parse results
+            results_url = f"{base_url}/parse/jobs/{job_id}/results"
+            result = requests.get(
+                results_url,
+                headers=headers,
+                params={"output_types": ",".join(output_types)},
+            )
+            
+            return json.loads(result.text)
+            
+        except Exception as e:
+            raise RuntimeError(f"Failed to parse document: {str(e)}")
+
+    @classmethod
+    def create_parser_only(
+        cls,
+        api_key: str,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        **kwargs
+    ) -> "ContextualTool":
+        """
+        Create a ContextualTool for document parsing only (no RAG capabilities).
+        
+        Args:
+            api_key: Your Contextual AI API key
+            name: Custom name for the tool
+            description: Custom description for the tool
+            **kwargs: Additional arguments passed to the tool
+            
+        Returns:
+            ContextualTool instance configured for parsing only
+        """
+        return cls(
+            api_key=api_key,
+            name=name or "Contextual AI Document Parser",
+            description=description or "Use this tool to parse documents using Contextual AI's parsing service",
+            **kwargs
+        )
+
+    def rerank_documents(
+        self,
+        query: str,
+        documents: List[str],
+        instruction: Optional[str] = None,
+        metadata: Optional[List[str]] = None,
+        model: str = "ctxl-rerank-en-v1-instruct"
+    ) -> dict:
+        """
+        Rerank documents using Contextual AI's instruction-following reranker.
+        
+        Args:
+            query: The search query to rerank documents against
+            documents: List of document texts to rerank
+            instruction: Optional instruction for reranking behavior
+            metadata: Optional list of metadata for each document
+            model: Reranker model to use (default: "ctxl-rerank-en-v1-instruct")
+            
+        Returns:
+            Dictionary containing reranked documents with scores
+        """
+        try:
+            import requests
+            import json
+            
+            base_url = "https://api.contextual.ai/v1"
+            headers = {
+                "accept": "application/json",
+                "content-type": "application/json",
+                "authorization": f"Bearer {self.api_key}"
+            }
+            
+            payload = {
+                "query": query,
+                "documents": documents,
+                "model": model
+            }
+            
+            if instruction:
+                payload["instruction"] = instruction
+            
+            if metadata:
+                if len(metadata) != len(documents):
+                    raise ValueError("Metadata list must have the same length as documents list")
+                payload["metadata"] = metadata
+            
+            rerank_url = f"{base_url}/rerank"
+            result = requests.post(rerank_url, json=payload, headers=headers)
+            
+            if result.status_code != 200:
+                raise RuntimeError(f"Reranker API returned status {result.status_code}: {result.text}")
+            
+            return result.json()
+            
+        except Exception as e:
+            raise RuntimeError(f"Failed to rerank documents: {str(e)}")
+
+    @classmethod
+    def create_reranker_only(
+        cls,
+        api_key: str,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        **kwargs
+    ) -> "ContextualTool":
+        """
+        Create a ContextualTool for document reranking only.
+        
+        Args:
+            api_key: Your Contextual AI API key
+            name: Custom name for the tool
+            description: Custom description for the tool
+            **kwargs: Additional arguments passed to the tool
+            
+        Returns:
+            ContextualTool instance configured for reranking only
+        """
+        return cls(
+            api_key=api_key,
+            name=name or "Contextual AI Document Reranker",
+            description=description or "Use this tool to rerank documents using Contextual AI's instruction-following reranker",
+            **kwargs
+        )
