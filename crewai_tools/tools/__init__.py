@@ -5,6 +5,7 @@ from .browserbase_load_tool.browserbase_load_tool import BrowserbaseLoadTool
 from .code_docs_search_tool.code_docs_search_tool import CodeDocsSearchTool
 from .code_interpreter_tool.code_interpreter_tool import CodeInterpreterTool
 from .composio_tool.composio_tool import ComposioTool
+from .couchbase_tool.couchbase_tool import CouchbaseFTSVectorSearchTool
 from .crewai_enterprise_tools.crewai_enterprise_tools import CrewaiEnterpriseTools
 from .csv_search_tool.csv_search_tool import CSVSearchTool
 from .dalle_tool.dalle_tool import DallETool
@@ -15,10 +16,10 @@ from .docx_search_tool.docx_search_tool import DOCXSearchTool
 from .exa_tools.exa_search_tool import EXASearchTool
 from .file_read_tool.file_read_tool import FileReadTool
 from .file_writer_tool.file_writer_tool import FileWriterTool
+from .files_compressor_tool.files_compressor_tool import FileCompressorTool
 from .firecrawl_crawl_website_tool.firecrawl_crawl_website_tool import (
     FirecrawlCrawlWebsiteTool,
 )
-from .files_compressor_tool.files_compressor_tool import FileCompressorTool
 from .firecrawl_scrape_website_tool.firecrawl_scrape_website_tool import (
     FirecrawlScrapeWebsiteTool,
 )
@@ -30,9 +31,26 @@ from .keboola_storage_api_tool.keboola_table_extract_tool import KeboolaTableExt
 from .linkup.linkup_search_tool import LinkupSearchTool
 from .llamaindex_tool.llamaindex_tool import LlamaIndexTool
 from .mdx_search_tool.mdx_search_tool import MDXSearchTool
+from .mongodb_vector_search_tool import (
+    MongoDBToolSchema,
+    MongoDBVectorSearchConfig,
+    MongoDBVectorSearchTool,
+)
 from .multion_tool.multion_tool import MultiOnTool
 from .mysql_search_tool.mysql_search_tool import MySQLSearchTool
 from .nl2sql.nl2sql_tool import NL2SQLTool
+from .oxylabs_universal_scraper_tool.oxylabs_universal_scraper_tool import (
+    OxylabsUniversalScraperTool,
+)
+from .oxylabs_google_search_scraper_tool.oxylabs_google_search_scraper_tool import (
+    OxylabsGoogleSearchScraperTool,
+)
+from .oxylabs_amazon_product_scraper_tool.oxylabs_amazon_product_scraper_tool import (
+    OxylabsAmazonProductScraperTool,
+)
+from .oxylabs_amazon_search_scraper_tool.oxylabs_amazon_search_scraper_tool import (
+    OxylabsAmazonSearchScraperTool,
+)
 from .patronus_eval_tool import (
     PatronusEvalTool,
     PatronusLocalEvaluatorTool,
@@ -57,6 +75,7 @@ from .selenium_scraping_tool.selenium_scraping_tool import SeleniumScrapingTool
 from .serpapi_tool.serpapi_google_search_tool import SerpApiGoogleSearchTool
 from .serpapi_tool.serpapi_google_shopping_tool import SerpApiGoogleShoppingTool
 from .serper_dev_tool.serper_dev_tool import SerperDevTool
+from .serper_scrape_website_tool.serper_scrape_website_tool import SerperScrapeWebsiteTool
 from .serply_api_tool.serply_job_search_tool import SerplyJobSearchTool
 from .serply_api_tool.serply_news_search_tool import SerplyNewsSearchTool
 from .serply_api_tool.serply_scholar_search_tool import SerplyScholarSearchTool
