@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from crewai.tools import BaseTool
+
 from crewai_tools.adapters.tool_collection import ToolCollection
+
 """
 MCPServer for CrewAI.
 
@@ -70,6 +73,8 @@ class MCPServerAdapter:
         self,
         serverparams: StdioServerParameters | dict[str, Any],
         *tool_names: str,
+        connect_timeout: int = 30,
+        client_session_timeout_seconds: float | timedelta | None = 5,
     ):
         """Initialize the MCP Server
 
@@ -78,6 +83,8 @@ class MCPServerAdapter:
                 `StdioServerParameters` or a `dict` respectively for STDIO and SSE.
             *tool_names: Optional names of tools to filter. If provided, only tools with
                 matching names will be available.
+            connect_timeout: Timeout for connecting to the MCP server (default: 30 seconds).
+            client_session_timeout_seconds: Timeout for client sessions (default: 5 seconds).
 
         """
 
@@ -106,7 +113,12 @@ class MCPServerAdapter:
 
         try:
             self._serverparams = serverparams
-            self._adapter = MCPAdapt(self._serverparams, CrewAIAdapter())
+            self._adapter = MCPAdapt(
+                self._serverparams,
+                CrewAIAdapter(),
+                connect_timeout=connect_timeout,
+                client_session_timeout_seconds=client_session_timeout_seconds,
+            )
             self.start()
 
         except Exception as e:

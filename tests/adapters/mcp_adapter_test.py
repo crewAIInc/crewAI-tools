@@ -1,3 +1,4 @@
+from datetime import timedelta
 from textwrap import dedent
 
 import pytest
@@ -5,6 +6,7 @@ from mcp import StdioServerParameters
 
 from crewai_tools import MCPServerAdapter
 from crewai_tools.adapters.tool_collection import ToolCollection
+
 
 @pytest.fixture
 def echo_server_script():
@@ -83,7 +85,8 @@ def test_context_manager_syntax(echo_server_script):
         assert tools[0].name == "echo_tool"
         assert tools[1].name == "calc_tool"
         assert tools[0].run(text="hello") == "Echo: hello"
-        assert tools[1].run(a=5, b=3) == '8'
+        assert tools[1].run(a=5, b=3) == "8"
+
 
 def test_context_manager_syntax_sse(echo_sse_server):
     sse_serverparams = echo_sse_server
@@ -92,7 +95,8 @@ def test_context_manager_syntax_sse(echo_sse_server):
         assert tools[0].name == "echo_tool"
         assert tools[1].name == "calc_tool"
         assert tools[0].run(text="hello") == "Echo: hello"
-        assert tools[1].run(a=5, b=3) == '8'
+        assert tools[1].run(a=5, b=3) == "8"
+
 
 def test_try_finally_syntax(echo_server_script):
     serverparams = StdioServerParameters(
@@ -105,9 +109,10 @@ def test_try_finally_syntax(echo_server_script):
         assert tools[0].name == "echo_tool"
         assert tools[1].name == "calc_tool"
         assert tools[0].run(text="hello") == "Echo: hello"
-        assert tools[1].run(a=5, b=3) == '8'
+        assert tools[1].run(a=5, b=3) == "8"
     finally:
         mcp_server_adapter.stop()
+
 
 def test_try_finally_syntax_sse(echo_sse_server):
     sse_serverparams = echo_sse_server
@@ -118,9 +123,10 @@ def test_try_finally_syntax_sse(echo_sse_server):
         assert tools[0].name == "echo_tool"
         assert tools[1].name == "calc_tool"
         assert tools[0].run(text="hello") == "Echo: hello"
-        assert tools[1].run(a=5, b=3) == '8'
+        assert tools[1].run(a=5, b=3) == "8"
     finally:
         mcp_server_adapter.stop()
+
 
 def test_context_manager_with_filtered_tools(echo_server_script):
     serverparams = StdioServerParameters(
@@ -138,6 +144,7 @@ def test_context_manager_with_filtered_tools(echo_server_script):
         with pytest.raises(KeyError):
             _ = tools["calc_tool"]
 
+
 def test_context_manager_sse_with_filtered_tools(echo_sse_server):
     sse_serverparams = echo_sse_server
     # Only select the calc_tool
@@ -145,12 +152,13 @@ def test_context_manager_sse_with_filtered_tools(echo_sse_server):
         assert isinstance(tools, ToolCollection)
         assert len(tools) == 1
         assert tools[0].name == "calc_tool"
-        assert tools[0].run(a=10, b=5) == '15'
+        assert tools[0].run(a=10, b=5) == "15"
         # Check that echo_tool is not present
         with pytest.raises(IndexError):
             _ = tools[1]
         with pytest.raises(KeyError):
             _ = tools["echo_tool"]
+
 
 def test_try_finally_with_filtered_tools(echo_server_script):
     serverparams = StdioServerParameters(
@@ -168,6 +176,7 @@ def test_try_finally_with_filtered_tools(echo_server_script):
     finally:
         mcp_server_adapter.stop()
 
+
 def test_filter_with_nonexistent_tool(echo_server_script):
     serverparams = StdioServerParameters(
         command="uv", args=["run", "python", "-c", echo_server_script]
@@ -178,6 +187,7 @@ def test_filter_with_nonexistent_tool(echo_server_script):
         assert len(tools) == 1
         assert tools[0].name == "echo_tool"
 
+
 def test_filter_with_only_nonexistent_tools(echo_server_script):
     serverparams = StdioServerParameters(
         command="uv", args=["run", "python", "-c", echo_server_script]
@@ -187,3 +197,49 @@ def test_filter_with_only_nonexistent_tools(echo_server_script):
         # Should return an empty tool collection
         assert isinstance(tools, ToolCollection)
         assert len(tools) == 0
+
+
+def test_timeout_parameters_are_set(echo_server_script):
+    """Test that connect_timeout and client_session_timeout_seconds are properly set."""
+
+    serverparams = StdioServerParameters(
+        command="uv", args=["run", "python", "-c", echo_server_script]
+    )
+
+    # Test with custom timeout values
+    connect_timeout = 45
+    client_session_timeout_seconds = 10.5
+
+    try:
+        mcp_server_adapter = MCPServerAdapter(
+            serverparams,
+            connect_timeout=connect_timeout,
+            client_session_timeout_seconds=client_session_timeout_seconds,
+        )
+
+        # Verify the timeout parameters are set on the adapter
+        assert mcp_server_adapter._adapter.connect_timeout == connect_timeout
+        assert (
+            mcp_server_adapter._adapter.client_session_timeout_seconds
+            == client_session_timeout_seconds
+        )
+
+        # Test with timedelta for client_session_timeout_seconds
+        client_session_timeout_timedelta = timedelta(seconds=15)
+        mcp_server_adapter_timedelta = MCPServerAdapter(
+            serverparams,
+            connect_timeout=60,
+            client_session_timeout_seconds=client_session_timeout_timedelta,
+        )
+
+        assert mcp_server_adapter_timedelta._adapter.connect_timeout == 60
+        assert (
+            mcp_server_adapter_timedelta._adapter.client_session_timeout_seconds
+            == client_session_timeout_timedelta
+        )
+
+    finally:
+        if "mcp_server_adapter" in locals():
+            mcp_server_adapter.stop()
+        if "mcp_server_adapter_timedelta" in locals():
+            mcp_server_adapter_timedelta.stop()
