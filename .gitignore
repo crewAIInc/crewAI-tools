@@ -12,3 +12,4 @@ venv
 
 # chroma db
 db
+crewai-rag-tool.lock

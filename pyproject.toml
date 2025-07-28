@@ -22,6 +22,7 @@ dependencies = [
     "lancedb>=0.5.4",
     "tiktoken>=0.8.0",
     "stagehand>=0.4.1",
+    "portalocker==2.7.0",
 ]
 
 [project.urls]
