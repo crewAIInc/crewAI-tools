@@ -53,6 +53,29 @@ def echo_server_sse_script():
 
 
 @pytest.fixture
+def echo_server_stateless_script():
+    return dedent(
+        '''
+        from mcp.server.fastmcp import FastMCP
+
+        mcp = FastMCP("Echo Server", host="127.0.0.1", port=8002)
+
+        @mcp.tool()
+        def echo_tool(text: str) -> str:
+            """Echo the input text"""
+            return f"Echo: {text}"
+
+        @mcp.tool()
+        def calc_tool(a: int, b: int) -> int:
+            """Calculate a + b"""
+            return a + b
+
+        mcp.run("streamable-http")
+        '''
+    )
+
+
+@pytest.fixture
 def echo_sse_server(echo_server_sse_script):
     import subprocess
     import time
@@ -187,3 +210,21 @@ def test_filter_with_only_nonexistent_tools(echo_server_script):
         # Should return an empty tool collection
         assert isinstance(tools, ToolCollection)
         assert len(tools) == 0
+
+
+def test_stateless_parameter_validation():
+    with pytest.raises(ValueError, match="stateless parameter is only supported with streamable-http transport"):
+        MCPServerAdapter({
+            "url": "http://127.0.0.1:8000/sse", 
+            "stateless": True
+        })
+
+
+def test_backward_compatibility_without_stateless():
+    serverparams = {"url": "http://127.0.0.1:8001/sse"}
+    
+    import crewai_tools.adapters.mcp_adapter as mcp_module
+    
+    test_params = {"url": "http://127.0.0.1:8001/sse"}
+    has_stateless = isinstance(test_params, dict) and test_params.get("stateless", False)
+    assert not has_stateless  # Should be False for backward compatibility

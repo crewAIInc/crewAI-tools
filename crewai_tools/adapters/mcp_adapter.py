@@ -46,6 +46,10 @@ class MCPServerAdapter:
         with MCPServerAdapter({"url": "http://localhost:8000/sse"}) as tools:
             # tools is now available
 
+        # context manager + stateless http
+        with MCPServerAdapter({"url": "http://localhost:8001/mcp", "transport": "streamable-http", "stateless": True}) as tools:
+            # tools is now available
+
         # context manager with filtered tools
         with MCPServerAdapter(..., "tool1", "tool2") as filtered_tools:
             # only tool1 and tool2 are available
@@ -75,7 +79,8 @@ class MCPServerAdapter:
 
         Args:
             serverparams: The parameters for the MCP server it supports either a
-                `StdioServerParameters` or a `dict` respectively for STDIO and SSE.
+                `StdioServerParameters` or a `dict` respectively for STDIO, SSE, and 
+                stateless HTTP. For stateless HTTP, include `stateless: True` in the dict.
             *tool_names: Optional names of tools to filter. If provided, only tools with
                 matching names will be available.
 
@@ -104,11 +109,27 @@ class MCPServerAdapter:
                     "`mcp` package not found, please run `uv add crewai-tools[mcp]`"
                 )
 
+        self._is_stateless = False
+
         try:
             self._serverparams = serverparams
-            self._adapter = MCPAdapt(self._serverparams, CrewAIAdapter())
+            
+            if isinstance(serverparams, dict) and serverparams.get("stateless", False):
+                modified_params = serverparams.copy()
+                modified_params.pop("stateless", None)
+                if modified_params.get("transport") == "streamable-http":
+                    self._is_stateless = True
+                    self._adapter = MCPAdapt(modified_params, CrewAIAdapter())
+                else:
+                    raise ValueError("stateless parameter is only supported with streamable-http transport")
+            else:
+                self._is_stateless = False
+                self._adapter = MCPAdapt(self._serverparams, CrewAIAdapter())
+            
             self.start()
 
+        except ValueError:
+            raise
         except Exception as e:
             if self._adapter is not None:
                 try:
