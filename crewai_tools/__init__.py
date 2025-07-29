@@ -73,6 +73,8 @@ from .tools import (
     SnowflakeSearchTool,
     SpiderTool,
     StagehandTool,
+    TavilyExtractorTool,
+    TavilySearchTool,
     TXTSearchTool,
     VisionTool,
     WeaviateVectorSearchTool,
