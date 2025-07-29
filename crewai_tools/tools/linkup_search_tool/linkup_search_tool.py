@@ -1,7 +1,6 @@
 from typing import Any, Optional, Type
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-
 try:
     from linkup import LinkupClient
     LINKUP_AVAILABLE = True
