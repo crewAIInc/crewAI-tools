@@ -71,7 +71,7 @@ jobs:
           commit-message: "Automatically update tool specifications"
           committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          delete-branch: false
+          delete-branch: true
 
   notify-api:
     if: github.event.head_commit.author.name == 'crewai-tools-spec-generator[bot]'
