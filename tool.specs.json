@@ -115,6 +115,80 @@
       }
     },
     {
+      "description": "Fetches metadata from Arxiv based on a search query and optionally downloads PDFs.",
+      "env_vars": [],
+      "humanized_name": "Arxiv Paper Fetcher and Downloader",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "additionalProperties": true,
+        "properties": {},
+        "title": "ArxivPaperTool",
+        "type": "object"
+      },
+      "name": "ArxivPaperTool",
+      "package_dependencies": [
+        "pydantic"
+      ],
+      "run_params_schema": {
+        "properties": {
+          "max_results": {
+            "default": 5,
+            "description": "Max results to fetch; must be between 1 and 100",
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Max Results",
+            "type": "integer"
+          },
+          "search_query": {
+            "description": "Search query for Arxiv, e.g., 'transformer neural network'",
+            "title": "Search Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "search_query"
+        ],
+        "title": "ArxivToolInput",
+        "type": "object"
+      }
+    },
+    {
       "description": "A tool that can be used to search the internet with a search_query.",
       "env_vars": [
         {
@@ -2906,62 +2980,6 @@
       "run_params_schema": {
         "description": "Input for MongoDBTool.",
         "properties": {
-          "include_embeddings": {
-            "default": false,
-            "description": "Whether to include the embedding vector of each result in metadata.",
-            "title": "Include Embeddings",
-            "type": "boolean"
-          },
-          "limit": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": 4,
-            "description": "number of documents to return.",
-            "title": "Limit"
-          },
-          "oversampling_factor": {
-            "default": 10,
-            "description": "Multiple of limit used when generating number of candidates at each step in the HNSW Vector Search",
-            "title": "Oversampling Factor",
-            "type": "integer"
-          },
-          "post_filter_pipeline": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": true,
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "description": "Pipeline of MongoDB aggregation stages to filter/process results after $vectorSearch.",
-            "title": "Post Filter Pipeline"
-          },
-          "pre_filter": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "description": "List of MQL match expressions comparing an indexed field",
-            "title": "Pre Filter"
-          },
           "query": {
             "description": "The query to search retrieve relevant information from the MongoDB database. Pass only the query, not the question.",
             "title": "Query",
@@ -5710,6 +5728,83 @@
           "search_query"
         ],
         "title": "SerperDevToolSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Scrapes website content using Serper's scraping API. This tool can extract clean, readable content from any website URL, optionally including markdown formatting for better structure.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Serper",
+          "name": "SERPER_API_KEY",
+          "required": true
+        }
+      ],
+      "humanized_name": "serper_scrape_website",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "properties": {},
+        "title": "SerperScrapeWebsiteTool",
+        "type": "object"
+      },
+      "name": "SerperScrapeWebsiteTool",
+      "package_dependencies": [],
+      "run_params_schema": {
+        "description": "Input schema for SerperScrapeWebsite.",
+        "properties": {
+          "include_markdown": {
+            "default": true,
+            "description": "Whether to include markdown formatting in the scraped content",
+            "title": "Include Markdown",
+            "type": "boolean"
+          },
+          "url": {
+            "description": "The URL of the website to scrape",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "SerperScrapeWebsiteInput",
         "type": "object"
       }
     },
