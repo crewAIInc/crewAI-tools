@@ -57,7 +57,7 @@ class Document(BaseModel):
 class CustomRAGAdapter(Adapter):
     collection_name: str = "crewai_knowledge_base"
     persist_directory: Optional[str] = None
-    embedding_model: str = "text-embedding-3-small"
+    embedding_model: str = "text-embedding-3-large"
     summarize: bool = False
     top_k: int = 5
     embedding_config: Dict[str, Any] = Field(default_factory=dict)
@@ -75,7 +75,7 @@ class CustomRAGAdapter(Adapter):
 
             self._collection = self._client.get_or_create_collection(
                 name=self.collection_name,
-                metadata={"description": "CrewAI Knowledge Base"}
+                metadata={"hnsw:space": "cosine", "description": "CrewAI Knowledge Base"}
             )
 
             self._embedding_service = EmbeddingService(model=self.embedding_model, **self.embedding_config)
@@ -173,20 +173,16 @@ class CustomRAGAdapter(Adapter):
             metadatas = results.get("metadatas", [None])[0] or []
             distances = results.get("distances", [None])[0] or []
 
-            if self.summarize:
-                # For summarization, return concatenated content
-                return "\n\n".join(documents)
-            else:
-                # Return sources with relevance scores
-                formatted_results = []
-                for i, doc in enumerate(documents):
-                    metadata = metadatas[i] if i < len(metadatas) else {}
-                    distance = distances[i] if i < len(distances) else 1.0
-                    source = metadata.get("source", "unknown") if metadata else "unknown"
-                    score = 1 - distance if distance is not None else 0  # Convert distance to similarity
-                    formatted_results.append(f"[Source: {source}, Relevance: {score:.3f}]\n{doc}")
+            # Return sources with relevance scores
+            formatted_results = []
+            for i, doc in enumerate(documents):
+                metadata = metadatas[i] if i < len(metadatas) else {}
+                distance = distances[i] if i < len(distances) else 1.0
+                source = metadata.get("source", "unknown") if metadata else "unknown"
+                score = 1 - distance if distance is not None else 0  # Convert distance to similarity
+                formatted_results.append(f"[Source: {source}, Relevance: {score:.3f}]\n{doc}")
 
-                return "\n\n".join(formatted_results)
+            return "\n\n".join(formatted_results)
         except Exception as e:
             logger.error(f"Query failed: {e}")
             return f"Error querying knowledge base: {e}"
