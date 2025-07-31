@@ -14,6 +14,7 @@ class TextFileLoader(BaseLoader):
 
         return LoaderResult(content=content, source=str(source))
 
+
 class TextLoader(BaseLoader):
     def load(self, source: str | Path, **kwargs) -> LoaderResult:
         return LoaderResult(content=source, source="raw")
