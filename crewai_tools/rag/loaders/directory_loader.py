@@ -1,0 +1,162 @@
+import os
+from pathlib import Path
+from typing import Union, List, Dict, Any
+from urllib.parse import urlparse
+
+from crewai_tools.rag.loaders.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.data_types import DataTypes
+
+
+class DirectoryLoader(BaseLoader):
+    def load(self, source: Union[str, Path], **kwargs) -> LoaderResult:
+        """
+        Load and process all files from a directory recursively.
+
+        Args:
+            source: Directory path or URL to a directory listing
+            **kwargs: Additional options:
+                - recursive: bool (default True) - Whether to search recursively
+                - include_extensions: list - Only include files with these extensions
+                - exclude_extensions: list - Exclude files with these extensions
+                - max_files: int - Maximum number of files to process
+        """
+        source_str = str(source)
+
+        if self._is_url(source):
+            raise ValueError("URL directory loading is not supported. Please provide a local directory path.")
+
+        if not os.path.exists(source_str):
+            raise FileNotFoundError(f"Directory does not exist: {source_str}")
+
+        if not os.path.isdir(source_str):
+            raise ValueError(f"Path is not a directory: {source_str}")
+
+        return self._process_directory(source_str, kwargs)
+
+    def _is_url(self, source: Union[str, Path]) -> bool:
+        if not isinstance(source, str):
+            return False
+        try:
+            parsed_url = urlparse(source)
+            return bool(parsed_url.scheme and parsed_url.netloc)
+        except Exception:
+            return False
+
+    def _process_directory(self, dir_path: str, kwargs: dict) -> LoaderResult:
+        recursive = kwargs.get("recursive", True)
+        include_extensions = kwargs.get("include_extensions", None)
+        exclude_extensions = kwargs.get("exclude_extensions", None)
+        max_files = kwargs.get("max_files", None)
+
+        files = self._find_files(dir_path, recursive, include_extensions, exclude_extensions)
+
+        if max_files and len(files) > max_files:
+            files = files[:max_files]
+
+        all_contents = []
+        processed_files = []
+        errors = []
+
+        for file_path in files:
+            try:
+                result = self._process_single_file(file_path)
+                if result:
+                    all_contents.append(f"=== File: {file_path} ===\n{result.content}")
+                    processed_files.append({
+                        "path": file_path,
+                        "metadata": result.metadata,
+                        "source": result.source
+                    })
+            except Exception as e:
+                error_msg = f"Error processing {file_path}: {str(e)}"
+                errors.append(error_msg)
+                all_contents.append(f"=== File: {file_path} (ERROR) ===\n{error_msg}")
+
+        combined_content = "\n\n".join(all_contents)
+
+        metadata = {
+            "format": "directory",
+            "directory_path": dir_path,
+            "total_files": len(files),
+            "processed_files": len(processed_files),
+            "errors": len(errors),
+            "file_details": processed_files,
+            "error_details": errors
+        }
+
+        return LoaderResult(
+            content=combined_content,
+            source=dir_path,
+            metadata=metadata
+        )
+
+    def _find_files(self, dir_path: str, recursive: bool, include_ext: List[str] = None, exclude_ext: List[str] = None) -> List[str]:
+        """Find all files in directory matching criteria."""
+        files = []
+
+        if recursive:
+            for root, dirs, filenames in os.walk(dir_path):
+                dirs[:] = [d for d in dirs if not d.startswith('.')]
+
+                for filename in filenames:
+                    if self._should_include_file(filename, include_ext, exclude_ext):
+                        files.append(os.path.join(root, filename))
+        else:
+            try:
+                for item in os.listdir(dir_path):
+                    item_path = os.path.join(dir_path, item)
+                    if os.path.isfile(item_path) and self._should_include_file(item, include_ext, exclude_ext):
+                        files.append(item_path)
+            except PermissionError:
+                pass
+
+        return sorted(files)
+
+    def _should_include_file(self, filename: str, include_ext: List[str] = None, exclude_ext: List[str] = None) -> bool:
+        """Determine if a file should be included based on criteria."""
+        if filename.startswith('.'):
+            return False
+
+        _, ext = os.path.splitext(filename.lower())
+
+        if include_ext:
+            if ext not in [e.lower() if e.startswith('.') else f'.{e.lower()}' for e in include_ext]:
+                return False
+
+        if exclude_ext:
+            if ext in [e.lower() if e.startswith('.') else f'.{e.lower()}' for e in exclude_ext]:
+                return False
+
+        return True
+
+    def _process_single_file(self, file_path: str) -> LoaderResult:
+        """Process a single file using the appropriate loader."""
+        try:
+            data_type = DataTypes.from_content(Path(file_path))
+
+            loader = data_type.get_loader()
+
+            result = loader.load(file_path)
+
+            if result.metadata is None:
+                result.metadata = {}
+
+            result.metadata.update({
+                "file_path": file_path,
+                "file_size": os.path.getsize(file_path),
+                "data_type": str(data_type),
+                "loader_type": loader.__class__.__name__
+            })
+
+            return result
+
+        except Exception as e:
+            return LoaderResult(
+                content=f"Error: {str(e)}",
+                source=file_path,
+                metadata={
+                    "file_path": file_path,
+                    "error": str(e),
+                    "data_type": "unknown"
+                }
+            )
