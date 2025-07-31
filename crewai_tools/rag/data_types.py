@@ -47,14 +47,21 @@ class DataType(str, Enum):
     def get_loader(self) -> BaseLoader:
         from importlib import import_module
 
-        chunkers = {
-            DataType.TEXT_FILE: "TextFileLoader",
-            DataType.TEXT: "TextLoader",
+        loaders = {
+            DataType.TEXT_FILE: ("loaders", "TextFileLoader"),
+            DataType.TEXT: ("loaders", "TextLoader"),
+            DataType.XML: ("xml_loader", "XMLLoader"),
+            DataType.WEBSITE: ("webpage_loader", "WebPageLoader"),
+            DataType.MDX: ("mdx_loader", "MDXLoader"),
+            DataType.JSON: ("json_loader", "JSONLoader"),
+            DataType.DOCX: ("docx_loader", "DOCXLoader"),
+            DataType.CSV: ("csv_loader", "CSVLoader"),
+            DataType.DIRECTORY: ("directory_loader", "DirectoryLoader"),
         }
 
-        module_path = f"crewai_tools.rag.loaders.{chunkers.get(self, 'TextLoader')}"
+        module_name, class_name = loaders.get(self, ("loaders", "TextLoader"))
+        module_path = f"crewai_tools.rag.loaders.{module_name}"
         try:
-            module_path, class_name = module_path.rsplit(".", 1)
             module = import_module(module_path)
             return getattr(module, class_name)()
         except Exception as e:
@@ -112,5 +119,7 @@ class DataTypes:
 
             if os.path.exists(content):
                 return DataType.TEXT_FILE
+        elif os.path.isdir(content):
+            return DataType.DIRECTORY
 
         return DataType.TEXT
