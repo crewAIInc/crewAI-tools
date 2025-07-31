@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Tuple
 from uuid import uuid4
 
 import chromadb
@@ -8,8 +8,9 @@ import litellm
 from pydantic import BaseModel, Field, PrivateAttr
 
 from crewai_tools.tools.rag.rag_tool import Adapter
-from .data_types import DataType
-from crewai_tools.rag.chunker import chunk_text
+from crewai_tools.rag.data_types import DataTypes, DataType
+from crewai_tools.rag.loaders.base_loader import BaseLoader
+from crewai_tools.rag.chunkers.base_chunker import BaseChunker
 
 logger = logging.getLogger(__name__)
 
@@ -88,39 +89,34 @@ class CustomRAGAdapter(Adapter):
 
     def add(
         self,
-        content: Union[str, Path, List[str], List[Dict[str, Any]]],
+        content: str | Path,
         data_type: Optional[Union[str, DataType]] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        loader: Optional[Any] = None,
+        loader: Optional[BaseLoader] = None,
+        chunker: Optional[BaseChunker] = None,
         **kwargs: Any
     ) -> None:
-        if isinstance(data_type, str):
-            data_type = DataType(data_type)
+        data_type = self._get_data_type(data_type=data_type, content=content)
 
+        if not loader:
+            loader = data_type.get_loader()
+
+        if not chunker:
+            chunker = data_type.get_chunker()
+
+        loader_result = loader.load(content)
         documents = []
 
-        if isinstance(content, (str, Path)):
-            if isinstance(content, Path):
-                try:
-                    text_content = content.read_text(encoding='utf-8')
-                    source = str(content)
-                except Exception as e:
-                    logger.error(f"Failed to read file {content}: {e}")
-                    return
-            else:
-                text_content = content
-                source = metadata.get('source', 'text_input') if metadata else 'text_input'
-
-            chunks = chunk_text(text_content)
-            for i, chunk in enumerate(chunks):
-                doc_metadata = (metadata or {}).copy()
-                doc_metadata['chunk_index'] = i
-                documents.append(Document(
-                    content=chunk,
-                    metadata=doc_metadata,
-                    data_type=data_type or DataType.TEXT,
-                    source=source
-                ))
+        chunks = chunker.chunk(loader_result.content)
+        for i, chunk in enumerate(chunks):
+            doc_metadata = (metadata or {}).copy()
+            doc_metadata['chunk_index'] = i
+            documents.append(Document(
+                content=chunk,
+                metadata=doc_metadata,
+                data_type=data_type,
+                source=loader_result.source
+            ))
 
         if not documents:
             logger.warning("No documents to add")
@@ -140,7 +136,7 @@ class CustomRAGAdapter(Adapter):
             doc_metadata = doc.metadata.copy()
             doc_metadata.update({
                 "data_type": doc.data_type.value,
-                "source": doc.source or "unknown"
+                "source": doc.source
             })
             metadatas.append(doc_metadata)
 
@@ -205,3 +201,18 @@ class CustomRAGAdapter(Adapter):
         except Exception as e:
             logger.error(f"Failed to get collection info: {e}")
             return {"error": str(e)}
+
+    def _get_data_type(self, content: str | Path, data_type: str | DataType | None = None) -> DataType:
+        try:
+            if isinstance(data_type, str):
+                return DataType(data_type)
+        except Exception as e:
+            pass
+
+        return DataTypes.from_content(content)
+
+    def _get_loader_and_chunker(self, data_type: DataType) -> Tuple[Any, Any]:
+        loader = Loader.from_data_type(data_type)
+        chunker = Chunker.from_data_type(data_type)
+
+        return loader, chunker

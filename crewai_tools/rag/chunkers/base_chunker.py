@@ -1,7 +1,6 @@
 from typing import List, Optional
 import re
 
-
 class RecursiveCharacterTextSplitter:
     """
     A text splitter that recursively splits text based on a hierarchy of separators.
@@ -141,15 +140,8 @@ class RecursiveCharacterTextSplitter:
 
         return docs
 
-
-class Chunker:
-    def __init__(
-        self,
-        chunk_size: int = 1000,
-        chunk_overlap: int = 200,
-        separators: Optional[List[str]] = None,
-        keep_separator: bool = True,
-    ):
+class BaseChunker:
+    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 200, separators: Optional[List[str]] = None, keep_separator: bool = True):
         """
         Initialize the Chunker
 
@@ -159,6 +151,7 @@ class Chunker:
             separators: List of separators to use for splitting
             keep_separator: Whether to keep separators in the chunks
         """
+
         self._splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
@@ -166,34 +159,9 @@ class Chunker:
             keep_separator=keep_separator,
         )
 
+
     def chunk(self, text: str) -> List[str]:
         if not text or not text.strip():
             return []
 
         return self._splitter.split_text(text)
-
-
-def chunk_text(
-    text: str,
-    chunk_size: int = 1000,
-    chunk_overlap: int = 200,
-    separators: Optional[List[str]] = None,
-) -> List[str]:
-    """
-    Quickly chunk text with default settings.
-
-    Args:
-        text: Text to chunk
-        chunk_size: Maximum chunk size
-        chunk_overlap: Overlap between chunks
-        separators: Custom separators
-
-    Returns:
-        List of text chunks
-    """
-    chunker = Chunker(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        separators=separators,
-    )
-    return chunker.chunk(text)
