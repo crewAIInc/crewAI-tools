@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, PrivateAttr
 
 from crewai_tools.tools.rag.rag_tool import Adapter
 from .data_types import DataType
+from crewai_tools.rag.chunker import chunk_text
 
 logger = logging.getLogger(__name__)
 
@@ -110,8 +111,7 @@ class CustomRAGAdapter(Adapter):
                 text_content = content
                 source = metadata.get('source', 'text_input') if metadata else 'text_input'
 
-            # Simple text chunking
-            chunks = self._chunk_text(text_content)
+            chunks = chunk_text(text_content)
             for i, chunk in enumerate(chunks):
                 doc_metadata = (metadata or {}).copy()
                 doc_metadata['chunk_index'] = i
@@ -186,33 +186,6 @@ class CustomRAGAdapter(Adapter):
         except Exception as e:
             logger.error(f"Query failed: {e}")
             return f"Error querying knowledge base: {e}"
-
-    def _chunk_text(self, text: str, chunk_size: int = 1000, overlap: int = 200) -> List[str]:
-        """Split text into overlapping chunks."""
-        if len(text) <= chunk_size:
-            return [text]
-
-        chunks = []
-        start = 0
-
-        while start < len(text):
-            end = start + chunk_size
-
-            # Try to break at sentence boundary
-            if end < len(text):
-                sentence_end = text.rfind('.', start, end)
-                if sentence_end > start + chunk_size // 2:
-                    end = sentence_end + 1
-
-            chunk = text[start:end].strip()
-            if chunk:
-                chunks.append(chunk)
-
-            start = end - overlap
-            if start >= len(text):
-                break
-
-        return chunks
 
     def delete_collection(self) -> None:
         try:
