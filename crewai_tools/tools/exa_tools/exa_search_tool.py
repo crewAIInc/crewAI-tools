@@ -95,6 +95,7 @@ class EXASearchTool(BaseTool):
             search_params["include_domains"] = include_domains
 
         if self.content:
+            search_params["text"] = True
             results = self.client.search_and_contents(
                 search_query, summary=self.summary, **search_params
             )
