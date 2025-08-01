@@ -10,7 +10,6 @@ class DataType(str, Enum):
     TEXT_FILE = "text_file"
     CSV = "csv"
     JSON = "json"
-    TXT = "txt"
     XML = "xml"
     DOCX = "docx"
     MDX = "mdx"
@@ -29,20 +28,33 @@ class DataType(str, Enum):
 
     # Raw types
     TEXT = "text"
-    RAW = "raw"
+
 
     def get_chunker(self) -> BaseChunker:
         from importlib import import_module
 
         chunkers = {
-            DataType.PDF_FILE: "PdfChunker",
+            DataType.TEXT_FILE: ("text_chunker", "TextChunker"),
+            DataType.TEXT: ("text_chunker", "TextChunker"),
+            DataType.DOCX: ("text_chunker", "DocxChunker"),
+            DataType.MDX: ("text_chunker", "MdxChunker"),
+
+            # Structured formats
+            DataType.CSV: ("structured_chunker", "CsvChunker"),
+            DataType.JSON: ("structured_chunker", "JsonChunker"),
+            DataType.XML: ("structured_chunker", "XmlChunker"),
+
+            DataType.WEBSITE: ("web_chunker", "WebsiteChunker"),
         }
 
-        module_path = f"crewai_tools.rag.chunkers.{chunkers.get(self, 'DefaultChunker')}"
+        module_name, class_name = chunkers.get(self, ("default_chunker", "DefaultChunker"))
+        module_path = f"crewai_tools.rag.chunkers.{module_name}"
 
-        module_path, class_name = module_path.rsplit(".", 1)
-        module = import_module(module_path)
-        return getattr(module, class_name)()
+        try:
+            module = import_module(module_path)
+            return getattr(module, class_name)()
+        except Exception as e:
+            raise ValueError(f"Error loading chunker for {self}: {e}")
 
     def get_loader(self) -> BaseLoader:
         from importlib import import_module

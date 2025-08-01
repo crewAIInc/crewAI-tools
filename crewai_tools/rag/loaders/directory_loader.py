@@ -4,7 +4,6 @@ from typing import Union, List, Dict, Any
 from urllib.parse import urlparse
 
 from crewai_tools.rag.loaders.base_loader import BaseLoader, LoaderResult
-from crewai_tools.rag.data_types import DataTypes
 
 
 class DirectoryLoader(BaseLoader):
@@ -130,6 +129,8 @@ class DirectoryLoader(BaseLoader):
         return True
 
     def _process_single_file(self, file_path: str) -> LoaderResult:
+        from crewai_tools.rag.data_types import DataTypes
+
         """Process a single file using the appropriate loader."""
         try:
             data_type = DataTypes.from_content(Path(file_path))

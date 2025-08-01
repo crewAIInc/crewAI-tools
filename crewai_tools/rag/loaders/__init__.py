@@ -1,4 +1,3 @@
-from .base_loader import BaseLoader, LoaderResult
 from .loaders import TextFileLoader, TextLoader
 from .xml_loader import XMLLoader
 from .webpage_loader import WebPageLoader
@@ -9,8 +8,6 @@ from .csv_loader import CSVLoader
 from .directory_loader import DirectoryLoader
 
 __all__ = [
-    "BaseLoader",
-    "LoaderResult",
     "TextFileLoader",
     "TextLoader",
     "XMLLoader",
