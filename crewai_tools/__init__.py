@@ -16,6 +16,7 @@ from .tools import (
     CodeDocsSearchTool,
     CodeInterpreterTool,
     ComposioTool,
+    ContextualTool,
     CouchbaseFTSVectorSearchTool,
     CrewaiEnterpriseTools,
     CSVSearchTool,
