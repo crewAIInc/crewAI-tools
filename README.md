@@ -147,6 +147,32 @@ try:
 # ** important ** don't forget to stop the connection
 finally: 
     mcp_server_adapter.stop()
+
+#### Configuring Connection Timeout
+
+If you're experiencing connection timeouts (default is 30 seconds), you can configure a custom timeout:
+
+```python
+from mcp import StdioServerParameters
+from crewai_tools import MCPServerAdapter
+
+serverparams = StdioServerParameters(
+    command="uvx",
+    args=["mcp-server-git", "--repository", "path/to/git/repo"],
+    env={"UV_PYTHON": "3.12", **os.environ},
+)
+
+# Use a longer timeout (60 seconds) for slow connections
+with MCPServerAdapter(serverparams, connect_timeout=60) as tools:
+    agent = Agent(..., tools=tools)
+    task = Task(...)
+    crew = Crew(agents=[agent], tasks=[task])
+    crew.kickoff()
+```
+
+This is particularly useful when connecting to remote MCP servers or servers that take longer to initialize.
+
+
 ```
 
 And finally the same thing but for an SSE MCP Server:
