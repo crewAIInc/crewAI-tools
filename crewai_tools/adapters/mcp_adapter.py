@@ -70,6 +70,7 @@ class MCPServerAdapter:
         self,
         serverparams: StdioServerParameters | dict[str, Any],
         *tool_names: str,
+        connect_timeout: int = 30,
     ):
         """Initialize the MCP Server
 
@@ -78,6 +79,7 @@ class MCPServerAdapter:
                 `StdioServerParameters` or a `dict` respectively for STDIO and SSE.
             *tool_names: Optional names of tools to filter. If provided, only tools with
                 matching names will be available.
+            connect_timeout: Connection timeout in seconds to the MCP server (default is 30s).
 
         """
 
@@ -106,7 +108,7 @@ class MCPServerAdapter:
 
         try:
             self._serverparams = serverparams
-            self._adapter = MCPAdapt(self._serverparams, CrewAIAdapter())
+            self._adapter = MCPAdapt(self._serverparams, CrewAIAdapter(), connect_timeout)
             self.start()
 
         except Exception as e:

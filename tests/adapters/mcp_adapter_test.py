@@ -187,3 +187,64 @@ def test_filter_with_only_nonexistent_tools(echo_server_script):
         # Should return an empty tool collection
         assert isinstance(tools, ToolCollection)
         assert len(tools) == 0
+
+def test_custom_timeout_parameter(echo_server_script):
+    """Test that custom timeout parameter is properly passed to MCPAdapt"""
+    serverparams = StdioServerParameters(
+        command="uv", args=["run", "python", "-c", echo_server_script]
+    )
+    
+    with MCPServerAdapter(serverparams, connect_timeout=60) as tools:
+        assert len(tools) == 2
+        assert tools[0].name == "echo_tool"
+        assert tools[1].name == "calc_tool"
+        assert tools[0].run(text="hello") == "Echo: hello"
+        assert tools[1].run(a=5, b=3) == '8'
+
+def test_custom_timeout_with_filtered_tools(echo_server_script):
+    """Test that custom timeout works with filtered tools"""
+    serverparams = StdioServerParameters(
+        command="uv", args=["run", "python", "-c", echo_server_script]
+    )
+    
+    with MCPServerAdapter(serverparams, "echo_tool", connect_timeout=45) as tools:
+        assert len(tools) == 1
+        assert tools[0].name == "echo_tool"
+        assert tools[0].run(text="timeout_test") == "Echo: timeout_test"
+
+def test_default_timeout_parameter(echo_server_script):
+    """Test that default timeout (30s) still works"""
+    serverparams = StdioServerParameters(
+        command="uv", args=["run", "python", "-c", echo_server_script]
+    )
+    
+    with MCPServerAdapter(serverparams) as tools:
+        assert len(tools) == 2
+        assert tools[0].name == "echo_tool"
+        assert tools[1].name == "calc_tool"
+
+def test_custom_timeout_sse(echo_sse_server):
+    """Test that custom timeout parameter works with SSE servers"""
+    sse_serverparams = echo_sse_server
+    
+    with MCPServerAdapter(sse_serverparams, connect_timeout=60) as tools:
+        assert len(tools) == 2
+        assert tools[0].name == "echo_tool"
+        assert tools[1].name == "calc_tool"
+        assert tools[0].run(text="sse_timeout_test") == "Echo: sse_timeout_test"
+        assert tools[1].run(a=10, b=5) == '15'
+
+def test_try_finally_with_custom_timeout(echo_server_script):
+    """Test that custom timeout works with try/finally syntax"""
+    serverparams = StdioServerParameters(
+        command="uv", args=["run", "python", "-c", echo_server_script]
+    )
+    try:
+        mcp_server_adapter = MCPServerAdapter(serverparams, connect_timeout=45)
+        tools = mcp_server_adapter.tools
+        assert len(tools) == 2
+        assert tools[0].name == "echo_tool"
+        assert tools[1].name == "calc_tool"
+        assert tools[0].run(text="manual_timeout_test") == "Echo: manual_timeout_test"
+    finally:
+        mcp_server_adapter.stop()
