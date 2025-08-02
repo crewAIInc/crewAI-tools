@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
 import chromadb
@@ -8,9 +8,11 @@ import litellm
 from pydantic import BaseModel, Field, PrivateAttr
 
 from crewai_tools.tools.rag.rag_tool import Adapter
-from crewai_tools.rag.data_types import DataTypes, DataType
-from crewai_tools.rag.loaders.base_loader import BaseLoader
+from crewai_tools.rag.data_types import  DataType
+from crewai_tools.rag.base_loader import BaseLoader
 from crewai_tools.rag.chunkers.base_chunker import BaseChunker
+from crewai_tools.rag.source_content import SourceContent
+from crewai_tools.rag.misc import compute_sha256
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +98,9 @@ class CustomRAGAdapter(Adapter):
         chunker: Optional[BaseChunker] = None,
         **kwargs: Any
     ) -> None:
-        data_type = self._get_data_type(data_type=data_type, content=content)
+        source_content = SourceContent(content)
+
+        data_type = self._get_data_type(data_type=data_type, content=source_content)
 
         if not loader:
             loader = data_type.get_loader()
@@ -104,7 +108,21 @@ class CustomRAGAdapter(Adapter):
         if not chunker:
             chunker = data_type.get_chunker()
 
-        loader_result = loader.load(content)
+        loader_result = loader.load(source_content)
+        doc_id = loader_result.doc_id
+
+        existing_doc = self._collection.get(where={"source": source_content.source_ref}, limit=1)
+        existing_doc_id = existing_doc and existing_doc['metadatas'][0]['doc_id'] if existing_doc['metadatas'] else None
+
+        if existing_doc_id == doc_id:
+            logger.warning(f"Document with source {loader_result.source} already exists")
+            return
+
+        # Document with same source ref does exists but the content has changed, deleting the oldest reference
+        if existing_doc_id and existing_doc_id != loader_result.doc_id:
+            logger.warning(f"Deleting old document with doc_id {existing_doc_id}")
+            self._collection.delete(where={"doc_id": existing_doc_id})
+
         documents = []
 
         chunks = chunker.chunk(loader_result.content)
@@ -112,6 +130,7 @@ class CustomRAGAdapter(Adapter):
             doc_metadata = (metadata or {}).copy()
             doc_metadata['chunk_index'] = i
             documents.append(Document(
+                id=compute_sha256(chunk),
                 content=chunk,
                 metadata=doc_metadata,
                 data_type=data_type,
@@ -136,7 +155,8 @@ class CustomRAGAdapter(Adapter):
             doc_metadata = doc.metadata.copy()
             doc_metadata.update({
                 "data_type": doc.data_type.value,
-                "source": doc.source
+                "source": doc.source,
+                "doc_id": doc_id
             })
             metadatas.append(doc_metadata)
 
@@ -145,7 +165,7 @@ class CustomRAGAdapter(Adapter):
                 ids=ids,
                 embeddings=embeddings,
                 documents=contents,
-                metadatas=metadatas
+                metadatas=metadatas,
             )
             logger.info(f"Added {len(documents)} documents to knowledge base")
         except Exception as e:
@@ -202,17 +222,11 @@ class CustomRAGAdapter(Adapter):
             logger.error(f"Failed to get collection info: {e}")
             return {"error": str(e)}
 
-    def _get_data_type(self, content: str | Path, data_type: str | DataType | None = None) -> DataType:
+    def _get_data_type(self, content: SourceContent, data_type: str | DataType | None = None) -> DataType:
         try:
             if isinstance(data_type, str):
                 return DataType(data_type)
         except Exception as e:
             pass
 
-        return DataTypes.from_content(content)
-
-    def _get_loader_and_chunker(self, data_type: DataType) -> Tuple[Any, Any]:
-        loader = Loader.from_data_type(data_type)
-        chunker = Chunker.from_data_type(data_type)
-
-        return loader, chunker
+        return content.data_type

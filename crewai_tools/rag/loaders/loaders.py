@@ -1,20 +1,28 @@
-import os
-from pathlib import Path
 
-from crewai_tools.rag.loaders.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.source_content import SourceContent
 
 
 class TextFileLoader(BaseLoader):
-    def load(self, source: str | Path, **kwargs) -> LoaderResult:
-        if not os.path.exists(source):
-            raise FileNotFoundError(f"The following file does not exist: {source}")
+    def load(self, source_content: SourceContent, **kwargs) -> LoaderResult:
+        source_ref = source_content.source_ref
+        if not source_content.path_exists():
+            raise FileNotFoundError(f"The following file does not exist: {source_content.source}")
 
-        with open(source, "r", encoding="utf-8") as file:
+        with open(source_content.source, "r", encoding="utf-8") as file:
             content = file.read()
 
-        return LoaderResult(content=content, source=str(source))
+        return LoaderResult(
+            content=content,
+            source=source_ref,
+            doc_id=self.generate_doc_id(source_ref=source_ref, content=content)
+        )
 
 
 class TextLoader(BaseLoader):
-    def load(self, source: str | Path, **kwargs) -> LoaderResult:
-        return LoaderResult(content=source, source="raw")
+    def load(self, source_content: SourceContent, **kwargs) -> LoaderResult:
+        return LoaderResult(
+            content=source_content.source,
+            source=source_content.source_ref,
+            doc_id=self.generate_doc_id(content=source_content.source)
+        )
