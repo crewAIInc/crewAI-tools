@@ -1,35 +1,25 @@
 import csv
-import os
 from io import StringIO
 from pathlib import Path
 from urllib.parse import urlparse
 from typing import Union
 
-from crewai_tools.rag.loaders.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.source_content import SourceContent
 
 
 class CSVLoader(BaseLoader):
-    def load(self, source: Union[str, Path], **kwargs) -> LoaderResult:
-        source_str = str(source)
+    def load(self, source_content: SourceContent, **kwargs) -> LoaderResult:
+        source_ref = source_content.source_ref
 
-        if self._is_url(source):
-            content = self._load_from_url(source_str, kwargs)
-        elif os.path.exists(source_str):
-            content = self._load_from_file(source_str)
-        else:
-            content = str(source)
-            source_str = kwargs.get("source", "csv_string")
+        content_str = source_content.source
+        if source_content.is_url():
+            content_str = self._load_from_url(content_str, kwargs)
+        elif source_content.path_exists():
+            content_str = self._load_from_file(content_str)
 
-        return self._parse_csv(content, source_str)
+        return self._parse_csv(content_str, source_ref)
 
-    def _is_url(self, source: Union[str, Path]) -> bool:
-        if not isinstance(source, str):
-            return False
-        try:
-            parsed_url = urlparse(source)
-            return bool(parsed_url.scheme and parsed_url.netloc)
-        except Exception:
-            return False
 
     def _load_from_url(self, url: str, kwargs: dict) -> str:
         import requests
@@ -50,7 +40,7 @@ class CSVLoader(BaseLoader):
         with open(path, "r", encoding="utf-8") as file:
             return file.read()
 
-    def _parse_csv(self, content: str, source_str: str) -> LoaderResult:
+    def _parse_csv(self, content: str, source_ref: str) -> LoaderResult:
         try:
             csv_reader = csv.DictReader(StringIO(content))
 
@@ -77,4 +67,9 @@ class CSVLoader(BaseLoader):
             text = content
             metadata = {"format": "csv", "parse_error": str(e)}
 
-        return LoaderResult(content=text, source=source_str, metadata=metadata)
+        return LoaderResult(
+            content=text,
+            source=source_ref,
+            metadata=metadata,
+            doc_id=self.generate_doc_id(source_ref=source_ref, content=text)
+        )

@@ -1,40 +1,29 @@
 import os
 import tempfile
-from pathlib import Path
-from urllib.parse import urlparse
-from typing import Union
 
-from crewai_tools.rag.loaders.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.source_content import SourceContent
 
 
 class DOCXLoader(BaseLoader):
-    def load(self, source: Union[str, Path], **kwargs) -> LoaderResult:
+    def load(self, source_content: SourceContent, **kwargs) -> LoaderResult:
         try:
             from docx import Document as DocxDocument
         except ImportError:
             raise ImportError("python-docx is required for DOCX loading. Install with: 'pip install python-docx' or pip install crewai-tools[rag]")
 
-        source_str = str(source)
+        source_ref = source_content.source_ref
 
-        if self._is_url(source):
-            temp_file = self._download_from_url(source_str, kwargs)
+        if source_content.is_url():
+            temp_file = self._download_from_url(source_ref, kwargs)
             try:
-                return self._load_from_file(temp_file, source_str, DocxDocument)
+                return self._load_from_file(temp_file, source_ref, DocxDocument)
             finally:
                 os.unlink(temp_file)
-        elif os.path.exists(source_str):
-            return self._load_from_file(source_str, source_str, DocxDocument)
+        elif source_content.path_exists():
+            return self._load_from_file(source_ref, source_ref, DocxDocument)
         else:
-            raise ValueError(f"Source must be a valid file path or URL, got: {source}")
-
-    def _is_url(self, source: Union[str, Path]) -> bool:
-        if not isinstance(source, str):
-            return False
-        try:
-            parsed_url = urlparse(source)
-            return bool(parsed_url.scheme and parsed_url.netloc)
-        except Exception:
-            return False
+            raise ValueError(f"Source must be a valid file path or URL, got: {source_content.source}")
 
     def _download_from_url(self, url: str, kwargs: dict) -> str:
         import requests
@@ -55,7 +44,7 @@ class DOCXLoader(BaseLoader):
         except Exception as e:
             raise ValueError(f"Error fetching DOCX from URL {url}: {str(e)}")
 
-    def _load_from_file(self, file_path: str, source_str: str, DocxDocument) -> LoaderResult:
+    def _load_from_file(self, file_path: str, source_ref: str, DocxDocument) -> LoaderResult:
         try:
             doc = DocxDocument(file_path)
 
@@ -72,7 +61,12 @@ class DOCXLoader(BaseLoader):
                 "tables": len(doc.tables)
             }
 
-            return LoaderResult(content=content, source=source_str, metadata=metadata)
+            return LoaderResult(
+                content=content,
+                source=source_ref,
+                metadata=metadata,
+                doc_id=self.generate_doc_id(source_ref=source_ref, content=content)
+            )
 
         except Exception as e:
             raise ValueError(f"Error loading DOCX file: {str(e)}")

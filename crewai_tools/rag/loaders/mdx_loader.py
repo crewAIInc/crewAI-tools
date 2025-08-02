@@ -1,34 +1,19 @@
-import os
 import re
-from pathlib import Path
-from urllib.parse import urlparse
-from typing import Union
 
-from crewai_tools.rag.loaders.base_loader import BaseLoader, LoaderResult
-
+from crewai_tools.rag.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.source_content import SourceContent
 
 class MDXLoader(BaseLoader):
-    def load(self, source: Union[str, Path], **kwargs) -> LoaderResult:
-        source_str = str(source)
+    def load(self, source_content: SourceContent, **kwargs) -> LoaderResult:
+        source_ref = source_content.source_ref
+        content = source_content.source
 
-        if self._is_url(source):
-            content = self._load_from_url(source_str, kwargs)
-        elif os.path.exists(source_str):
-            content = self._load_from_file(source_str)
-        else:
-            content = str(source)
-            source_str = kwargs.get("source", "mdx_string")
+        if source_content.is_url():
+            content = self._load_from_url(source_ref, kwargs)
+        elif source_content.path_exists():
+            content = self._load_from_file(source_ref)
 
-        return self._parse_mdx(content, source_str)
-
-    def _is_url(self, source: Union[str, Path]) -> bool:
-        if not isinstance(source, str):
-            return False
-        try:
-            parsed_url = urlparse(source)
-            return bool(parsed_url.scheme and parsed_url.netloc)
-        except Exception:
-            return False
+        return self._parse_mdx(content, source_ref)
 
     def _load_from_url(self, url: str, kwargs: dict) -> str:
         import requests
@@ -49,7 +34,7 @@ class MDXLoader(BaseLoader):
         with open(path, "r", encoding="utf-8") as file:
             return file.read()
 
-    def _parse_mdx(self, content: str, source_str: str) -> LoaderResult:
+    def _parse_mdx(self, content: str, source_ref: str) -> LoaderResult:
         cleaned_content = content
 
         # Remove import statements
@@ -66,4 +51,9 @@ class MDXLoader(BaseLoader):
         cleaned_content = cleaned_content.strip()
 
         metadata = {"format": "mdx"}
-        return LoaderResult(content=cleaned_content, source=source_str, metadata=metadata)
+        return LoaderResult(
+            content=cleaned_content,
+            source=source_ref,
+            metadata=metadata,
+            doc_id=self.generate_doc_id(source_ref=source_ref, content=cleaned_content)
+        )
