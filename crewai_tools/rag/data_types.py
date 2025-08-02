@@ -3,7 +3,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 import os
 from crewai_tools.rag.chunkers.base_chunker import BaseChunker
-from crewai_tools.rag.loaders.base_loader import BaseLoader
+from crewai_tools.rag.base_loader import BaseLoader
 
 class DataType(str, Enum):
     PDF_FILE = "pdf_file"

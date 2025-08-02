@@ -1,13 +1,13 @@
 import os
 from pathlib import Path
-from typing import Union, List, Dict, Any
-from urllib.parse import urlparse
+from typing import List
 
-from crewai_tools.rag.loaders.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.source_content import SourceContent
 
 
 class DirectoryLoader(BaseLoader):
-    def load(self, source: Union[str, Path], **kwargs) -> LoaderResult:
+    def load(self, source_content: SourceContent, **kwargs) -> LoaderResult:
         """
         Load and process all files from a directory recursively.
 
@@ -19,27 +19,18 @@ class DirectoryLoader(BaseLoader):
                 - exclude_extensions: list - Exclude files with these extensions
                 - max_files: int - Maximum number of files to process
         """
-        source_str = str(source)
+        source_ref = source_content.source_ref
 
-        if self._is_url(source):
+        if source_content.is_url():
             raise ValueError("URL directory loading is not supported. Please provide a local directory path.")
 
-        if not os.path.exists(source_str):
-            raise FileNotFoundError(f"Directory does not exist: {source_str}")
+        if not os.path.exists(source_ref):
+            raise FileNotFoundError(f"Directory does not exist: {source_ref}")
 
-        if not os.path.isdir(source_str):
-            raise ValueError(f"Path is not a directory: {source_str}")
+        if not os.path.isdir(source_ref):
+            raise ValueError(f"Path is not a directory: {source_ref}")
 
-        return self._process_directory(source_str, kwargs)
-
-    def _is_url(self, source: Union[str, Path]) -> bool:
-        if not isinstance(source, str):
-            return False
-        try:
-            parsed_url = urlparse(source)
-            return bool(parsed_url.scheme and parsed_url.netloc)
-        except Exception:
-            return False
+        return self._process_directory(source_ref, kwargs)
 
     def _process_directory(self, dir_path: str, kwargs: dict) -> LoaderResult:
         recursive = kwargs.get("recursive", True)
@@ -86,10 +77,11 @@ class DirectoryLoader(BaseLoader):
         return LoaderResult(
             content=combined_content,
             source=dir_path,
-            metadata=metadata
+            metadata=metadata,
+            doc_id=self.generate_doc_id(source_ref=dir_path, content=combined_content)
         )
 
-    def _find_files(self, dir_path: str, recursive: bool, include_ext: List[str] = None, exclude_ext: List[str] = None) -> List[str]:
+    def _find_files(self, dir_path: str, recursive: bool, include_ext: List[str] | None = None, exclude_ext: List[str] | None = None) -> List[str]:
         """Find all files in directory matching criteria."""
         files = []
 
@@ -131,33 +123,20 @@ class DirectoryLoader(BaseLoader):
     def _process_single_file(self, file_path: str) -> LoaderResult:
         from crewai_tools.rag.data_types import DataTypes
 
-        """Process a single file using the appropriate loader."""
-        try:
-            data_type = DataTypes.from_content(Path(file_path))
+        data_type = DataTypes.from_content(Path(file_path))
 
-            loader = data_type.get_loader()
+        loader = data_type.get_loader()
 
-            result = loader.load(file_path)
+        result = loader.load(SourceContent(file_path))
 
-            if result.metadata is None:
-                result.metadata = {}
+        if result.metadata is None:
+            result.metadata = {}
 
-            result.metadata.update({
-                "file_path": file_path,
-                "file_size": os.path.getsize(file_path),
-                "data_type": str(data_type),
-                "loader_type": loader.__class__.__name__
-            })
+        result.metadata.update({
+            "file_path": file_path,
+            "file_size": os.path.getsize(file_path),
+            "data_type": str(data_type),
+            "loader_type": loader.__class__.__name__
+        })
 
-            return result
-
-        except Exception as e:
-            return LoaderResult(
-                content=f"Error: {str(e)}",
-                source=file_path,
-                metadata={
-                    "file_path": file_path,
-                    "error": str(e),
-                    "data_type": "unknown"
-                }
-            )
+        return result

@@ -1,34 +1,20 @@
-import os
 import json
-from urllib.parse import urlparse
-from pathlib import Path
-from typing import Union
 
-from crewai_tools.rag.loaders.base_loader import BaseLoader, LoaderResult
+from crewai_tools.rag.source_content import SourceContent
+from crewai_tools.rag.base_loader import BaseLoader, LoaderResult
 
 
 class JSONLoader(BaseLoader):
-    def load(self, source: Union[str, Path], **kwargs) -> LoaderResult:
-        source_str = str(source)
+    def load(self, source_content: SourceContent, **kwargs) -> LoaderResult:
+        source_ref = source_content.source_ref
+        content = source_content.source
 
-        if self._is_url(source):
-            content = self._load_from_url(source_str, kwargs)
-        elif os.path.exists(source_str):
-            content = self._load_from_file(source_str)
-        else:
-            content = str(source)
-            source_str = kwargs.get("source", "json_string")
+        if source_content.is_url():
+            content = self._load_from_url(source_ref, kwargs)
+        elif source_content.path_exists():
+            content = self._load_from_file(source_ref)
 
-        return self._parse_json(content, source_str)
-
-    def _is_url(self, source: Union[str, Path]) -> bool:
-        if not isinstance(source, str):
-            return False
-        try:
-            parsed_url = urlparse(source)
-            return bool(parsed_url.scheme and parsed_url.netloc)
-        except Exception:
-            return False
+        return self._parse_json(content, source_ref)
 
     def _load_from_url(self, url: str, kwargs: dict) -> str:
         import requests
@@ -56,7 +42,7 @@ class JSONLoader(BaseLoader):
         with open(path, "r", encoding="utf-8") as file:
             return file.read()
 
-    def _parse_json(self, content: str, source_str: str) -> LoaderResult:
+    def _parse_json(self, content: str, source_ref: str) -> LoaderResult:
         try:
             data = json.loads(content)
             if isinstance(data, dict):
@@ -75,4 +61,9 @@ class JSONLoader(BaseLoader):
             text = content
             metadata = {"format": "json", "parse_error": str(e)}
 
-        return LoaderResult(content=text, source=source_str, metadata=metadata)
+        return LoaderResult(
+            content=text,
+            source=source_ref,
+            metadata=metadata,
+            doc_id=self.generate_doc_id(source_ref=source_ref, content=text)
+        )
