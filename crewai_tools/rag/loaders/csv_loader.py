@@ -1,8 +1,5 @@
 import csv
 from io import StringIO
-from pathlib import Path
-from urllib.parse import urlparse
-from typing import Union
 
 from crewai_tools.rag.base_loader import BaseLoader, LoaderResult
 from crewai_tools.rag.source_content import SourceContent

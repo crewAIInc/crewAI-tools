@@ -1,4 +1,4 @@
-from .loaders import TextFileLoader, TextLoader
+from .text_loader import TextFileLoader, TextLoader
 from .xml_loader import XMLLoader
 from .webpage_loader import WebPageLoader
 from .mdx_loader import MDXLoader

@@ -60,8 +60,8 @@ class DataType(str, Enum):
         from importlib import import_module
 
         loaders = {
-            DataType.TEXT_FILE: ("loaders", "TextFileLoader"),
-            DataType.TEXT: ("loaders", "TextLoader"),
+            DataType.TEXT_FILE: ("text_loader", "TextFileLoader"),
+            DataType.TEXT: ("text_loader", "TextLoader"),
             DataType.XML: ("xml_loader", "XMLLoader"),
             DataType.WEBSITE: ("webpage_loader", "WebPageLoader"),
             DataType.MDX: ("mdx_loader", "MDXLoader"),
@@ -71,7 +71,7 @@ class DataType(str, Enum):
             DataType.DIRECTORY: ("directory_loader", "DirectoryLoader"),
         }
 
-        module_name, class_name = loaders.get(self, ("loaders", "TextLoader"))
+        module_name, class_name = loaders.get(self, ("text_loader", "TextLoader"))
         module_path = f"crewai_tools.rag.loaders.{module_name}"
         try:
             module = import_module(module_path)
