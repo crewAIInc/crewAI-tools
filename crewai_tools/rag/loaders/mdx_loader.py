@@ -41,7 +41,7 @@ class MDXLoader(BaseLoader):
         cleaned_content = re.sub(r'^import\s+.*?\n', '', cleaned_content, flags=re.MULTILINE)
 
         # Remove export statements
-        cleaned_content = re.sub(r'^export\s+.*?\n', '', cleaned_content, flags=re.MULTILINE)
+        cleaned_content = re.sub(r'^export\s+.*?(?:\n|$)', '', cleaned_content, flags=re.MULTILINE)
 
         # Remove JSX tags (simple approach)
         cleaned_content = re.sub(r'<[^>]+>', '', cleaned_content)

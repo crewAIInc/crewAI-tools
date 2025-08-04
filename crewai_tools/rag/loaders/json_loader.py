@@ -28,7 +28,7 @@ class JSONLoader(BaseLoader):
             response = requests.get(url, headers=headers, timeout=30)
             response.raise_for_status()
             return response.text if not self._is_json_response(response) else json.dumps(response.json(), indent=2)
-        except requests.RequestException as e:
+        except Exception as e:
             raise ValueError(f"Error fetching JSON from URL {url}: {str(e)}")
 
     def _is_json_response(self, response) -> bool:
