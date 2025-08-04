@@ -43,9 +43,9 @@ class XMLLoader(BaseLoader):
                 root = ET.parse(source_ref).getroot()
 
             text_parts = []
-            for elem in root.iter():
-                if elem.text and elem.text.strip():
-                    text_parts.append(elem.text.strip())
+            for text_content in root.itertext():
+                if text_content and text_content.strip():
+                    text_parts.append(text_content.strip())
 
             text = "\n".join(text_parts)
             metadata = {"format": "xml", "root_tag": root.tag}
