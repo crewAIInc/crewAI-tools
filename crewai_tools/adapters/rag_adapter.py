@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from crewai_tools.rag.core import CustomRAGAdapter as BaseCustomRAGAdapter
+from crewai_tools.rag.core import RAG
 from crewai_tools.tools.rag.rag_tool import Adapter
 
 
@@ -22,7 +22,7 @@ class RAGAdapter(Adapter):
             **embedding_kwargs
         }
 
-        self._adapter = BaseCustomRAGAdapter(
+        self._adapter = RAG(
             collection_name=collection_name,
             persist_directory=persist_directory,
             embedding_model=embedding_model,
