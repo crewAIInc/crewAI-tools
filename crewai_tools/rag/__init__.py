@@ -1,8 +1,8 @@
-from .core import CustomRAGAdapter, EmbeddingService
-from .data_types import DataType
+from crewai_tools.rag.core import RAG, EmbeddingService
+from crewai_tools.rag.data_types import DataType
 
 __all__ = [
-    "CustomRAGAdapter",
+    "RAG",
     "EmbeddingService",
     "DataType",
 ]

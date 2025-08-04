@@ -58,7 +58,7 @@ class Document(BaseModel):
     source: Optional[str] = None
 
 
-class CustomRAGAdapter(Adapter):
+class RAG(Adapter):
     collection_name: str = "crewai_knowledge_base"
     persist_directory: Optional[str] = None
     embedding_model: str = "text-embedding-3-large"
