@@ -290,7 +290,7 @@ class SingleStoreSearchTool(BaseTool):
 
         return True, "Valid query"
 
-    def _run(self, search_query: str, **kwargs: Any) -> Any:
+    def _run(self, search_query: str) -> Any:
         """Execute the search query against the SingleStore database.
 
         Args:

@@ -13,11 +13,6 @@ except ImportError:
 
 from crewai_tools import SingleStoreSearchTool, SingleStoreSearchToolSchema
 
-# Skip all tests if SingleStore dependencies are not available
-pytestmark = pytest.mark.skipif(
-    not SINGLESTORE_AVAILABLE, reason="SingleStore dependencies not available"
-)
-
 
 @pytest.fixture(scope="session")
 def docker_server_url() -> Generator[str, None, None]:
