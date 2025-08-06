@@ -1,6 +1,9 @@
 from typing import Any, Optional, Type, List, Union
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
+import time
+import requests
+import warnings
 
 
 class ContextualQuerySchema(BaseModel):
@@ -30,23 +33,42 @@ class ContextualTool(BaseTool):
                 "contextual-client package is required. Install it with: pip install contextual-client"
             )
 
+    def _check_documents_ready(self, datastore_id: str) -> bool:
+        """Check if all documents in datastore are ready (not pending)."""  
+        url = f"https://api.contextual.ai/v1/datastores/{datastore_id}/documents"
+        headers = {"Authorization": f"Bearer {self.api_key}"}
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code == 200:
+            data = response.json()
+            documents = data.get('documents', [])
+            # print(f"Documents: {documents}")
+
+            # Return False if ANY document is still processing/pending
+            return not any(doc.get('status') in ('processing', 'pending') for doc in documents)
+        return True
+
     def _run(self, query: str) -> str:
         """Run the tool by querying the Contextual AI agent."""
         if not self.agent_id:
             raise ValueError("Agent ID is required to query the Contextual AI agent")
         
+        if not self.datastore_id:
+            warnings.warn("Datastore ID not provided - skipping document readiness check", UserWarning)
+        else:
+            # Wait for documents to be ready
+            attempts = 0  
+            while not self._check_documents_ready(self.datastore_id) and attempts < 20:  
+                print(f"Waiting for documents to be processed... Attempt {attempts}/20, waiting for 30 seconds ...")  
+                time.sleep(30)  
+                attempts += 1  
+
         try:
             response = self.contextual_client.agents.query.create(
                 agent_id=self.agent_id,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": query
-                    }
-                ]
+                messages=[{"role": "user", "content": query}]
             )
             
-            # Extract the response content based on the response structure
             if hasattr(response, 'content'):
                 return response.content
             elif hasattr(response, 'message'):
