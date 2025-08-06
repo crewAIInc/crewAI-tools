@@ -876,7 +876,7 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.150.0"
+version = "0.152.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
@@ -906,14 +906,14 @@ dependencies = [
     { name = "tomli-w" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/77/45/354255f6d85285603c068414465e9f85d04298e6ca8a2b2c9df2e6be1bfe/crewai-0.150.0.tar.gz", hash = "sha256:1cc63e1d8956989f681207189a257259aee3a6400e7bb0a0c7d6d5ccc4936581", size = 6321063, upload_time = "2025-07-23T18:03:36.1Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c3/e0/9a1f8f2fd811c854c64680bf4b42b23b610b5a7f92679d90afbe739a528d/crewai-0.152.0.tar.gz", hash = "sha256:fe7ccee499c7769031b4b495b2fa5ed8a5df5d7aaebe3231cc05bd238bc8bf62", size = 6321614, upload_time = "2025-07-30T21:38:20.013Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/86/c0/219e3922e5a9809a4ff4480c13fdbd3d852260a275c72c29da2728d3380c/crewai-0.150.0-py3-none-any.whl", hash = "sha256:ab3a3dbf1bbe3ac7a1494e4ba6112e78feeb73f1785651c59947493eb8026f4c", size = 366345, upload_time = "2025-07-23T18:03:33.956Z" },
+    { url = "https://files.pythonhosted.org/packages/5f/82/a5f0e5444e82b9c4466ad843a43ba0d4803ff60aaab252b9b3bd5f6ef7e1/crewai-0.152.0-py3-none-any.whl", hash = "sha256:42423a43bb8920dfe9efccc0c7cdd76985ada5f658f95aa7d4b9f8dff8efdf7c", size = 366682, upload_time = "2025-07-30T21:38:17.68Z" },
 ]
 
 [[package]]
 name = "crewai-tools"
-version = "0.59.0"
+version = "0.60.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
@@ -1045,7 +1045,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
-    { name = "crewai", specifier = ">=0.150.0" },
+    { name = "crewai", specifier = ">=0.152.0" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },
