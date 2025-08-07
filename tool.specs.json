@@ -6349,19 +6349,6 @@
       }
     },
     {
-      "description": "Execute SQL queries on SingleStore database's table(s). Supports raw SQL queries",
-      "env_vars": [],
-      "humanized_name": "SingleStore Database Search",
-      "name": "SingleStoreSearchTool",
-      "run_params": [
-        {
-          "description": "SQL query to execute",
-          "name": "search_query",
-          "type": "str"
-        }
-      ]
-    },
-    {
       "description": "Execute SQL queries or semantic search on Snowflake data warehouse. Supports both raw SQL and natural language queries.",
       "env_vars": [],
       "humanized_name": "Snowflake Database Search",
