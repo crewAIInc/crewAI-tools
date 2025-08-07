@@ -1,6 +1,6 @@
 from typing import Any, Callable, Dict, List, Optional, Type
 
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, Field
 
 try:
@@ -41,6 +41,76 @@ class SingleStoreSearchTool(BaseTool):
         "A tool that can be used to semantic search a query from a database."
     )
     args_schema: Type[BaseModel] = SingleStoreSearchToolSchema
+
+    package_dependencies: List[str] = ["singlestoredb", "SQLAlchemy"]
+    env_vars: List[EnvVar] = [
+        EnvVar(
+            name="SINGLESTOREDB_URL",
+            description="A comprehensive URL string that can encapsulate host, port,"
+            " username, password, and database information, often used in environments"
+            " like SingleStore notebooks or specific frameworks."
+            " For example: 'me:p455w0rd@s2-host.com/my_db'",
+            required=False,
+            default=None,
+        ),
+        EnvVar(
+            name="SINGLESTOREDB_HOST",
+            description="Specifies the hostname, IP address, or URL of"
+            " the SingleStoreDB workspace or cluster",
+            required=False,
+            default=None,
+        ),
+        EnvVar(
+            name="SINGLESTOREDB_PORT",
+            description="Defines the port number on which the"
+            " SingleStoreDB server is listening",
+            required=False,
+            default=None,
+        ),
+        EnvVar(
+            name="SINGLESTOREDB_USER",
+            description="Specifies the database user name",
+            required=False,
+            default=None,
+        ),
+        EnvVar(
+            name="SINGLESTOREDB_PASSWORD",
+            description="Specifies the database user password",
+            required=False,
+            default=None,
+        ),
+        EnvVar(
+            name="SINGLESTOREDB_DATABASE",
+            description="Name of the database to connect to",
+            required=False,
+            default=None,
+        ),
+        EnvVar(
+            name="SINGLESTOREDB_SSL_KEY",
+            description="File containing SSL key",
+            required=False,
+            default=None,
+        ),
+        EnvVar(
+            name="SINGLESTOREDB_SSL_CERT",
+            description="File containing SSL certificate",
+            required=False,
+            default=None,
+        ),
+        EnvVar(
+            name="SINGLESTOREDB_SSL_CA",
+            description="File containing SSL certificate authority",
+            required=False,
+            default=None,
+        ),
+        EnvVar(
+            name="SINGLESTOREDB_CONNECT_TIMEOUT",
+            description="The timeout for connecting to the database in seconds",
+            required=False,
+            default=None,
+        ),
+    ]
+
     connection_args: dict = {}
     connection_pool: Optional[Any] = None
 
