@@ -2,14 +2,8 @@ import os
 from typing import Generator
 
 import pytest
-
-try:
-    from singlestoredb import connect
-    from singlestoredb.server import docker
-
-    SINGLESTORE_AVAILABLE = True
-except ImportError:
-    SINGLESTORE_AVAILABLE = False
+from singlestoredb import connect
+from singlestoredb.server import docker
 
 from crewai_tools import SingleStoreSearchTool
 from crewai_tools.tools.singlestore_search_tool import SingleStoreSearchToolSchema

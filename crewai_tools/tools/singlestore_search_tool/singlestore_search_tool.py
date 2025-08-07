@@ -2,9 +2,15 @@ from typing import Any, Callable, Dict, List, Optional, Type
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-from singlestoredb import connect
-from singlestoredb.connection import Connection
-from sqlalchemy.pool import Pool, QueuePool
+
+try:
+    from singlestoredb import connect
+    from sqlalchemy.pool import QueuePool
+
+    SINGLSTORE_AVAILABLE = True
+
+except ImportError:
+    SINGLSTORE_AVAILABLE = False
 
 
 class SingleStoreSearchToolSchema(BaseModel):
@@ -36,7 +42,7 @@ class SingleStoreSearchTool(BaseTool):
     )
     args_schema: Type[BaseModel] = SingleStoreSearchToolSchema
     connection_args: dict = {}
-    connection_pool: Pool = None
+    connection_pool: Optional[Any] = None
 
     def __init__(
         self,
@@ -103,6 +109,27 @@ class SingleStoreSearchTool(BaseTool):
             timeout: Connection timeout in seconds
             **kwargs: Additional arguments passed to the parent class
         """
+
+        if not SINGLSTORE_AVAILABLE:
+            import click
+
+            if click.confirm(
+                "You are missing the 'singlestore' package. Would you like to install it?"
+            ):
+                import subprocess
+
+                try:
+                    subprocess.run(
+                        ["uv", "add", "crewai-tools[singlestore]"], check=True
+                    )
+
+                except subprocess.CalledProcessError:
+                    raise ImportError("Failed to install singlestore package")
+            else:
+                raise ImportError(
+                    "`singlestore` package not found, please run `uv add crewai-tools[singlestore]`"
+                )
+
         # Set the data type for the parent class
         kwargs["data_type"] = "singlestore"
         super().__init__(**kwargs)
@@ -228,7 +255,7 @@ class SingleStoreSearchTool(BaseTool):
         )
         self._generate_description()
 
-    def _get_connection(self) -> Connection:
+    def _get_connection(self) -> Optional[Any]:
         """Get a connection from the connection pool.
 
         Returns:
@@ -244,7 +271,7 @@ class SingleStoreSearchTool(BaseTool):
             # Re-raise the exception to be handled by the caller
             raise
 
-    def _create_connection(self) -> Connection:
+    def _create_connection(self) -> Optional[Any]:
         """Create a new SingleStore connection.
 
         This method is used by the connection pool to create new connections
