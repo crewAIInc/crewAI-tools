@@ -11,7 +11,8 @@ try:
 except ImportError:
     SINGLESTORE_AVAILABLE = False
 
-from crewai_tools import SingleStoreSearchTool, SingleStoreSearchToolSchema
+from crewai_tools import SingleStoreSearchTool
+from crewai_tools.tools.singlestore_search_tool import SingleStoreSearchToolSchema
 
 
 @pytest.fixture(scope="session")
