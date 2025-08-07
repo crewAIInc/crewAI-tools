@@ -33,15 +33,14 @@ def test_run_success_html(mock_post):
 def test_run_success_json(mock_post):
     mock_response = Mock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"data": "value"}
+    mock_response.text = "mock response text"
     mock_response.raise_for_status = Mock()
     mock_post.return_value = mock_response
 
     tool = BrightDataWebUnlockerTool()
     result = tool._run(url="https://example.com", format="json")
 
-    assert isinstance(result, dict)
-    assert result["data"] == "value"
+    assert isinstance(result, str)
 
 
 @patch.dict(

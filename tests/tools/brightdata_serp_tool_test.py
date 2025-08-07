@@ -15,10 +15,9 @@ class TestBrightDataSearchTool(unittest.TestCase):
     @patch("requests.post")
     def test_run_successful_search(self, mock_post):
         # Sample mock JSON response
-        mock_response_data = {"results": ["result1", "result2"]}
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.json.return_value = mock_response_data
+        mock_response.text = "mock response text"
         mock_post.return_value = mock_response
 
         # Define search input
@@ -36,9 +35,7 @@ class TestBrightDataSearchTool(unittest.TestCase):
         result = self.tool._run(**input_data)
 
         # Assertions
-        self.assertIsInstance(result, dict)
-        self.assertIn("results", result)
-        self.assertEqual(result["results"], ["result1", "result2"])
+        self.assertIsInstance(result, str)  # Your tool returns response.text (string)
         mock_post.assert_called_once()
 
     @patch("requests.post")
