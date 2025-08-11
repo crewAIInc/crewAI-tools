@@ -41,6 +41,10 @@ tool = ArxivPaperTool(
     download_pdfs=True,
     save_dir=save_dir,
     use_title_as_filename=True
+    extra_params = {
+        "sortBy": "relevance",
+        "sortOrder": "descending"
+    }
 )
 tool.result_as_answer = True #Required,otherwise
 
