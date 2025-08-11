@@ -108,3 +108,4 @@ from .brightdata_tool import (
     BrightDataWebUnlockerTool
 )
 from .zapier_action_tool.zapier_action_tool import ZapierActionTools
+from .klavis_tool.klavis_tool import KlavisMcpServerTools
