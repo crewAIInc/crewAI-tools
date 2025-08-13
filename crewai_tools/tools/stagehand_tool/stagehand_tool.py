@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 import re
-from typing import Dict, List, Optional, Type, Union, Any
+from typing import Any, Dict, List, Optional, Type, Union
 
 from pydantic import BaseModel, Field
 
@@ -10,14 +10,14 @@ from pydantic import BaseModel, Field
 _HAS_STAGEHAND = False
 
 try:
-    from stagehand import Stagehand, StagehandConfig, StagehandPage
+    from stagehand import Stagehand, StagehandConfig, StagehandPage, configure_logging
     from stagehand.schemas import (
         ActOptions,
         AvailableModel,
         ExtractOptions,
         ObserveOptions,
     )
-    from stagehand import configure_logging
+
     _HAS_STAGEHAND = True
 except ImportError:
     # Define type stubs for when stagehand is not installed
@@ -27,14 +27,15 @@ except ImportError:
     ActOptions = Any
     ExtractOptions = Any
     ObserveOptions = Any
-    
+
     # Mock configure_logging function
     def configure_logging(level=None, remove_logger_name=None, quiet_dependencies=None):
         pass
-    
+
     # Define only what's needed for class defaults
     class AvailableModel:
         CLAUDE_3_7_SONNET_LATEST = "anthropic.claude-3-7-sonnet-20240607"
+
 
 from crewai.tools import BaseTool
 
@@ -72,10 +73,10 @@ class StagehandToolSchema(BaseModel):
     )
     command_type: Optional[str] = Field(
         "act",
-        description="""The type of command to execute (choose one): 
+        description="""The type of command to execute (choose one):
         - 'act': Perform an action like clicking buttons, filling forms, etc. (default)
         - 'navigate': Specifically navigate to a URL
-        - 'extract': Extract structured data from the page 
+        - 'extract': Extract structured data from the page
         - 'observe': Identify and analyze elements on the page
         """,
     )
@@ -83,13 +84,35 @@ class StagehandToolSchema(BaseModel):
 
 class StagehandTool(BaseTool):
     """
-    A tool that uses Stagehand to automate web browser interactions using natural language
-    with improved atomic action handling and better error recovery.
+    A tool that uses Stagehand to automate web browser interactions using natural language with atomic action handling.
+
+    Stagehand allows AI agents to interact with websites through a browser,
+    performing actions like clicking buttons, filling forms, and extracting data.
+
+    The tool supports four main command types:
+    1. act - Perform actions like clicking, typing, scrolling, or navigating
+    2. navigate - Specifically navigate to a URL (shorthand for act with navigation)
+    3. extract - Extract structured data from web pages
+    4. observe - Identify and analyze elements on a page
+
+    Usage examples:
+    - Navigate to a website: instruction="Go to the homepage", url="https://example.com"
+    - Click a button: instruction="Click the login button"
+    - Fill a form: instruction="Fill the login form with username 'user' and password 'pass'"
+    - Extract data: instruction="Extract all product prices and names", command_type="extract"
+    - Observe elements: instruction="Find all navigation menu items", command_type="observe"
+    - Complex tasks: instruction="Step 1: Navigate to https://example.com; Step 2: Scroll down to the 'Features' section; Step 3: Click 'Learn More'", command_type="act"
+
+    Example of breaking down "Search for OpenAI" into multiple steps:
+    1. First navigation: instruction="Go to Google", url="https://google.com", command_type="navigate"
+    2. Enter search term: instruction="Type 'OpenAI' in the search box", command_type="act"
+    3. Submit search: instruction="Press the Enter key or click the search button", command_type="act"
+    4. Click on result: instruction="Click on the OpenAI website link in the search results", command_type="act"
     """
 
     name: str = "Web Automation Tool"
     description: str = """Use this tool to control a web browser and interact with websites using natural language.
-    
+
     Capabilities:
     - Navigate to websites and follow links
     - Click buttons, links, and other elements
@@ -97,13 +120,13 @@ class StagehandTool(BaseTool):
     - Search within websites
     - Extract information from web pages
     - Identify and analyze elements on a page
-    
+
     To use this tool, provide a natural language instruction describing what you want to do.
     For reliability on complex pages, use specific, atomic instructions with location hints:
     - Good: "Click the search box in the header"
     - Good: "Type 'Italy' in the focused field"
     - Bad: "Search for Italy and click the first result"
-    
+
     For different types of tasks, specify the command_type:
     - 'act': For performing one atomic action (default)
     - 'navigate': For navigating to a URL
@@ -123,7 +146,7 @@ class StagehandTool(BaseTool):
     self_heal: bool = True
     wait_for_captcha_solves: bool = True
     verbose: int = 1
-    
+
     # Token management settings
     max_retries_on_token_limit: int = 3
     use_simplified_dom: bool = True
@@ -150,18 +173,19 @@ class StagehandTool(BaseTool):
         _testing: bool = False,
         **kwargs,
     ):
-        # Set testing flag early
+        # Set testing flag early so that other init logic can rely on it
         self._testing = _testing
         super().__init__(**kwargs)
 
         # Set up logger
         import logging
+
         self._logger = logging.getLogger(__name__)
 
         # Set configuration from parameters or environment
         self.api_key = api_key or os.getenv("BROWSERBASE_API_KEY")
         self.project_id = project_id or os.getenv("BROWSERBASE_PROJECT_ID")
-        
+
         if model_api_key:
             self.model_api_key = model_api_key
         if model_name:
@@ -196,7 +220,7 @@ class StagehandTool(BaseTool):
             raise ImportError(
                 "`stagehand` package not found, please run `uv add stagehand`"
             )
-            
+
         if not self.api_key:
             raise ValueError("api_key is required (or set BROWSERBASE_API_KEY in env).")
         if not self.project_id:
@@ -210,7 +234,7 @@ class StagehandTool(BaseTool):
             self.close()
         except Exception:
             pass
-    
+
     def _get_model_api_key(self):
         """Get the appropriate API key based on the model being used."""
         # Check model type and get appropriate key
@@ -223,64 +247,74 @@ class StagehandTool(BaseTool):
             return self.model_api_key or os.getenv("GOOGLE_API_KEY")
         else:
             # Default to trying OpenAI, then Anthropic
-            return (self.model_api_key or 
-                    os.getenv("OPENAI_API_KEY") or 
-                    os.getenv("ANTHROPIC_API_KEY"))
+            return (
+                self.model_api_key
+                or os.getenv("OPENAI_API_KEY")
+                or os.getenv("ANTHROPIC_API_KEY")
+            )
 
     async def _setup_stagehand(self, session_id: Optional[str] = None):
         """Initialize Stagehand if not already set up."""
-        
+
         # If we're in testing mode, return mock objects
         if self._testing:
             if not self._stagehand:
                 # Create mock objects for testing
                 class MockPage:
                     async def act(self, options):
-                        mock_result = type('MockResult', (), {})()
-                        mock_result.model_dump = lambda: {"message": "Action completed successfully"}
+                        mock_result = type("MockResult", (), {})()
+                        mock_result.model_dump = lambda: {
+                            "message": "Action completed successfully"
+                        }
                         return mock_result
-                        
+
                     async def goto(self, url):
                         return None
-                        
+
                     async def extract(self, options):
-                        mock_result = type('MockResult', (), {})()
+                        mock_result = type("MockResult", (), {})()
                         mock_result.model_dump = lambda: {"data": "Extracted content"}
                         return mock_result
-                        
+
                     async def observe(self, options):
-                        mock_result1 = type('MockResult', (), {"description": "Test element", "method": "click"})()
+                        mock_result1 = type(
+                            "MockResult",
+                            (),
+                            {"description": "Test element", "method": "click"},
+                        )()
                         return [mock_result1]
 
                     async def wait_for_load_state(self, state):
                         return None
-                
+
                 class MockStagehand:
                     def __init__(self):
                         self.page = MockPage()
                         self.session_id = "test-session-id"
-                        
+
                     async def init(self):
                         return None
-                        
+
                     async def close(self):
                         return None
-                
+
                 self._stagehand = MockStagehand()
                 await self._stagehand.init()
                 self._page = self._stagehand.page
                 self._session_id = self._stagehand.session_id
-            
+
             return self._stagehand, self._page
 
         # Normal initialization for non-testing mode
         if not self._stagehand:
             # Get the appropriate API key based on model type
             model_api_key = self._get_model_api_key()
-            
+
             if not model_api_key:
-                raise ValueError("No appropriate API key found for model. Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY")
-            
+                raise ValueError(
+                    "No appropriate API key found for model. Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY"
+                )
+
             # Build the StagehandConfig with proper parameter names
             config = StagehandConfig(
                 env="BROWSERBASE",
@@ -288,7 +322,9 @@ class StagehandTool(BaseTool):
                 projectId=self.project_id,  # Browserbase project ID (camelCase)
                 modelApiKey=model_api_key,  # LLM API key - auto-detected based on model
                 modelName=self.model_name,
-                apiUrl=self.server_url if self.server_url else "https://api.stagehand.browserbase.com/v1",
+                apiUrl=self.server_url
+                if self.server_url
+                else "https://api.stagehand.browserbase.com/v1",
                 domSettleTimeoutMs=self.dom_settle_timeout_ms,
                 selfHeal=self.self_heal,
                 waitForCaptchaSolves=self.wait_for_captcha_solves,
@@ -305,24 +341,28 @@ class StagehandTool(BaseTool):
             self._session_id = self._stagehand.session_id
 
         return self._stagehand, self._page
-    
+
     def _extract_steps(self, instruction: str) -> List[str]:
         """Extract individual steps from multi-step instructions"""
         # Check for numbered steps (Step 1:, Step 2:, etc.)
-        if re.search(r'Step \d+:', instruction, re.IGNORECASE):
-            steps = re.findall(r'Step \d+:\s*([^;]+?)(?=Step \d+:|$)', instruction, re.IGNORECASE | re.DOTALL)
+        if re.search(r"Step \d+:", instruction, re.IGNORECASE):
+            steps = re.findall(
+                r"Step \d+:\s*([^;]+?)(?=Step \d+:|$)",
+                instruction,
+                re.IGNORECASE | re.DOTALL,
+            )
             return [step.strip() for step in steps if step.strip()]
         # Check for semicolon-separated instructions
-        elif ';' in instruction:
-            return [step.strip() for step in instruction.split(';') if step.strip()]
+        elif ";" in instruction:
+            return [step.strip() for step in instruction.split(";") if step.strip()]
         else:
             return [instruction]
-    
+
     def _simplify_instruction(self, instruction: str) -> str:
         """Simplify complex instructions to basic actions"""
         # Extract the core action from complex instructions
         instruction_lower = instruction.lower()
-        
+
         if "search" in instruction_lower and "click" in instruction_lower:
             # For search tasks, focus on the search action first
             if "type" in instruction_lower or "enter" in instruction_lower:
@@ -343,7 +383,7 @@ class StagehandTool(BaseTool):
             return "type in the input field"
         else:
             return instruction  # Return as-is if can't simplify
-    
+
     async def _async_run(
         self,
         instruction: Optional[str] = None,
@@ -351,7 +391,7 @@ class StagehandTool(BaseTool):
         command_type: str = "act",
     ):
         """Override _async_run with improved atomic action handling"""
-        
+
         # Handle missing instruction based on command type
         if not instruction:
             if command_type == "navigate" and url:
@@ -362,22 +402,22 @@ class StagehandTool(BaseTool):
                 instruction = "Extract information from the page"
             else:
                 instruction = "Perform the requested action"
-        
+
         # For testing mode, use parent implementation
         if self._testing:
             return await super()._async_run(instruction, url, command_type)
-        
+
         try:
             _, page = await self._setup_stagehand(self._session_id)
-            
+
             self._logger.info(
                 f"Executing {command_type} with instruction: {instruction}"
             )
-            
+
             # Get the API key to pass to model operations
             model_api_key = self._get_model_api_key()
             model_client_options = {"apiKey": model_api_key}
-            
+
             # Always navigate first if URL is provided and we're doing actions
             if url and command_type.lower() == "act":
                 self._logger.info(f"Navigating to {url} before performing actions")
@@ -385,51 +425,54 @@ class StagehandTool(BaseTool):
                 await page.wait_for_load_state("networkidle")
                 # Small delay to ensure page is fully loaded
                 await asyncio.sleep(1)
-            
+
             # Process according to command type
             if command_type.lower() == "act":
                 # Extract steps from complex instructions
                 steps = self._extract_steps(instruction)
                 self._logger.info(f"Extracted {len(steps)} steps: {steps}")
-                
+
                 results = []
                 for i, step in enumerate(steps):
-                    self._logger.info(f"Executing step {i+1}/{len(steps)}: {step}")
-                    
+                    self._logger.info(f"Executing step {i + 1}/{len(steps)}: {step}")
+
                     try:
                         # Create act options with API key for each step
                         from stagehand.schemas import ActOptions
+
                         act_options = ActOptions(
                             action=step,
                             modelName=self.model_name,
                             domSettleTimeoutMs=self.dom_settle_timeout_ms,
                             modelClientOptions=model_client_options,
                         )
-                        
+
                         result = await page.act(act_options)
                         results.append(result.model_dump())
-                        
+
                         # Small delay between steps to let DOM settle
                         if i < len(steps) - 1:  # Don't delay after last step
                             await asyncio.sleep(0.5)
-                            
+
                     except Exception as step_error:
                         error_msg = f"Step failed: {step_error}"
-                        self._logger.warning(f"Step {i+1} failed: {error_msg}")
-                        
+                        self._logger.warning(f"Step {i + 1} failed: {error_msg}")
+
                         # Try with simplified instruction
                         try:
                             simplified = self._simplify_instruction(step)
                             if simplified != step:
-                                self._logger.info(f"Retrying with simplified instruction: {simplified}")
-                                
+                                self._logger.info(
+                                    f"Retrying with simplified instruction: {simplified}"
+                                )
+
                                 act_options = ActOptions(
                                     action=simplified,
                                     modelName=self.model_name,
                                     domSettleTimeoutMs=self.dom_settle_timeout_ms,
                                     modelClientOptions=model_client_options,
                                 )
-                                
+
                                 result = await page.act(act_options)
                                 results.append(result.model_dump())
                             else:
@@ -438,25 +481,27 @@ class StagehandTool(BaseTool):
                         except Exception as retry_error:
                             self._logger.error(f"Retry also failed: {retry_error}")
                             results.append({"error": str(retry_error), "step": step})
-                
+
                 # Return combined results
                 if len(results) == 1:
                     # Single step, return as-is
                     if "error" in results[0]:
-                        return self._format_result(False, results[0], results[0]["error"])
+                        return self._format_result(
+                            False, results[0], results[0]["error"]
+                        )
                     return self._format_result(True, results[0])
                 else:
                     # Multiple steps, return all results
                     has_errors = any("error" in result for result in results)
                     return self._format_result(not has_errors, {"steps": results})
-                
+
             elif command_type.lower() == "navigate":
                 # For navigation, use the goto method directly
                 if not url:
                     error_msg = "No URL provided for navigation. Please provide a URL."
                     self._logger.error(error_msg)
                     return self._format_result(False, {}, error_msg)
-                
+
                 result = await page.goto(url)
                 self._logger.info(f"Navigate operation completed to {url}")
                 return self._format_result(
@@ -464,12 +509,13 @@ class StagehandTool(BaseTool):
                     {
                         "url": url,
                         "message": f"Successfully navigated to {url}",
-                    }
+                    },
                 )
-                
+
             elif command_type.lower() == "extract":
                 # Create extract options with API key
                 from stagehand.schemas import ExtractOptions
+
                 extract_options = ExtractOptions(
                     instruction=instruction,
                     modelName=self.model_name,
@@ -477,14 +523,15 @@ class StagehandTool(BaseTool):
                     useTextExtract=True,
                     modelClientOptions=model_client_options,  # Add API key here
                 )
-                
+
                 result = await page.extract(extract_options)
                 self._logger.info(f"Extract operation completed successfully {result}")
                 return self._format_result(True, result.model_dump())
-                
+
             elif command_type.lower() == "observe":
                 # Create observe options with API key
                 from stagehand.schemas import ObserveOptions
+
                 observe_options = ObserveOptions(
                     instruction=instruction,
                     modelName=self.model_name,
@@ -492,9 +539,9 @@ class StagehandTool(BaseTool):
                     domSettleTimeoutMs=self.dom_settle_timeout_ms,
                     modelClientOptions=model_client_options,  # Add API key here
                 )
-                
+
                 results = await page.observe(observe_options)
-                
+
                 # Format the observation results
                 formatted_results = []
                 for i, result in enumerate(results):
@@ -505,22 +552,22 @@ class StagehandTool(BaseTool):
                             "method": result.method,
                         }
                     )
-                
+
                 self._logger.info(
                     f"Observe operation completed with {len(formatted_results)} elements found"
                 )
                 return self._format_result(True, formatted_results)
-                
+
             else:
                 error_msg = f"Unknown command type: {command_type}"
                 self._logger.error(error_msg)
                 return self._format_result(False, {}, error_msg)
-                
+
         except Exception as e:
             error_msg = f"Error using Stagehand: {str(e)}"
             self._logger.error(f"Operation failed: {error_msg}")
             return self._format_result(False, {}, error_msg)
-    
+
     def _format_result(self, success, data, error=None):
         """Helper to format results consistently"""
         return StagehandResult(success=success, data=data, error=error)
@@ -558,10 +605,10 @@ class StagehandTool(BaseTool):
             if loop.is_running():
                 # We're in an existing event loop, use it
                 import concurrent.futures
+
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                     future = executor.submit(
-                        asyncio.run, 
-                        self._async_run(instruction, url, command_type)
+                        asyncio.run, self._async_run(instruction, url, command_type)
                     )
                     result = future.result()
             else:
@@ -578,12 +625,18 @@ class StagehandTool(BaseTool):
                         step_messages = []
                         for i, step in enumerate(result.data["steps"]):
                             if "error" in step:
-                                step_messages.append(f"Step {i+1}: Failed - {step['error']}")
+                                step_messages.append(
+                                    f"Step {i + 1}: Failed - {step['error']}"
+                                )
                             else:
-                                step_messages.append(f"Step {i+1}: {step.get('message', 'Completed')}")
+                                step_messages.append(
+                                    f"Step {i + 1}: {step.get('message', 'Completed')}"
+                                )
                         return "\n".join(step_messages)
                     else:
-                        return f"Action result: {result.data.get('message', 'Completed')}"
+                        return (
+                            f"Action result: {result.data.get('message', 'Completed')}"
+                        )
                 elif command_type.lower() == "extract":
                     return f"Extracted data: {json.dumps(result.data, indent=2)}"
                 elif command_type.lower() == "observe":
@@ -621,7 +674,7 @@ class StagehandTool(BaseTool):
             self._stagehand = None
             self._page = None
             return
-            
+
         if self._stagehand:
             await self._stagehand.close()
             self._stagehand = None
@@ -635,7 +688,7 @@ class StagehandTool(BaseTool):
             self._stagehand = None
             self._page = None
             return
-            
+
         if self._stagehand:
             try:
                 # Handle both synchronous and asynchronous cases
@@ -645,8 +698,13 @@ class StagehandTool(BaseTool):
                             loop = asyncio.get_event_loop()
                             if loop.is_running():
                                 import concurrent.futures
-                                with concurrent.futures.ThreadPoolExecutor() as executor:
-                                    future = executor.submit(asyncio.run, self._async_close())
+
+                                with (
+                                    concurrent.futures.ThreadPoolExecutor() as executor
+                                ):
+                                    future = executor.submit(
+                                        asyncio.run, self._async_close()
+                                    )
                                     future.result()
                             else:
                                 loop.run_until_complete(self._async_close())
@@ -658,9 +716,9 @@ class StagehandTool(BaseTool):
             except Exception as e:
                 # Log but don't raise - we're cleaning up
                 print(f"Error closing Stagehand: {str(e)}")
-                    
+
             self._stagehand = None
-            
+
         if self._page:
             self._page = None
 
@@ -672,47 +730,3 @@ class StagehandTool(BaseTool):
         """Exit the context manager and clean up resources."""
         self.close()
 
-
-def create_stagehand_tool(model_name=AvailableModel.CLAUDE_3_7_SONNET_LATEST, verbose=1, headless=True):
-    """Factory function to create a properly configured StagehandTool"""
-    
-    # Get API keys from environment - using os.getenv explicitly
-    browserbase_api_key = os.getenv("BROWSERBASE_API_KEY")
-    browserbase_project_id = os.getenv("BROWSERBASE_PROJECT_ID")
-    
-    # Check for model API keys based on model type
-    model_str = str(model_name)
-    if "gpt" in model_str.lower():
-        model_api_key = os.getenv("OPENAI_API_KEY")
-    elif "claude" in model_str.lower() or "anthropic" in model_str.lower():
-        model_api_key = os.getenv("ANTHROPIC_API_KEY")
-    elif "gemini" in model_str.lower():
-        model_api_key = os.getenv("GOOGLE_API_KEY")
-    else:
-        model_api_key = os.getenv("OPENAI_API_KEY") or os.getenv("ANTHROPIC_API_KEY")
-    
-    if not all([browserbase_api_key, browserbase_project_id]):
-        missing = []
-        if not browserbase_api_key:
-            missing.append("BROWSERBASE_API_KEY")
-        if not browserbase_project_id:
-            missing.append("BROWSERBASE_PROJECT_ID")
-        raise ValueError(
-            f"Missing required environment variables: {', '.join(missing)}. "
-            "Please ensure all are set."
-        )
-    
-    if not model_api_key:
-        raise ValueError(
-            f"No API key found for model {model_name}. "
-            "Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY."
-        )
-    
-    return StagehandTool(
-        api_key=browserbase_api_key,
-        project_id=browserbase_project_id,
-        model_api_key=model_api_key,
-        model_name=model_name,
-        verbose=verbose,
-        headless=headless,
-    )
