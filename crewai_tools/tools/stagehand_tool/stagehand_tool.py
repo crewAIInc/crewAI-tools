@@ -85,7 +85,7 @@ class StagehandToolSchema(BaseModel):
     )
 
 
-class FixedStagehandTool(BaseTool):
+class StagehandTool(BaseTool):
     """
     A tool that uses Stagehand to automate web browser interactions using natural language
     with improved atomic action handling and better error recovery.
@@ -712,7 +712,7 @@ def create_stagehand_tool(model_name=AvailableModel.CLAUDE_3_7_SONNET_LATEST, ve
             "Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, or GOOGLE_API_KEY."
         )
     
-    return FixedStagehandTool(
+    return StagehandTool(
         api_key=browserbase_api_key,
         project_id=browserbase_project_id,
         model_api_key=model_api_key,
