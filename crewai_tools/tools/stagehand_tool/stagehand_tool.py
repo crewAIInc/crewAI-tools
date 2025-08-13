@@ -1,7 +1,3 @@
-"""
-Fixed StagehandTool wrapper with improved atomic action handling and proper API key management
-"""
-
 import asyncio
 import json
 import os
