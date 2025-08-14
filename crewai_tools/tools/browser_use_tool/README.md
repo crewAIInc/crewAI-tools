@@ -19,6 +19,12 @@ Install the crewai_tools package
 pip install 'crewai[tools]'
 ```
 
+Install playwright and the required browsers
+
+```shell
+playwright install
+```
+
 ## Examples
 
 Notes:
