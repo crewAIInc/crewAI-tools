@@ -89,6 +89,7 @@ snowflake = [
 ]
 browser-use = [
     "browser-use==0.1.16",
+]
 singlestore = [
     "singlestoredb>=1.12.4",
     "SQLAlchemy>=2.0.40",
