@@ -1,6 +1,6 @@
 [project]
 name = "crewai-tools"
-version = "0.58.0"
+version = "0.62.0"
 description = "Set of tools for the crewAI framework"
 readme = "README.md"
 authors = [
@@ -17,11 +17,12 @@ dependencies = [
     "requests>=2.31.0",
     "docker>=7.1.0",
     "embedchain>=0.1.114",
-    "crewai>=0.148.0",
+    "crewai>=0.157.0",
     "click>=8.1.8",
     "lancedb>=0.5.4",
     "tiktoken>=0.8.0",
     "stagehand>=0.4.1",
+    "portalocker==2.7.0",
 ]
 
 [project.urls]
@@ -88,6 +89,9 @@ snowflake = [
 ]
 browser-use = [
     "browser-use==0.1.16",
+singlestore = [
+    "singlestoredb>=1.12.4",
+    "SQLAlchemy>=2.0.40",
 ]
 exa-py = [
     "exa-py>=1.8.7",
