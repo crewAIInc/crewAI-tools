@@ -1,7 +1,6 @@
-from .browser_use_tool import BrowserUseTool, BaseBrowserUseTool, BaseBrowserUseToolSchema
+from .browser_use_tool import BrowserUseTool, BrowserUseToolSchema
 
 __all__ = [
     "BrowserUseTool",
-    "BaseBrowserUseTool",
-    "BaseBrowserUseToolSchema",
+    "BrowserUseToolSchema",
 ]
