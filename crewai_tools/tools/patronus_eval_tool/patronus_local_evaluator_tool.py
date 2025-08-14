@@ -1,7 +1,7 @@
-from typing import TYPE_CHECKING, Any, Type
+from typing import TYPE_CHECKING, Any, Type, List
 
 from crewai.tools import BaseTool
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 if TYPE_CHECKING:
     from patronus import Client, EvaluationResult
@@ -40,8 +40,8 @@ class PatronusLocalEvaluatorTool(BaseTool):
     evaluator: str
     evaluated_model_gold_answer: str
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    package_dependencies: List[str] = ["patronus"]
 
     def __init__(
         self,

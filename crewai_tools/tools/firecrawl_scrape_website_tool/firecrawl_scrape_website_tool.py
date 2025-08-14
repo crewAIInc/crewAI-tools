@@ -1,23 +1,41 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Dict, List, TYPE_CHECKING
 
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
+
+if TYPE_CHECKING:
+    from firecrawl import FirecrawlApp
 
 try:
     from firecrawl import FirecrawlApp
+
+    FIRECRAWL_AVAILABLE = True
 except ImportError:
-    FirecrawlApp = Any
+    FIRECRAWL_AVAILABLE = False
 
 
 class FirecrawlScrapeWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
-    timeout: Optional[int] = Field(
-        default=30000,
-        description="Timeout in milliseconds for the scraping operation. The default value is 30000.",
-    )
 
 
 class FirecrawlScrapeWebsiteTool(BaseTool):
+    """
+    Tool for scraping webpages using Firecrawl. To run this tool, you need to have a Firecrawl API key.
+
+    Args:
+        api_key (str): Your Firecrawl API key.
+        config (dict): Optional. It contains Firecrawl API parameters.
+
+    Default configuration options:
+        formats (list[str]): Content formats to return. Default: ["markdown"]
+        onlyMainContent (bool): Only return main content. Default: True
+        includeTags (list[str]): Tags to include. Default: []
+        excludeTags (list[str]): Tags to exclude. Default: []
+        headers (dict): Headers to include. Default: {}
+        waitFor (int): Time to wait for page to load in ms. Default: 0
+        json_options (dict): Options for JSON extraction. Default: None
+    """
+
     model_config = ConfigDict(
         arbitrary_types_allowed=True, validate_assignment=True, frozen=False
     )
@@ -25,7 +43,22 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
     description: str = "Scrape webpages using Firecrawl and return the contents"
     args_schema: Type[BaseModel] = FirecrawlScrapeWebsiteToolSchema
     api_key: Optional[str] = None
+    config: Dict[str, Any] = Field(
+        default_factory=lambda: {
+            "formats": ["markdown"],
+            "onlyMainContent": True,
+            "includeTags": [],
+            "excludeTags": [],
+            "headers": {},
+            "waitFor": 0,
+        }
+    )
+
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
+    package_dependencies: List[str] = ["firecrawl-py"]
+    env_vars: List[EnvVar] = [
+        EnvVar(name="FIRECRAWL_API_KEY", description="API key for Firecrawl services", required=True),
+    ]
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
@@ -50,21 +83,11 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
 
         self._firecrawl = FirecrawlApp(api_key=api_key)
 
-    def _run(
-        self,
-        url: str,
-        timeout: Optional[int] = 30000,
-    ):
-        options = {
-            "formats": ["markdown"],
-            "onlyMainContent": True,
-            "includeTags": [],
-            "excludeTags": [],
-            "headers": {},
-            "waitFor": 0,
-            "timeout": timeout,
-        }
-        return self._firecrawl.scrape_url(url, options)
+    def _run(self, url: str):
+        if not self._firecrawl:
+            raise RuntimeError("FirecrawlApp not properly initialized")
+
+        return self._firecrawl.scrape_url(url, params=self.config)
 
 
 try:

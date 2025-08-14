@@ -1,10 +1,10 @@
 import re
 import time
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, List
 from urllib.parse import urlparse
 
 from crewai.tools import BaseTool
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class FixedSeleniumScrapingToolSchema(BaseModel):
@@ -23,7 +23,7 @@ class SeleniumScrapingToolSchema(FixedSeleniumScrapingToolSchema):
         description="Mandatory css reference for element to scrape from the website",
     )
 
-    @validator("website_url")
+    @field_validator("website_url")
     def validate_website_url(cls, v):
         if not v:
             raise ValueError("Website URL cannot be empty")
@@ -57,8 +57,8 @@ class SeleniumScrapingTool(BaseTool):
     wait_time: Optional[int] = 3
     css_element: Optional[str] = None
     return_html: Optional[bool] = False
-    _options: Optional[dict] = None
     _by: Optional[Any] = None
+    package_dependencies: List[str] = ["selenium", "webdriver-manager"]
 
     def __init__(
         self,
@@ -91,8 +91,17 @@ class SeleniumScrapingTool(BaseTool):
                 raise ImportError(
                     "`selenium` and `webdriver-manager` package not found, please run `uv add selenium webdriver-manager`"
                 )
-        self.driver = webdriver.Chrome()
-        self._options = Options()
+
+        if 'driver' not in kwargs:
+            if 'options' not in kwargs:
+                options: Options = Options()
+                options.add_argument("--headless")
+            else:
+                options = kwargs['options']
+            self.driver = webdriver.Chrome(options=options)
+        else:
+            self.driver = kwargs['driver']
+
         self._by = By
         if cookie is not None:
             self.cookie = cookie
@@ -116,28 +125,30 @@ class SeleniumScrapingTool(BaseTool):
         website_url = kwargs.get("website_url", self.website_url)
         css_element = kwargs.get("css_element", self.css_element)
         return_html = kwargs.get("return_html", self.return_html)
-        driver = self._create_driver(website_url, self.cookie, self.wait_time)
+        try:
+            self._make_request(website_url, self.cookie, self.wait_time)
+            content = self._get_content(css_element, return_html)
+            return "\n".join(content)
+        except Exception as e:
+            return f"Error scraping website: {str(e)}"
+        finally:
+            self.driver.close()
 
-        content = self._get_content(driver, css_element, return_html)
-        driver.close()
-
-        return "\n".join(content)
-
-    def _get_content(self, driver, css_element, return_html):
+    def _get_content(self, css_element, return_html):
         content = []
 
         if self._is_css_element_empty(css_element):
-            content.append(self._get_body_content(driver, return_html))
+            content.append(self._get_body_content(return_html))
         else:
-            content.extend(self._get_elements_content(driver, css_element, return_html))
+            content.extend(self._get_elements_content(css_element, return_html))
 
         return content
 
     def _is_css_element_empty(self, css_element):
         return css_element is None or css_element.strip() == ""
 
-    def _get_body_content(self, driver, return_html):
-        body_element = driver.find_element(self._by.TAG_NAME, "body")
+    def _get_body_content(self, return_html):
+        body_element = self.driver.find_element(self._by.TAG_NAME, "body")
 
         return (
             body_element.get_attribute("outerHTML")
@@ -145,17 +156,17 @@ class SeleniumScrapingTool(BaseTool):
             else body_element.text
         )
 
-    def _get_elements_content(self, driver, css_element, return_html):
+    def _get_elements_content(self, css_element, return_html):
         elements_content = []
 
-        for element in driver.find_elements(self._by.CSS_SELECTOR, css_element):
+        for element in self.driver.find_elements(self._by.CSS_SELECTOR, css_element):
             elements_content.append(
                 element.get_attribute("outerHTML") if return_html else element.text
             )
 
         return elements_content
 
-    def _create_driver(self, url, cookie, wait_time):
+    def _make_request(self, url, cookie, wait_time):
         if not url:
             raise ValueError("URL cannot be empty")
 
@@ -163,17 +174,13 @@ class SeleniumScrapingTool(BaseTool):
         if not re.match(r"^https?://", url):
             raise ValueError("URL must start with http:// or https://")
 
-        options = self._options
-        options.add_argument("--headless")
-        driver = self.driver(options=options)
-        driver.get(url)
+        self.driver.get(url)
         time.sleep(wait_time)
         if cookie:
-            driver.add_cookie(cookie)
+            self.driver.add_cookie(cookie)
             time.sleep(wait_time)
-            driver.get(url)
+            self.driver.get(url)
             time.sleep(wait_time)
-        return driver
 
     def close(self):
         self.driver.close()

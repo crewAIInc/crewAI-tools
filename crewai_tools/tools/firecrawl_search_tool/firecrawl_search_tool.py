@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Type
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, List
 
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 if TYPE_CHECKING:
@@ -17,26 +17,25 @@ except ImportError:
 
 class FirecrawlSearchToolSchema(BaseModel):
     query: str = Field(description="Search query")
-    limit: Optional[int] = Field(
-        default=5, description="Maximum number of results to return"
-    )
-    tbs: Optional[str] = Field(default=None, description="Time-based search parameter")
-    lang: Optional[str] = Field(
-        default="en", description="Language code for search results"
-    )
-    country: Optional[str] = Field(
-        default="us", description="Country code for search results"
-    )
-    location: Optional[str] = Field(
-        default=None, description="Location parameter for search results"
-    )
-    timeout: Optional[int] = Field(default=60000, description="Timeout in milliseconds")
-    scrape_options: Optional[Dict[str, Any]] = Field(
-        default=None, description="Options for scraping search results"
-    )
 
 
 class FirecrawlSearchTool(BaseTool):
+    """
+    Tool for searching webpages using Firecrawl. To run this tool, you need to have a Firecrawl API key.
+
+    Args:
+        api_key (str): Your Firecrawl API key.
+        config (dict): Optional. It contains Firecrawl API parameters.
+
+    Default configuration options:
+        limit (int): Maximum number of pages to crawl. Default: 5
+        tbs (str): Time before search. Default: None
+        lang (str): Language. Default: "en"
+        country (str): Country. Default: "us"
+        location (str): Location. Default: None
+        timeout (int): Timeout in milliseconds. Default: 60000
+    """
+
     model_config = ConfigDict(
         arbitrary_types_allowed=True, validate_assignment=True, frozen=False
     )
@@ -47,7 +46,21 @@ class FirecrawlSearchTool(BaseTool):
     description: str = "Search webpages using Firecrawl and return the results"
     args_schema: Type[BaseModel] = FirecrawlSearchToolSchema
     api_key: Optional[str] = None
+    config: Optional[dict[str, Any]] = Field(
+        default_factory=lambda: {
+            "limit": 5,
+            "tbs": None,
+            "lang": "en",
+            "country": "us",
+            "location": None,
+            "timeout": 60000,
+        }
+    )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
+    package_dependencies: List[str] = ["firecrawl-py"]
+    env_vars: List[EnvVar] = [
+        EnvVar(name="FIRECRAWL_API_KEY", description="API key for Firecrawl services", required=True),
+    ]
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
@@ -56,10 +69,9 @@ class FirecrawlSearchTool(BaseTool):
 
     def _initialize_firecrawl(self) -> None:
         try:
-            if FIRECRAWL_AVAILABLE:
-                self._firecrawl = FirecrawlApp(api_key=self.api_key)
-            else:
-                raise ImportError
+            from firecrawl import FirecrawlApp  # type: ignore
+
+            self._firecrawl = FirecrawlApp(api_key=self.api_key)
         except ImportError:
             import click
 
@@ -72,7 +84,7 @@ class FirecrawlSearchTool(BaseTool):
                     subprocess.run(["uv", "add", "firecrawl-py"], check=True)
                     from firecrawl import FirecrawlApp
 
-                    self.firecrawl = FirecrawlApp(api_key=self.api_key)
+                    self._firecrawl = FirecrawlApp(api_key=self.api_key)
                 except subprocess.CalledProcessError:
                     raise ImportError("Failed to install firecrawl-py package")
             else:
@@ -83,27 +95,14 @@ class FirecrawlSearchTool(BaseTool):
     def _run(
         self,
         query: str,
-        limit: Optional[int] = 5,
-        tbs: Optional[str] = None,
-        lang: Optional[str] = "en",
-        country: Optional[str] = "us",
-        location: Optional[str] = None,
-        timeout: Optional[int] = 60000,
-        scrape_options: Optional[Dict[str, Any]] = None,
     ) -> Any:
-        if not self.firecrawl:
+        if not self._firecrawl:
             raise RuntimeError("FirecrawlApp not properly initialized")
 
-        options = {
-            "limit": limit,
-            "tbs": tbs,
-            "lang": lang,
-            "country": country,
-            "location": location,
-            "timeout": timeout,
-            "scrapeOptions": scrape_options or {},
-        }
-        return self.firecrawl.search(**options)
+        return self._firecrawl.search(
+            query=query,
+            params=self.config,
+        )
 
 
 try:

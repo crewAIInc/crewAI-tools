@@ -12,3 +12,6 @@ venv
 agent_history.gif
 poetry.lock
 uv.lock
+
+# chroma db
+db
