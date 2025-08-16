@@ -3,13 +3,13 @@ from typing import Any, Optional, Type
 
 import requests
 from crewai.tools import BaseTool
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic_settings import BaseSettings
 
 class BrightDataConfig(BaseSettings):
-    API_URL: str = "https://api.brightdata.com/request"    
-    class Config:
-        env_prefix = "BRIGHTDATA_"
+    model_config = ConfigDict(env_prefix="BRIGHTDATA_")
+    
+    API_URL: str = "https://api.brightdata.com/request"
 
 class BrightDataUnlockerToolSchema(BaseModel):
     """
