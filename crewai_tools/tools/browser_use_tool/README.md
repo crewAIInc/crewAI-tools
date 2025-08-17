@@ -2,146 +2,241 @@
 
 ## Description
 
-This tool is used to give the Agent the ability to use a browser to interact with the environment.
-It is useful when the Agent needs to interact with it.
+The Browser-Use Tool enables agents to interact with web browsers using natural language commands.
+This tool wraps the [browser-use](https://github.com/browser-use/browser-use) library, providing seamless browser automation capabilities within CrewAI agents.
 
-The tool uses [browser-use/browser-use](https://github.com/browser-use/browser-use).
+## Key Features
+
+- **Natural Language Control**: Interact with browsers using plain English instructions
+- **Comprehensive Actions**: Support for navigation, clicking, typing, scrolling, tab management, and more
+- **Persistent Browser Sessions**: Maintain browser state across multiple interactions
+- **Multimodal Support**: Works with vision-capable LLMs like GPT-4o as well as text-only models
+- **Async Operation**: Efficient asynchronous browser operations with customizable event loops
 
 ## Requirements
 
-- [browser-use@0.1.16](https://github.com/browser-use/browser-use/tree/0.1.16) (will be installed automatically). Later versions do not work.
+- Python 3.11+
+- browser-use>=0.5.6
+- Playwright (for browser automation)
 
 ## Installation
 
-Install the crewai_tools package
+Install the crewai_tools package:
 
-```shell
+```bash
 pip install 'crewai[tools]'
 ```
 
-Install playwright and the required browsers
+Install Playwright and required browsers:
 
-```shell
+```bash
 playwright install
 ```
 
-## Examples
+## Usage
 
-Notes:
-
-- browser-use requires multimodal models like gpt-4o, gpt-4o-mini, etc.
-- Browser-use uses its own llm, which is different than the Agent's llm.
-The only supported llms are from langchain.
-- browser-use runs asynchronously. It creates a new event loop and runs the browser in that loop and deletes the loop after the tool is deleted. If you want to use your own event loop, you can pass it to the tool.
-- browser-use uses a Browser and a BrowserContext to run the browser. If you don't specify them, the tool will create its own Browser and BrowserContext each time the tool is called. If you want to use a consistent browser throughout the Agent's lifecycle, you should specify your own Browser and BrowserContext and manage them yourself outside the tool.
-
-### Short Examples
+### Basic Usage
 
 ```python
 from crewai_tools import BrowserUseTool
-from langchain_openai.chat_models import ChatOpenAI
+from browser_use.llm import ChatOpenAI as BrowserUseChatOpenAI
+from crewai import Agent
 
-browser_use_tool = BrowserUseTool(llm=ChatOpenAI(model="gpt-4o"))
-
-Agent(
-    ...
-    tools=[browser_use_tool],
-)
-```
-
-To use a consistent browser throughout the Agent's lifecycle, you can do this
-
-```python
-import asyncio
-
-from crewai_tools import BrowserUseTool
-from langchain_openai.chat_models import ChatOpenAI
-
-browser = Browser(config=BrowserConfig(headless=False))
-
-browser_context = BrowserContext(browser=browser)
-
+# Create the browser tool
 browser_use_tool = BrowserUseTool(
-    llm=ChatOpenAI(model="gpt-4o"),
-    browser=browser,
-    browser_context=browser_context,
+    llm=BrowserUseChatOpenAI(model="gpt-4o")
 )
 
-Agent(
-    ...
+# Use in an agent
+agent = Agent(
+    role="Web Researcher",
+    goal="Navigate and extract information from websites",
     tools=[browser_use_tool],
+    llm="gpt-4o"  # Agent's LLM can be different from browser's LLM
 )
-
-with asyncio.new_event_loop() as loop:
-    loop: asyncio.AbstractEventLoop
-    loop.run_until_complete(browser.close())
 ```
 
-### Full Working Example
+### Persistent Browser Session
 
-Found in [tests/tools/test_browser_use_tool.py](/tests/tools/test_browser_use_tool.py)
+For maintaining browser state across multiple interactions:
 
 ```python
 import asyncio
+import threading
+from browser_use import BrowserProfile, BrowserSession
+from playwright.async_api import async_playwright
+from concurrent.futures import Future
 
-from browser_use import Browser, BrowserConfig
-from browser_use.browser.context import BrowserContext
+def using_persistent_browser():
+    # Create a separate event loop for browser operations
+    browser_loop = asyncio.new_event_loop()
+    browser_future = Future()
+
+    async def setup_and_run():
+        """Setup browser and return resources."""
+        browser_profile = BrowserProfile(headless=False)
+        playwright = await async_playwright().start()
+        browser = await playwright.chromium.launch(
+            headless=browser_profile.headless,
+            args=browser_profile.get_args(),
+        )
+        browser_session = BrowserSession(
+            browser_profile=browser_profile,
+            browser=browser,
+        )
+        return browser_session, playwright
+
+    def browser_loop_thread():
+        """Run the browser event loop in a separate thread."""
+        asyncio.set_event_loop(browser_loop)
+
+        # Setup browser and store result
+        browser_session, playwright = browser_loop.run_until_complete(setup_and_run())
+        browser_future.set_result((browser_session, playwright))
+
+        # Keep the loop running for async operations
+        browser_loop.run_forever()
+
+    # Start browser thread
+    threading.Thread(target=browser_loop_thread, daemon=True).start()
+
+    # Wait for browser setup
+    browser_session, playwright = browser_future.result()
+
+    # Create the browser tool with persistent session
+    browser_tool = BrowserUseTool(
+        llm=BrowserUseChatOpenAI(model="gpt-4o"),
+        browser_loop=browser_loop,
+        agent_kwargs={"browser_session": browser_session}
+    )
+
+    # Use the tool with your agents...
+    # ...
+
+    # Cleanup when done
+    async def cleanup():
+        await browser_session.stop()
+        await playwright.stop()
+
+    asyncio.run_coroutine_threadsafe(cleanup(), browser_loop).result()
+    browser_loop.call_soon_threadsafe(browser_loop.stop)
+```
+
+### Complete Working Example
+
+```python
+import asyncio
+from browser_use import BrowserProfile, BrowserSession
+from browser_use.llm import ChatOpenAI as BrowserUseChatOpenAI
+from playwright.async_api import async_playwright
 from crewai import Agent, Crew, Task
+from crewai_tools import BrowserUseTool
 
-from crewai_tools.tools.browser_use_tool import BrowserUseTool
-from langchain_openai.chat_models import ChatOpenAI
-
-
-def main():
-
-    browser = Browser(config=BrowserConfig(headless=False))
-
-    browser_context = BrowserContext(browser=browser)
-
-    browser_use_tool = BrowserUseTool(
-        llm=ChatOpenAI(model="gpt-4o"),
-        browser=browser,
-        browser_context=browser_context,
+async def simple_browser_interaction():
+    """Simple browser interaction example."""
+    browser_tool = BrowserUseTool(
+        llm=BrowserUseChatOpenAI(model="gpt-4o")
     )
 
     agent = Agent(
-        role="Browser Use Agent",
-        goal="Use the browser",
-        backstory=(
-            "You are the best Browser Use Agent in the world. "
-            "You have a browser that you can interact with using natural language instructions."
-        ),
-        tools=[browser_use_tool],
-        verbose=True,
-        llm="gpt-4o",
+        role="Browser Agent",
+        goal="Navigate and extract information",
+        backstory="Expert at web navigation and data extraction",
+        tools=[browser_tool],
+        llm="gpt-4o"
     )
 
     task = Task(
-        name="Navigate to webpage and summarize article",
-        description="Navigate to {webpage} and find the article about 'xAI (company)' and summarize it.",
-        expected_output="A summary of the article",
-        agent=agent,
+        description="Navigate to Wikipedia and find information about Python programming language",
+        expected_output="A summary of the Python article",
+        agent=agent
     )
 
     crew = Crew(
-        tasks=[task],
         agents=[agent],
-        verbose=True,
+        tasks=[task],
+        verbose=True
     )
 
-    crew_result = crew.kickoff(
-        inputs={
-            "webpage": "https://www.wikipedia.org/",
-        }
-    )
+    result = crew.kickoff()
+    print(result.raw)
 
-    print(crew_result.raw)
-
-    with asyncio.new_event_loop() as loop:
-        loop: asyncio.AbstractEventLoop
-        loop.run_until_complete(browser.close())
-
-
+# Run the example
 if __name__ == "__main__":
-    main()
+    asyncio.run(simple_browser_interaction())
 ```
+
+## Tool Schema
+
+The BrowserUseTool accepts the following parameters:
+
+- **instruction** (required): Natural language instruction for the browser action
+- **max_steps** (optional, default=100): Maximum number of steps the browser can take
+
+## Supported Actions
+
+The tool supports a wide range of browser actions:
+
+### Basic Navigation
+- Navigate to URLs
+- Go back/forward in history
+- Refresh pages
+
+### Element Interaction
+- Click on elements (buttons, links, etc.)
+- Type text into input fields
+- Select from dropdowns
+- Submit forms
+
+### Tab Management
+- Open new tabs
+- Switch between tabs
+- Close tabs
+
+### Content Actions
+- Scroll (up, down, to element)
+- Take screenshots
+- Extract text content
+- Wait for elements
+
+### Advanced Features
+- Handle popups and alerts
+- Execute JavaScript
+- Interact with Google Sheets
+- Download files
+
+## Important Notes
+
+1. **LLM Requirements**: The browser-use library requires multimodal LLMs (e.g., GPT-4o, GPT-4o-mini)
+2. **Separate LLMs**: The browser tool's LLM is independent from the agent's LLM
+3. **Async Operations**: Browser operations run asynchronously for better performance
+4. **Event Loop Management**: The tool manages its own event loop by default, or you can provide your own
+5. **Resource Cleanup**: Always clean up browser resources when using persistent sessions
+
+## Testing
+
+The tool includes comprehensive tests covering:
+- Schema validation
+- Browser task execution
+- Error handling
+- History parsing
+- Multiple action support
+
+Run tests with:
+```bash
+pytest tests/tools/browser_use_tool_test.py
+```
+
+## Troubleshooting
+
+- **Browser not closing**: Ensure proper cleanup in persistent browser sessions
+- **Timeout errors**: Increase `max_steps` parameter for complex tasks
+- **Element not found**: The browser might need more specific instructions or wait conditions
+- **LLM errors**: Verify you're using a multimodal model (GPT-4o recommended)
+
+## Links
+
+- [Browser Use Documentation](https://github.com/browser-use/browser-use)
+- [CrewAI Documentation](https://docs.crewai.com)
+- [Example Implementation](example.py)
+- [Test Suite](../../../tests/tools/browser_use_tool_test.py)
