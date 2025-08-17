@@ -19,7 +19,7 @@ import asyncio
 from browser_use import BrowserProfile, BrowserSession
 from browser_use.llm import ChatOpenAI as BrowserUseChatOpenAI
 from playwright.async_api import Browser as PlaywrightBrowser
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright, Playwright
 
 from crewai import Agent, Crew, CrewOutput, Task
 
@@ -60,14 +60,14 @@ def run_crew(browser_use_tool: BrowserUseTool, query: str = "Python programming 
     return crew.kickoff(inputs={"query": query})
 
 async def simple_browser_interaction() -> None:
-    browser_use_tool = BrowserUseTool(llm=BrowserUseChatOpenAI(model="gpt-4o"))
+    browser_use_tool = BrowserUseTool(llm=BrowserUseChatOpenAI(model="gpt-4o"), browser_loop=None)
     crew_output = run_crew(browser_use_tool)
     print(crew_output.raw)
 
 def using_persistent_browser() -> None:
     import threading
 
-    async def setup_browser() -> tuple[BrowserSession, PlaywrightBrowser]:
+    async def setup_browser() -> tuple[BrowserSession, Playwright]:
         nonlocal browser_session, playwright
 
         browser_profile = BrowserProfile(headless=True)
@@ -101,8 +101,10 @@ def using_persistent_browser() -> None:
     # Cleanup
     async def cleanup() -> None:
         nonlocal browser_session, playwright
-        await browser_session.stop()
-        await playwright.stop()
+        if browser_session is not None:
+            await browser_session.stop()
+        if playwright is not None:
+            await playwright.stop()
 
     # Create a separate event loop for browser operations
     browser_loop = asyncio.new_event_loop()

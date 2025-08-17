@@ -25,7 +25,8 @@ class TestBrowserUseToolSchema:
     def test_schema_with_valid_instruction(self):
         """Test schema creation with valid instruction."""
         schema = BrowserUseToolSchema(
-            instruction="Navigate to Google and search for CrewAI"
+            instruction="Navigate to Google and search for CrewAI",
+            max_steps=100
         )
         assert schema.instruction == "Navigate to Google and search for CrewAI"
         assert schema.max_steps == 100  # default value
@@ -42,7 +43,7 @@ class TestBrowserUseToolSchema:
     def test_schema_requires_instruction(self):
         """Test that instruction is required."""
         with pytest.raises(ValidationError):
-            BrowserUseToolSchema()
+            BrowserUseToolSchema(instruction="", max_steps=100)
 
     def test_schema_json_schema(self):
         """Test that schema generates correct JSON schema."""
@@ -63,7 +64,7 @@ class TestBrowserUseTool:
     def test_tool_creation_with_valid_llm(self):
         """Test tool creation with valid LLM."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         assert tool.llm == mock_llm
         assert tool.args_schema == BrowserUseToolSchema
@@ -74,7 +75,7 @@ class TestBrowserUseTool:
         """Test tool creation with custom agent_kwargs."""
         mock_llm = MockLLM()
         agent_kwargs = {"validate_output": False, "timeout": 30}
-        tool = BrowserUseTool(llm=mock_llm, agent_kwargs=agent_kwargs)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None, agent_kwargs=agent_kwargs)
 
         assert tool.agent_kwargs == agent_kwargs
 
@@ -105,9 +106,11 @@ class TestBrowserUseTool:
 
     def test_parse_history_empty(self):
         """Test parsing empty history."""
+        mock_history = MagicMock(spec=BrowserUseAgentHistoryList)
+        mock_history.history = []  # Empty history - this triggers "Browser did not do anything."
         result = BrowserUseTool._parse_history(
             instruction="Test instruction",
-            agent_history_list=None,
+            agent_history_list=mock_history,
             max_steps=100
         )
         assert result == "Browser did not do anything."
@@ -194,16 +197,16 @@ class TestBrowserUseTool:
     async def test_run_with_no_instruction(self):
         """Test running tool without instruction."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
-        result = await tool._run(instruction="")
+        result = tool._run(instruction="")
         assert result == "No instruction provided."
 
     @pytest.mark.asyncio
     async def test_run_successful(self):
         """Test successful browser task execution."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         # Mock the browser agent
         mock_history = MagicMock(spec=BrowserUseAgentHistoryList)
@@ -216,7 +219,7 @@ class TestBrowserUseTool:
 
         with patch.object(tool, '_create_browser_task', return_value=mock_history):
             with patch.object(BrowserUseAgent, '__init__', return_value=None):
-                result = await tool._run(instruction="Navigate to Google")
+                result = tool._run(instruction="Navigate to Google")
 
                 assert "🚀 Starting task: Navigate to Google" in result
                 assert "✅ Successfully completed browser interaction." in result
@@ -225,12 +228,12 @@ class TestBrowserUseTool:
     async def test_run_with_cancellation(self):
         """Test handling of cancelled browser task."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         with patch.object(tool, '_create_browser_task', side_effect=asyncio.CancelledError()):
             with patch.object(BrowserUseAgent, '__init__', return_value=None):
                 with patch.object(BrowserUseAgent, 'stop'):
-                    result = await tool._run(instruction="Test task")
+                    result = tool._run(instruction="Test task")
 
                     assert "Browser agent was interrupted" in result
                     assert "You MUST stop now and return a result!" in result
@@ -239,12 +242,12 @@ class TestBrowserUseTool:
     async def test_run_with_exception(self):
         """Test handling of exceptions during execution."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         with patch.object(tool, '_create_browser_task', side_effect=RuntimeError("Test error")):
             with patch.object(BrowserUseAgent, '__init__', return_value=None):
                 with patch.object(BrowserUseAgent, 'stop'):
-                    result = await tool._run(instruction="Test task")
+                    result = tool._run(instruction="Test task")
 
                     assert "Error during execution: Test error" in result
                     assert "Browser agent was interrupted" in result
@@ -253,7 +256,7 @@ class TestBrowserUseTool:
     async def test_create_browser_task_without_loop(self):
         """Test creating browser task without custom event loop."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         mock_agent = MagicMock(spec=BrowserUseAgent)
         mock_history = MagicMock(spec=BrowserUseAgentHistoryList)
@@ -265,7 +268,7 @@ class TestBrowserUseTool:
     def test_tool_attributes(self):
         """Test that BrowserUseTool has correct attributes."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         assert tool.name == "Browser Use Tool"
         assert "Interact with the browser using natural language commands" in tool.description
@@ -279,7 +282,7 @@ class TestBrowserUseTool:
     async def test_tool_execution(self):
         """Test executing the BrowserUseTool."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         # Mock successful execution
         mock_history = MagicMock(spec=BrowserUseAgentHistoryList)
@@ -292,7 +295,7 @@ class TestBrowserUseTool:
 
         with patch.object(tool, '_create_browser_task', return_value=mock_history):
             with patch.object(BrowserUseAgent, '__init__', return_value=None):
-                result = await tool._run(
+                result = tool._run(
                     instruction="Search for CrewAI on Google",
                     max_steps=50
                 )
@@ -321,7 +324,7 @@ class TestIntegration:
     async def test_full_workflow(self):
         """Test complete workflow from instruction to result."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         # Create comprehensive mock history
         mock_history = MagicMock(spec=BrowserUseAgentHistoryList)
@@ -358,7 +361,7 @@ class TestIntegration:
 
         with patch.object(tool, '_create_browser_task', return_value=mock_history):
             with patch.object(BrowserUseAgent, '__init__', return_value=None):
-                result = await tool._run(
+                result = tool._run(
                     instruction="Search for CrewAI on Google",
                     max_steps=100
                 )
@@ -375,7 +378,7 @@ class TestIntegration:
     async def test_error_recovery(self):
         """Test error recovery and reporting."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         # Test various error scenarios
         error_scenarios = [
@@ -388,14 +391,14 @@ class TestIntegration:
             with patch.object(tool, '_create_browser_task', side_effect=error):
                 with patch.object(BrowserUseAgent, '__init__', return_value=None):
                     with patch.object(BrowserUseAgent, 'stop'):
-                        result = await tool._run(instruction="Test error handling")
+                        result = tool._run(instruction="Test error handling")
                         assert expected_message in result
 
     def test_validate_llm_field_validator(self):
         """Test the LLM field validator."""
         # Test with valid LLM
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
         assert tool.llm == mock_llm
 
         # Test with None LLM
@@ -454,7 +457,7 @@ class TestIntegration:
     async def test_create_browser_task_return_type(self):
         """Test that _create_browser_task returns correct type."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         mock_agent = MagicMock(spec=BrowserUseAgent)
         mock_history = MagicMock(spec=BrowserUseAgentHistoryList)
@@ -468,7 +471,7 @@ class TestIntegration:
     async def test_run_with_custom_max_steps(self):
         """Test running with custom max_steps parameter."""
         mock_llm = MockLLM()
-        tool = BrowserUseTool(llm=mock_llm)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None)
 
         mock_history = MagicMock(spec=BrowserUseAgentHistoryList)
         mock_history.history = [MagicMock()]
@@ -481,7 +484,7 @@ class TestIntegration:
         with patch.object(tool, '_create_browser_task', return_value=mock_history):
             with patch.object(BrowserUseAgent, '__init__', return_value=None):
                 with patch.object(BrowserUseAgent, 'run', new_callable=AsyncMock):
-                    result = await tool._run(instruction="Test task", max_steps=25)
+                    result = tool._run(instruction="Test task", max_steps=25)
 
                     # Check that max_steps was used correctly
                     assert "❌ Failed to complete browser interaction in 25 maximum steps." in result
@@ -513,12 +516,12 @@ class TestIntegration:
         """Test that BrowserUseAgent is initialized with correct parameters."""
         mock_llm = MockLLM()
         agent_kwargs = {"validate_output": False, "timeout": 60}
-        tool = BrowserUseTool(llm=mock_llm, agent_kwargs=agent_kwargs)
+        tool = BrowserUseTool(llm=mock_llm, browser_loop=None, agent_kwargs=agent_kwargs)
 
         with patch.object(BrowserUseAgent, '__init__', return_value=None) as mock_init:
             with patch.object(tool, '_create_browser_task', side_effect=Exception("Stop early")):
                 with patch.object(BrowserUseAgent, 'stop'):
-                    asyncio.run(tool._run(instruction="Test initialization"))
+                    tool._run(instruction="Test initialization")
 
                     # Verify BrowserUseAgent was initialized with correct params
                     mock_init.assert_called_once()
