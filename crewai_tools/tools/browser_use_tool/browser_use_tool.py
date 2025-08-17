@@ -67,7 +67,7 @@ class BrowserUseTool(BaseTool):
     )
     browser_loop: Optional[asyncio.AbstractEventLoop] = Field(
         None,
-        description="Event loop to use for the browser_use agent.",
+        description="Optional event loop to use for the browser_use agent (e.g., for persistent browser between tool calls).",
     )
 
     args_schema: Type[BaseModel] = BrowserUseToolSchema
