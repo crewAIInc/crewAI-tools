@@ -21,10 +21,10 @@ class BrowserUseToolSchema(BaseModel):
             "The instructions will be broken down into multiple steps."
         ),
     )
-    max_steps: Optional[int] = Field(
+    max_steps: int = Field(
         100, # Taken from browser_use/agent/service.py Agent.run method
         description=(
-            "Optional parameter for maximum number of steps to run the browser for. "
+            "Maximum number of steps to run the browser for (default to 100). "
             "Note that tool interactions are performed step-by-step, for example: "
             "'Search for 'CrewAI' on Google' will be broken down into multiple steps like 'Navigate to google.com', "
             "'Input 'CrewAI' into search bar',"
