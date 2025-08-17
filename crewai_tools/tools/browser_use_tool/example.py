@@ -7,7 +7,7 @@ from crewai import Agent, Crew, CrewOutput, Task
 from crewai_tools.tools.browser_use_tool import BrowserUseTool
 
 
-def run_crew(browser_use_tool: BrowserUseTool) -> CrewOutput:
+def run_crew(browser_use_tool: BrowserUseTool, query: str = "Python programming language") -> CrewOutput:
     """
     Run a simple crew with the BrowserUseTool.
     This function is used to demonstrate how to use the BrowserUseTool in a crew.
@@ -27,7 +27,7 @@ def run_crew(browser_use_tool: BrowserUseTool) -> CrewOutput:
 
     task = Task(
         name="Navigate to webpage and summarize article",
-        description="Navigate to {webpage} and find the article about 'xAI (company)' and summarize it.",
+        description="Navigate to https://www.wikipedia.org/ and find the article about {query} and summarize it.",
         expected_output="A summary of the article",
         agent=agent,
     )
@@ -40,8 +40,7 @@ def run_crew(browser_use_tool: BrowserUseTool) -> CrewOutput:
 
     return crew.kickoff(
         inputs={
-            "webpage": "https://www.wikipedia.org/",
-            # "webpage": "https://www.nytimes.com/",
+            "query": query,
         }
     )
 
