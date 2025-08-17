@@ -229,7 +229,7 @@ class BrowserUseTool(BaseTool):
                 self._async_run(**kwargs),
                 loop=self.browser_loop,
             ).result()
-        
+
         # Otherwise, handle different event loop scenarios
         try:
             # Check if there's an event loop running
@@ -237,7 +237,7 @@ class BrowserUseTool(BaseTool):
             if loop.is_running():
                 # We're in an existing event loop context, run in thread
                 import concurrent.futures
-                
+
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                     future = executor.submit(
                         asyncio.run, self._async_run(**kwargs)
