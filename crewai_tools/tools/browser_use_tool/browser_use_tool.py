@@ -4,9 +4,9 @@ from typing import Any, Optional, Type
 from browser_use import Agent as BrowserUseAgent
 from browser_use.agent.views import AgentHistoryList as BrowserUseAgentHistoryList
 from browser_use.llm import BaseChatModel as BrowserUseBaseChatModel
-
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field, field_validator
+
 
 class BrowserUseToolSchema(BaseModel):
     """Input schema for BrowserUseTool.
@@ -22,7 +22,7 @@ class BrowserUseToolSchema(BaseModel):
         ),
     )
     max_steps: int = Field(
-        100, # Taken from browser_use/agent/service.py Agent.run method
+        100,  # Taken from browser_use/agent/service.py Agent.run method
         description=(
             "Maximum number of steps to run the browser for (default to 100). "
             "Note that tool interactions are performed step-by-step, for example: "
@@ -124,12 +124,12 @@ class BrowserUseTool(BaseTool):
             ),
             start=1,
         ):
-            actions = '\n'.join(
-                f'\t\t⚒️ Action {i+1}: {action.model_dump_json(exclude_unset=True)}'
+            actions = "\n".join(
+                f"\t\t⚒️ Action {i+1}: {action.model_dump_json(exclude_unset=True)}"
                 for i, action in enumerate(model_output.action)
             )
-            memory = f'\t🧠 Memory: {state.memory}' if state.memory else ''
-            results = f'\t📄 Result: {extracted_content}' if extracted_content else ''
+            memory = f"\t🧠 Memory: {state.memory}" if state.memory else ""
+            results = f"\t📄 Result: {extracted_content}" if extracted_content else ""
 
             step_by_step_output += (
                 f"📍 Step {step}:\n"
@@ -193,7 +193,9 @@ class BrowserUseTool(BaseTool):
         )
 
         try:
-            agent_history_list = await self._create_browser_task(browser_agent, args.max_steps)
+            agent_history_list = await self._create_browser_task(
+                browser_agent, args.max_steps
+            )
 
             return BrowserUseTool._parse_history(
                 instruction=args.instruction,
@@ -239,9 +241,7 @@ class BrowserUseTool(BaseTool):
                 import concurrent.futures
 
                 with concurrent.futures.ThreadPoolExecutor() as executor:
-                    future = executor.submit(
-                        asyncio.run, self._async_run(**kwargs)
-                    )
+                    future = executor.submit(asyncio.run, self._async_run(**kwargs))
                     return future.result()
             else:
                 # We have a loop but it's not running

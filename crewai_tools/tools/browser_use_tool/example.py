@@ -18,15 +18,16 @@ import asyncio
 
 from browser_use import BrowserProfile, BrowserSession
 from browser_use.llm import ChatOpenAI as BrowserUseChatOpenAI
-from playwright.async_api import Browser as PlaywrightBrowser
-from playwright.async_api import async_playwright, Playwright
-
 from crewai import Agent, Crew, CrewOutput, Task
+from playwright.async_api import Browser as PlaywrightBrowser
+from playwright.async_api import Playwright, async_playwright
 
 from crewai_tools.tools.browser_use_tool import BrowserUseTool
 
 
-def run_crew(browser_use_tool: BrowserUseTool, query: str = "Python programming language") -> CrewOutput:
+def run_crew(
+    browser_use_tool: BrowserUseTool, query: str = "Python programming language"
+) -> CrewOutput:
     """
     Run a simple crew with the BrowserUseTool.
     This function is used to demonstrate how to use the BrowserUseTool in a crew.
@@ -59,10 +60,14 @@ def run_crew(browser_use_tool: BrowserUseTool, query: str = "Python programming 
 
     return crew.kickoff(inputs={"query": query})
 
+
 async def simple_browser_interaction() -> None:
-    browser_use_tool = BrowserUseTool(llm=BrowserUseChatOpenAI(model="gpt-4o"), browser_loop=None)
+    browser_use_tool = BrowserUseTool(
+        llm=BrowserUseChatOpenAI(model="gpt-4o"), browser_loop=None
+    )
     crew_output = run_crew(browser_use_tool)
     print(crew_output.raw)
+
 
 def using_persistent_browser() -> None:
     import threading
@@ -125,7 +130,7 @@ def using_persistent_browser() -> None:
     browser_use_tool = BrowserUseTool(
         llm=BrowserUseChatOpenAI(model="gpt-4o"),
         browser_loop=browser_loop,
-        agent_kwargs = {"browser_session": browser_session}
+        agent_kwargs={"browser_session": browser_session},
     )
 
     # Run crews (this runs in the main thread)
@@ -140,7 +145,6 @@ def using_persistent_browser() -> None:
 
     # Stop the browser loop
     browser_loop.call_soon_threadsafe(browser_loop.stop)
-
 
 
 if __name__ == "__main__":

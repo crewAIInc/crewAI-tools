@@ -1,3 +1,5 @@
+import sys
+
 from .adapters.enterprise_adapter import EnterpriseActionTool
 from .adapters.mcp_adapter import MCPServerAdapter
 from .adapters.zapier_adapter import ZapierActionTool
@@ -12,9 +14,9 @@ from .tools import (
     ApifyActorsTool,
     ArxivPaperTool,
     BraveSearchTool,
-    BrightDataWebUnlockerTool,
-    BrightDataSearchTool,
     BrightDataDatasetTool,
+    BrightDataSearchTool,
+    BrightDataWebUnlockerTool,
     BrowserbaseLoadTool,
     BrowserUseTool,
     CodeDocsSearchTool,
@@ -88,8 +90,6 @@ from .tools import (
     YoutubeVideoSearchTool,
     ZapierActionTools,
 )
-
-import sys
 
 # Proper error handling for the 'browser-use' extra when using Python < 3.11
 if sys.version_info < (3, 11):
