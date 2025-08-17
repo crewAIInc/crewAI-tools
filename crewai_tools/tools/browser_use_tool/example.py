@@ -1,3 +1,19 @@
+"""
+BrowserUseTool Example
+
+This example demonstrates how to use the BrowserUseTool in a CrewAI workflow.
+It shows how to use browser automation with natural language instructions.
+
+Prerequisites:
+1. An LLM API key (OpenAI or Anthropic)
+2. Installed dependencies: crewai, crewai-tools, browser-use
+
+Usage:
+- Set your API keys in environment variables (recommended)
+- Or modify the script to include your API keys directly
+- Run the script: python example.py
+"""
+
 import asyncio
 
 from browser_use import BrowserProfile, BrowserSession
@@ -41,40 +57,28 @@ def run_crew(browser_use_tool: BrowserUseTool, query: str = "Python programming 
         verbose=True,
     )
 
-    return crew.kickoff(
-        inputs={
-            "query": query,
-        }
-    )
+    return crew.kickoff(inputs={"query": query})
 
-async def simple_browser_interaction():
+async def simple_browser_interaction() -> None:
     browser_use_tool = BrowserUseTool(llm=BrowserUseChatOpenAI(model="gpt-4o"))
     crew_output = run_crew(browser_use_tool)
     print(crew_output.raw)
 
-def using_persistent_browser():
+def using_persistent_browser() -> None:
     import threading
 
-    # Create a separate event loop for browser operations
-    browser_loop = asyncio.new_event_loop()
-
-    # Variables to store browser resources
-    browser_session = None
-    playwright = None
-    setup_complete = threading.Event()
-
-    async def setup_browser():
+    async def setup_browser() -> tuple[BrowserSession, PlaywrightBrowser]:
         nonlocal browser_session, playwright
 
-        browser_profile=BrowserProfile(
-            headless=False,
-        )
+        browser_profile = BrowserProfile(headless=True)
+
+        # [Optional] Get the Browser Use browser args for consistency
         browser_args = browser_profile.get_args()
         playwright = await async_playwright().start()
         bu_playwright_browser: PlaywrightBrowser = await playwright.chromium.launch(
-                headless=browser_profile.headless,
-                args=browser_args,
-            )
+            headless=browser_profile.headless,
+            args=browser_args,
+        )
 
         browser_session = BrowserSession(
             browser_profile=browser_profile,
@@ -83,8 +87,8 @@ def using_persistent_browser():
 
         return browser_session, playwright
 
-    def run_browser_loop():
-        nonlocal browser_session, playwright
+    def run_browser_loop() -> None:
+        nonlocal browser_session, playwright, setup_complete, browser_loop
         asyncio.set_event_loop(browser_loop)
 
         # Setup browser
@@ -93,6 +97,20 @@ def using_persistent_browser():
 
         # Keep the loop running for async operations
         browser_loop.run_forever()
+
+    # Cleanup
+    async def cleanup() -> None:
+        nonlocal browser_session, playwright
+        await browser_session.stop()
+        await playwright.stop()
+
+    # Create a separate event loop for browser operations
+    browser_loop = asyncio.new_event_loop()
+
+    # Variables to store browser resources
+    browser_session = None
+    playwright = None
+    setup_complete = threading.Event()
 
     # Start the browser loop in a separate thread
     browser_thread = threading.Thread(target=run_browser_loop, daemon=True)
@@ -105,10 +123,7 @@ def using_persistent_browser():
     browser_use_tool = BrowserUseTool(
         llm=BrowserUseChatOpenAI(model="gpt-4o"),
         browser_loop=browser_loop,
-        agent_kwargs = {
-            "browser_session": browser_session,
-            # "validate_output": False,
-        }
+        agent_kwargs = {"browser_session": browser_session}
     )
 
     # Run crews (this runs in the main thread)
@@ -117,12 +132,6 @@ def using_persistent_browser():
 
     crew_result = run_crew(browser_use_tool, query="XAI (company)")
     print(crew_result.raw)
-
-    # Cleanup
-    async def cleanup():
-        nonlocal browser_session, playwright
-        await browser_session.stop()
-        await playwright.stop()
 
     # Schedule cleanup in the browser loop
     asyncio.run_coroutine_threadsafe(cleanup(), browser_loop).result()
@@ -133,7 +142,8 @@ def using_persistent_browser():
 
 
 if __name__ == "__main__":
+    # This creates a browser for each tool usage
     asyncio.run(simple_browser_interaction())
 
-    # Now using_persistent_browser is synchronous and handles its own event loop
+    # To maintain persistent browser between tool usage, create a browser's own event loop and maintain it externally
     using_persistent_browser()
