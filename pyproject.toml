@@ -10,7 +10,7 @@ requires-python = ">=3.10,<3.14"
 dependencies = [
     "pydantic>=2.6.1",
     "lancedb>=0.5.4",
-    "openai>=1.12.0",
+    "openai<1.100.0", # TODO: Temporarily pin due to https://github.com/openai/openai-python/issues/2564. Can revert once the issue is fixed.
     "chromadb==0.5.23",
     "pyright>=1.1.350",
     "pytube>=15.0.0",
