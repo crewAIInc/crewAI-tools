@@ -10,7 +10,7 @@ class DOCXLoader(BaseLoader):
         try:
             from docx import Document as DocxDocument
         except ImportError:
-            raise ImportError("python-docx is required for DOCX loading. Install with: 'pip install python-docx' or pip install crewai-tools[rag]")
+            raise ImportError("python-docx is required for DOCX loading. Install with: 'uv pip install python-docx' or pip install crewai-tools[rag]")
 
         source_ref = source_content.source_ref
 
