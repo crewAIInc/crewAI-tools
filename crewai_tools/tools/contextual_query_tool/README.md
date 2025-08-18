@@ -10,7 +10,7 @@ To incorporate this tool into your project, follow the installation instructions
 pip install 'crewai[tools]' contextual-client
 ```
 
-**Note**: You'll also need a Contextual AI API key. Sign up at [app.contextual.ai](https://app.contextual.ai) to get your free API key with $25 in credits.
+**Note**: You'll need a Contextual AI API key. Sign up at [app.contextual.ai](https://app.contextual.ai) to get your free API key.
 
 ## Example
 
@@ -30,6 +30,8 @@ result = tool._run(
 )
 print(result)
 ```
+
+The result will contain the generated answer to the user's query. 
 
 ## Parameters
 **Initialization:**

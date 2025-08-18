@@ -10,7 +10,7 @@ To incorporate this tool into your project, follow the installation instructions
 pip install 'crewai[tools]' contextual-client
 ```
 
-**Note**: You'll also need a Contextual AI API key. Sign up at [app.contextual.ai](https://app.contextual.ai) to get your free API key with $25 in credits.
+**Note**: You'll need a Contextual AI API key. Sign up at [app.contextual.ai](https://app.contextual.ai) to get your free API key.
 
 ## Example
 
@@ -29,6 +29,27 @@ result = tool._run(
     instruction="Prioritize documents with specific financial metrics and quantitative data"
 )
 print(result)
+```
+
+The result will contain the document ranking. For example: 
+```
+Rerank Result:
+{
+  "results": [
+    {
+      "index": 1,
+      "relevance_score": 0.88227631
+    },
+    {
+      "index": 0,
+      "relevance_score": 0.61159354
+    },
+    {
+      "index": 2,
+      "relevance_score": 0.28579462
+    }
+  ]
+}
 ```
 
 ## Parameters
