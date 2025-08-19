@@ -39,25 +39,8 @@ tool = ChromaSearchTool(
     collection=collection,
     limit=5  # optional, default is 3
 )
-```
 
-## Usage Examples
-
-### Usage with Agent
-
-```python
-import chromadb
-from crewai_tools import ChromaSearchTool
-from crewai import Agent
-
-# Setup your Chroma collection
-client = chromadb.PersistentClient(path="./chroma_db")
-collection = client.get_or_create_collection(name="my_documents")
-
-# Create the search tool
-tool = ChromaSearchTool(collection=collection)
-
-# Add the tool to an agent
+# 4. Add the tool to an agent
 rag_agent = Agent(
     name="rag_agent",
     role="You are a helpful assistant that can answer questions with the help of the Chroma tool.",

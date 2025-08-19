@@ -52,7 +52,6 @@ def test_successful_search(chroma_tool):
 
 def test_search_with_filter(chroma_tool):
     """Test search with metadata filtering"""
-    # Mock filtered response
     chroma_tool.collection.query.return_value = {
         "documents": [["Filtered document"]],
         "metadatas": [[{"source": "filtered.txt"}]],
@@ -65,7 +64,6 @@ def test_search_with_filter(chroma_tool):
     assert len(parsed_result) == 1
     assert parsed_result[0]["metadata"]["source"] == "filtered.txt"
     
-    # Verify where clause was passed
     chroma_tool.collection.query.assert_called_with(
         query_texts=["test query"],
         n_results=3,
@@ -75,7 +73,6 @@ def test_search_with_filter(chroma_tool):
 
 def test_search_with_document_filter(chroma_tool):
     """Test search with document content filtering"""
-    # Mock filtered response
     chroma_tool.collection.query.return_value = {
         "documents": [["Document containing specific text"]],
         "metadatas": [[{"source": "doc.txt"}]],
@@ -91,7 +88,6 @@ def test_search_with_document_filter(chroma_tool):
     assert len(parsed_result) == 1
     assert "specific text" in parsed_result[0]["document"]
     
-    # Verify where_document clause was passed
     chroma_tool.collection.query.assert_called_with(
         query_texts=["test query"],
         n_results=3,
@@ -101,7 +97,6 @@ def test_search_with_document_filter(chroma_tool):
 
 def test_search_with_both_filters(chroma_tool):
     """Test search with both metadata and document filtering"""
-    # Mock filtered response
     chroma_tool.collection.query.return_value = {
         "documents": [["Filtered document with specific content"]],
         "metadatas": [[{"source": "special.txt", "category": "important"}]],
@@ -119,7 +114,6 @@ def test_search_with_both_filters(chroma_tool):
     assert parsed_result[0]["metadata"]["category"] == "important"
     assert "specific content" in parsed_result[0]["document"]
     
-    # Verify both filters were passed
     chroma_tool.collection.query.assert_called_with(
         query_texts=["test query"],
         n_results=3,
