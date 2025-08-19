@@ -1098,6 +1098,10 @@ patronus = [
 qdrant-client = [
     { name = "qdrant-client" },
 ]
+rag = [
+    { name = "lxml" },
+    { name = "python-docx" },
+]
 scrapegraph-py = [
     { name = "scrapegraph-py" },
 ]
@@ -1169,6 +1173,7 @@ requires-dist = [
     { name = "lancedb", specifier = ">=0.5.4" },
     { name = "langchain-apify", marker = "extra == 'apify'", specifier = ">=0.1.2,<1.0.0" },
     { name = "linkup-sdk", marker = "extra == 'linkup-sdk'", specifier = ">=0.2.2" },
+    { name = "lxml", marker = "extra == 'rag'", specifier = ">=5.3.0,<5.4.0" },
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.6.0" },
     { name = "mcpadapt", marker = "extra == 'mcp'", specifier = ">=0.1.9" },
     { name = "multion", marker = "extra == 'multion'", specifier = ">=1.1.0" },
@@ -1182,6 +1187,7 @@ requires-dist = [
     { name = "pygithub", marker = "extra == 'github'", specifier = "==1.59.1" },
     { name = "pymongo", marker = "extra == 'mongodb'", specifier = ">=4.13" },
     { name = "pyright", specifier = ">=1.1.350" },
+    { name = "python-docx", marker = "extra == 'rag'", specifier = ">=1.1.0" },
     { name = "pytube", specifier = ">=15.0.0" },
     { name = "qdrant-client", marker = "extra == 'qdrant-client'", specifier = ">=1.12.1" },
     { name = "requests", specifier = ">=2.31.0" },
