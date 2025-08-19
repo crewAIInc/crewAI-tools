@@ -7,19 +7,19 @@ import requests
 import os
 
 
-class ContextualQuerySchema(BaseModel):
+class ContextualAIQuerySchema(BaseModel):
     """Schema for contextual query tool."""
     query: str = Field(..., description="Query to send to the Contextual AI agent.")
     agent_id: str = Field(..., description="ID of the Contextual AI agent to query")
     datastore_id: Optional[str] = Field(None, description="Optional datastore ID for document readiness verification")
 
 
-class ContextualQueryTool(BaseTool):
+class ContextualAIQueryTool(BaseTool):
     """Tool to query Contextual AI RAG agents."""
     
     name: str = "Contextual AI Query Tool"
     description: str = "Use this tool to query a Contextual AI RAG agent with access to your documents"
-    args_schema: Type[BaseModel] = ContextualQuerySchema
+    args_schema: Type[BaseModel] = ContextualAIQuerySchema
     
     api_key: str
     contextual_client: Any = None

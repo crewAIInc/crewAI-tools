@@ -3,7 +3,7 @@ from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
 
-class ContextualParseSchema(BaseModel):
+class ContextualAIParseSchema(BaseModel):
     """Schema for contextual parse tool."""
     file_path: str = Field(..., description="Path to the document to parse")
     parse_mode: str = Field(default="standard", description="Parsing mode")
@@ -13,12 +13,12 @@ class ContextualParseSchema(BaseModel):
     output_types: List[str] = Field(default=["markdown-per-page"], description="List of output types")
 
 
-class ContextualParseTool(BaseTool):
+class ContextualAIParseTool(BaseTool):
     """Tool to parse documents using Contextual AI's parser."""
     
     name: str = "Contextual AI Document Parser"
     description: str = "Parse documents using Contextual AI's advanced document parser"
-    args_schema: Type[BaseModel] = ContextualParseSchema
+    args_schema: Type[BaseModel] = ContextualAIParseSchema
     
     api_key: str
     package_dependencies: List[str] = ["contextual-client"]

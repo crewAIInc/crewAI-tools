@@ -1,4 +1,4 @@
-# ContextualCreateAgentTool
+# ContextualAICreateAgentTool
 
 ## Description
 This tool is designed to integrate Contextual AI's enterprise-grade RAG agents with CrewAI. This tool enables you to create a new Contextual RAG agent. It uploads your documents to create a datastore and returns the Contextual agent ID and datastore ID.
@@ -15,10 +15,10 @@ pip install 'crewai[tools]' contextual-client
 ## Example
 
 ```python
-from crewai_tools import ContextualCreateAgentTool
+from crewai_tools import ContextualAICreateAgentTool
 
 # Initialize the tool
-tool = ContextualCreateAgentTool(api_key="your_api_key_here")
+tool = ContextualAICreateAgentTool(api_key="your_api_key_here")
 
 # Create agent with documents
 result = tool._run(
@@ -43,7 +43,7 @@ Example result:
 Successfully created agent 'Research Analyst' with ID: {created_agent_ID} and datastore ID: {created_datastore_ID}. Uploaded 5 documents.
 ```
 
-You can use `ContextualQueryTool` with the returned IDs to query the knowledge base and retrieve relevant information from your documents.
+You can use `ContextualAIQueryTool` with the returned IDs to query the knowledge base and retrieve relevant information from your documents.
 
 ## Key Features
 - **Complete Pipeline Setup**: Creates datastore, uploads documents, and configures agent in one operation

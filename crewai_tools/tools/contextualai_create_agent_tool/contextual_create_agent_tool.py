@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 import os
 
 
-class ContextualCreateAgentSchema(BaseModel):
+class ContextualAICreateAgentSchema(BaseModel):
     """Schema for contextual create agent tool."""
     agent_name: str = Field(..., description="Name for the new agent")
     agent_description: str = Field(..., description="Description for the new agent")
@@ -12,12 +12,12 @@ class ContextualCreateAgentSchema(BaseModel):
     document_paths: List[str] = Field(..., description="List of file paths to upload")
 
 
-class ContextualCreateAgentTool(BaseTool):
+class ContextualAICreateAgentTool(BaseTool):
     """Tool to create Contextual AI RAG agents with documents."""
     
     name: str = "Contextual AI Create Agent Tool"
     description: str = "Create a new Contextual AI RAG agent with documents and datastore"
-    args_schema: Type[BaseModel] = ContextualCreateAgentSchema
+    args_schema: Type[BaseModel] = ContextualAICreateAgentSchema
     
     api_key: str
     contextual_client: Any = None

@@ -3,7 +3,7 @@ from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
 
-class ContextualRerankSchema(BaseModel):
+class ContextualAIRerankSchema(BaseModel):
     """Schema for contextual rerank tool."""
     query: str = Field(..., description="The search query to rerank documents against")
     documents: List[str] = Field(..., description="List of document texts to rerank")
@@ -12,12 +12,12 @@ class ContextualRerankSchema(BaseModel):
     model: str = Field(default="ctxl-rerank-en-v1-instruct", description="Reranker model to use")
 
 
-class ContextualRerankTool(BaseTool):
+class ContextualAIRerankTool(BaseTool):
     """Tool to rerank documents using Contextual AI's instruction-following reranker."""
     
     name: str = "Contextual AI Document Reranker"
     description: str = "Rerank documents using Contextual AI's instruction-following reranker"
-    args_schema: Type[BaseModel] = ContextualRerankSchema
+    args_schema: Type[BaseModel] = ContextualAIRerankSchema
     
     api_key: str
     package_dependencies: List[str] = ["contextual-client"]

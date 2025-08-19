@@ -1,4 +1,4 @@
-# ContextualRerankTool
+# ContextualAIRerankTool
 
 ## Description
 This tool is designed to integrate Contextual AI's enterprise-grade instruction-following reranker with CrewAI, enabling you to intelligently reorder documents based on relevance and custom criteria. Use this tool to enhance search result quality and document retrieval for RAG systems using Contextual AI's reranking models that understand context and follow specific instructions for optimal document ordering.
@@ -15,9 +15,9 @@ pip install 'crewai[tools]' contextual-client
 ## Example
 
 ```python
-from crewai_tools import ContextualRerankTool
+from crewai_tools import ContextualAIRerankTool
 
-tool = ContextualRerankTool(api_key="your_api_key_here")
+tool = ContextualAIRerankTool(api_key="your_api_key_here")
 
 result = tool._run(
     query="financial performance and revenue metrics",

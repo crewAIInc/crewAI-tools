@@ -1,4 +1,4 @@
-# ContextualQueryTool
+# ContextualAIQueryTool
 
 ## Description
 This tool is designed to integrate Contextual AI's enterprise-grade RAG agents with CrewAI. Run this tool to query existing Contextual AI RAG agents that have been pre-configured with documents and knowledge bases.
@@ -17,10 +17,10 @@ pip install 'crewai[tools]' contextual-client
 Make sure you have already created a Contextual agent and ingested documents into the datastore before using this tool. 
 
 ```python
-from crewai_tools import ContextualQueryTool
+from crewai_tools import ContextualAIQueryTool
 
 # Initialize the tool
-tool = ContextualQueryTool(api_key="your_api_key_here")
+tool = ContextualAIQueryTool(api_key="your_api_key_here")
 
 # Query the agent with IDs
 result = tool._run(

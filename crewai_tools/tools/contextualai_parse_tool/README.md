@@ -1,4 +1,4 @@
-# ContextualParseTool
+# ContextualAIParseTool
 
 ## Description
 This tool is designed to integrate Contextual AI's enterprise-grade document parsing capabilities with CrewAI, enabling you to leverage advanced AI-powered document understanding for complex layouts, tables, and figures. Use this tool to extract structured content from your documents using Contextual AI's powerful document parser.
@@ -15,9 +15,9 @@ pip install 'crewai[tools]' contextual-client
 ## Example
 
 ```python
-from crewai_tools import ContextualParseTool
+from crewai_tools import ContextualAIParseTool
 
-tool = ContextualParseTool(api_key="your_api_key_here")
+tool = ContextualAIParseTool(api_key="your_api_key_here")
 
 result = tool._run(
     file_path="/path/to/document.pdf",
