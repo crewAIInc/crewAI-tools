@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.10, <3.14"
 resolution-markers = [
     "python_full_version >= '3.13' and platform_python_implementation == 'PyPy' and sys_platform == 'darwin'",
@@ -1157,7 +1157,7 @@ requires-dist = [
     { name = "beautifulsoup4", marker = "extra == 'bedrock'", specifier = ">=4.13.4" },
     { name = "bedrock-agentcore", marker = "extra == 'bedrock'", specifier = ">=0.1.0" },
     { name = "browserbase", marker = "extra == 'browserbase'", specifier = ">=1.0.5" },
-    { name = "chromadb", specifier = "==0.5.23" },
+    { name = "chromadb", specifier = ">=0.5.23" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
