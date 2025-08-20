@@ -53,6 +53,7 @@ from .tools import (
     PatronusLocalEvaluatorTool,
     PatronusPredefinedCriteriaEvalTool,
     PDFSearchTool,
+    PDFTextWritingTool,
     PGSearchTool,
     QdrantVectorSearchTool,
     RagTool,

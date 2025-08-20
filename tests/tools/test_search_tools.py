@@ -15,6 +15,7 @@ from crewai_tools.tools import (
     JSONSearchTool,
     MDXSearchTool,
     PDFSearchTool,
+    PDFTextWritingTool,
     TXTSearchTool,
     WebsiteSearchTool,
     XMLSearchTool,

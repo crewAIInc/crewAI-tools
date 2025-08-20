@@ -2,7 +2,8 @@ from pathlib import Path
 from typing import Optional, Type
 
 from pydantic import BaseModel, Field
-from pypdf import ContentStream, Font, NameObject, PageObject, PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
+from pypdf.annotations import FreeText
 
 from crewai_tools.tools.rag.rag_tool import RagTool
 
@@ -23,7 +24,7 @@ class PDFTextWritingToolSchema(BaseModel):
         default="F1", description="Font name for standard fonts"
     )
     font_file: Optional[str] = Field(
-        None, description="Path to a .ttf font file for custom font usage"
+        None, description="Path to a .ttf font file for custom font usage (currently not supported)"
     )
     page_number: int = Field(default=0, description="Page number to add text to")
 
@@ -44,47 +45,50 @@ class PDFTextWritingTool(RagTool):
         position: tuple,
         font_size: int,
         font_color: str,
-        font_name: str = "F1",
+        font_name: str = "Arial",
         font_file: Optional[str] = None,
         page_number: int = 0,
     ) -> str:
-        reader = PdfReader(pdf_path)
-        writer = PdfWriter()
+        try:
+            reader = PdfReader(pdf_path)
+            writer = PdfWriter()
 
-        if page_number >= len(reader.pages):
-            return "Page number out of range."
+            if page_number >= len(reader.pages):
+                return "Page number out of range."
 
-        page: PageObject = reader.pages[page_number]
-        content = ContentStream(page["/Contents"].data, reader)
+            for page in reader.pages:
+                writer.add_page(page)
 
-        if font_file:
-            # Check if the font file exists
-            if not Path(font_file).exists():
-                return "Font file does not exist."
+            x_position, y_position = position
+            rect = (x_position, y_position, x_position + 200, y_position + 50)
+            
+            if font_color == "0 0 0 rg":
+                color = "000000"  # black
+            elif font_color == "1 0 0 rg":
+                color = "ff0000"  # red
+            elif font_color == "0 1 0 rg":
+                color = "00ff00"  # green
+            elif font_color == "0 0 1 rg":
+                color = "0000ff"  # blue
+            else:
+                color = "000000"  # default to black
 
-            # Embed the custom font
-            font_name = self.embed_font(writer, font_file)
+            annotation = FreeText(
+                text=text,
+                rect=rect,
+                font=font_name,
+                font_size=f"{font_size}pt",
+                font_color=color,
+            )
 
-        # Prepare text operation with the custom or standard font
-        x_position, y_position = position
-        text_operation = f"BT /{font_name} {font_size} Tf {x_position} {y_position} Td ({text}) Tj ET"
-        content.operations.append([font_color])  # Set color
-        content.operations.append([text_operation])  # Add text
+            writer.add_annotation(page_number=page_number, annotation=annotation)
 
-        # Replace old content with new content
-        page[NameObject("/Contents")] = content
-        writer.add_page(page)
+            # Save the new PDF
+            output_pdf_path = "modified_output.pdf"
+            with open(output_pdf_path, "wb") as out_file:
+                writer.write(out_file)
 
-        # Save the new PDF
-        output_pdf_path = "modified_output.pdf"
-        with open(output_pdf_path, "wb") as out_file:
-            writer.write(out_file)
-
-        return f"Text added to {output_pdf_path} successfully."
-
-    def embed_font(self, writer: PdfWriter, font_file: str) -> str:
-        """Embeds a TTF font into the PDF and returns the font name."""
-        with open(font_file, "rb") as file:
-            font = Font.true_type(file.read())
-        font_ref = writer.add_object(font)
-        return font_ref
+            return f"Text added to {output_pdf_path} successfully."
+            
+        except Exception as e:
+            return f"Error adding text to PDF: {str(e)}"

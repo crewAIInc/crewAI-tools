@@ -57,6 +57,7 @@ from .patronus_eval_tool import (
     PatronusPredefinedCriteriaEvalTool,
 )
 from .pdf_search_tool.pdf_search_tool import PDFSearchTool
+from .pdf_text_writing_tool.pdf_text_writing_tool import PDFTextWritingTool
 from .pg_search_tool.pg_search_tool import PGSearchTool
 from .qdrant_vector_search_tool.qdrant_search_tool import QdrantVectorSearchTool
 from .rag.rag_tool import RagTool
