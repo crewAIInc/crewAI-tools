@@ -34,6 +34,7 @@ from .tools import (
     FirecrawlCrawlWebsiteTool,
     FirecrawlScrapeWebsiteTool,
     FirecrawlSearchTool,
+    GibsonAIQueryTool,
     GithubSearchTool,
     HyperbrowserLoadTool,
     JSONSearchTool,
