@@ -110,9 +110,10 @@ class WeaviateVectorSearchTool(BaseTool):
                 generative_config=self.generative_model,
             )
 
-        response = internal_docs.query.near_text(
+        response = internal_docs.query.hybrid(
             query=query,
             limit=self.limit,
+            alpha=self.alpha
         )
         json_response = ""
         for obj in response.objects:
