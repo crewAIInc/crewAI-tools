@@ -23,6 +23,7 @@ dependencies = [
     "tiktoken>=0.8.0",
     "stagehand>=0.4.1",
     "portalocker==2.7.0",
+    "desearch-py>=1.0.2",
 ]
 
 [project.urls]
