@@ -108,3 +108,5 @@ from .brightdata_tool import (
     BrightDataWebUnlockerTool
 )
 from .zapier_action_tool.zapier_action_tool import ZapierActionTools
+from .tavily_search_tool.tavily_search_tool import TavilySearchTool
+from .tavily_extractor_tool.tavily_extractor_tool import TavilyExtractorTool
