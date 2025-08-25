@@ -41,6 +41,7 @@ class WeaviateVectorSearchTool(BaseTool):
     collection_name: Optional[str] = None
     limit: Optional[int] = Field(default=3)
     headers: Optional[dict] = None
+    alpha: Optional[int] = Field(default=0.75)
     env_vars: List[EnvVar] = [
         EnvVar(name="OPENAI_API_KEY", description="OpenAI API key for embedding generation and retrieval", required=True),
     ]
