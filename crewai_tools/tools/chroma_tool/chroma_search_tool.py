@@ -55,16 +55,16 @@ class ChromaSearchTool(BaseTool):
             ):
                 import subprocess
 
-                subprocess.run(["uv", "pip", "install", "chromadb"], check=True)
+                subprocess.run(["uv", "add", "chromadb"], check=True)
             else:
                 raise ImportError(
-                    "You are missing the 'chromadb' package. Please install it with: uv pip install chromadb"
+                    "You are missing the 'chromadb' package. Please install it with: uv add chromadb"
                 )
 
     def _run(self, query: str, where: Optional[Dict[str, Any]] = None, where_document: Optional[Dict[str, Any]] = None) -> str:
         if not CHROMA_AVAILABLE:
             raise ImportError(
-                "You are missing the 'chromadb' package. Please install it with: uv pip install chromadb"
+                "You are missing the 'chromadb' package. Please install it with: uv add chromadb"
             )
 
         if not self.collection:
