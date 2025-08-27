@@ -146,6 +146,9 @@ dev-dependencies = [
     "pytest>=8.3.4",
 ]
 
+[tool.uv.sources]
+crewai = { git = "https://github.com/crewAIInc/crewAI.git", rev = "main" }
+
 [build-system]
 requires = [
     "hatchling",

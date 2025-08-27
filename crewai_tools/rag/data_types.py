@@ -36,6 +36,7 @@ class DataType(str, Enum):
         chunkers = {
             DataType.TEXT_FILE: ("text_chunker", "TextChunker"),
             DataType.TEXT: ("text_chunker", "TextChunker"),
+            DataType.PDF_FILE: ("text_chunker", "TextChunker"),
             DataType.DOCX: ("text_chunker", "DocxChunker"),
             DataType.MDX: ("text_chunker", "MdxChunker"),
 
@@ -62,6 +63,7 @@ class DataType(str, Enum):
         loaders = {
             DataType.TEXT_FILE: ("text_loader", "TextFileLoader"),
             DataType.TEXT: ("text_loader", "TextLoader"),
+            DataType.PDF_FILE: ("pdf_loader", "PDFLoader"),
             DataType.XML: ("xml_loader", "XMLLoader"),
             DataType.WEBSITE: ("webpage_loader", "WebPageLoader"),
             DataType.MDX: ("mdx_loader", "MDXLoader"),
