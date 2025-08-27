@@ -47,8 +47,11 @@ from .tools import (
     MySQLSearchTool,
     NL2SQLTool,
     OCRTool,
+<<<<<<< HEAD
     OxylabsUniversalScraperTool,
     OxylabsGoogleSearchScraperTool,
+=======
+>>>>>>> 7ab763f (fix: add OCR tool to available tools list)
     OxylabsAmazonProductScraperTool,
     OxylabsAmazonSearchScraperTool,
     OxylabsGoogleSearchScraperTool,
