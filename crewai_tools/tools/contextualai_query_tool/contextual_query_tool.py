@@ -2,7 +2,6 @@ from typing import Any, Optional, Type, List
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 import asyncio
-import nest_asyncio
 import requests
 import os
 
@@ -71,8 +70,12 @@ class ContextualAIQueryTool(BaseTool):
 
                 if loop and loop.is_running():
                     # Already inside an event loop 
-                    nest_asyncio.apply()
-                    loop.run_until_complete(self._wait_for_documents_async(datastore_id))
+                    try:
+                        import nest_asyncio
+                        nest_asyncio.apply(loop)
+                        loop.run_until_complete(self._wait_for_documents_async(datastore_id))
+                    except Exception as e:
+                        print(f"Failed to apply nest_asyncio: {str(e)}")
                 else:
                     asyncio.run(self._wait_for_documents_async(datastore_id))
         else:
