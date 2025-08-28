@@ -1,4 +1,4 @@
-from .adapters.enterprise_adapter import EnterpriseActionTool
+from .adapters.enterprise import EnterpriseActionTool
 from .adapters.mcp_adapter import MCPServerAdapter
 from .adapters.zapier_adapter import ZapierActionTool
 from .aws import (
