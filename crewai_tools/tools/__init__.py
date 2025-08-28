@@ -29,6 +29,7 @@ from .firecrawl_scrape_website_tool.firecrawl_scrape_website_tool import (
     FirecrawlScrapeWebsiteTool,
 )
 from .firecrawl_search_tool.firecrawl_search_tool import FirecrawlSearchTool
+from .gibsonai_query_tool.gibsonai_query_tool import GibsonAIQueryTool
 from .github_search_tool.github_search_tool import GithubSearchTool
 from .hyperbrowser_load_tool.hyperbrowser_load_tool import HyperbrowserLoadTool
 from .invoke_crewai_automation_tool.invoke_crewai_automation_tool import InvokeCrewAIAutomationTool
@@ -111,6 +112,6 @@ from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSea
 from .brightdata_tool import (
     BrightDataDatasetTool,
     BrightDataSearchTool,
-    BrightDataWebUnlockerTool
+    BrightDataWebUnlockerTool,
 )
 from .zapier_action_tool.zapier_action_tool import ZapierActionTools
