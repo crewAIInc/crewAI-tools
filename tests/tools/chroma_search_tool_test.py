@@ -19,24 +19,21 @@ def mock_collection():
 
 @pytest.fixture
 def chroma_tool(mock_collection):
-    with patch('crewai_tools.tools.chroma_tool.chroma_search_tool.CHROMA_AVAILABLE', True):
-        return ChromaSearchTool(collection=mock_collection)
+    return ChromaSearchTool(collection=mock_collection)
 
 
 def test_tool_initialization(mock_collection):
-    with patch('crewai_tools.tools.chroma_tool.chroma_search_tool.CHROMA_AVAILABLE', True):
-        tool = ChromaSearchTool(collection=mock_collection, limit=5)
+    tool = ChromaSearchTool(collection=mock_collection, limit=5)
         
-        assert tool.collection == mock_collection
-        assert tool.limit == 5
-        assert tool.name == "ChromaSearchTool"
+    assert tool.collection == mock_collection
+    assert tool.limit == 5
+    assert tool.name == "ChromaSearchTool"
 
 
 def test_missing_collection():
     """Test initialization fails without collection"""
-    with patch('crewai_tools.tools.chroma_tool.chroma_search_tool.CHROMA_AVAILABLE', True):
-        with pytest.raises(Exception):
-            ChromaSearchTool()
+    with pytest.raises(Exception):
+        ChromaSearchTool()
 
 
 def test_successful_search(chroma_tool):
