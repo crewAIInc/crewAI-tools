@@ -114,3 +114,8 @@ from .brightdata_tool import (
     BrightDataWebUnlockerTool
 )
 from .zapier_action_tool.zapier_action_tool import ZapierActionTools
+from .vectorx_vector_search_tool.vectorx_search_tool import (
+    VectorXVectorSearchTool,
+    VectorXSearchArgs,
+    SpladeSparseEmbedder,
+)
