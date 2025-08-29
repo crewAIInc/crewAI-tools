@@ -23,6 +23,7 @@ dependencies = [
     "tiktoken>=0.8.0",
     "stagehand>=0.4.1",
     "portalocker==2.7.0",
+    "google-genai>=1.32.0"
 ]
 
 [project.urls]
@@ -140,6 +141,9 @@ bedrock = [
 contextual = [
     "contextual-client>=0.1.0",
     "nest-asyncio>=1.6.0",
+]
+vectorx = [
+    "vecx>=0.33.1b5"
 ]
 
 [tool.pytest.ini_options]
