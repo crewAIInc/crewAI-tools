@@ -115,6 +115,80 @@
       }
     },
     {
+      "description": "Fetches metadata from Arxiv based on a search query and optionally downloads PDFs.",
+      "env_vars": [],
+      "humanized_name": "Arxiv Paper Fetcher and Downloader",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "additionalProperties": true,
+        "properties": {},
+        "title": "ArxivPaperTool",
+        "type": "object"
+      },
+      "name": "ArxivPaperTool",
+      "package_dependencies": [
+        "pydantic"
+      ],
+      "run_params_schema": {
+        "properties": {
+          "max_results": {
+            "default": 5,
+            "description": "Max results to fetch; must be between 1 and 100",
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Max Results",
+            "type": "integer"
+          },
+          "search_query": {
+            "description": "Search query for Arxiv, e.g., 'transformer neural network'",
+            "title": "Search Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "search_query"
+        ],
+        "title": "ArxivToolInput",
+        "type": "object"
+      }
+    },
+    {
       "description": "A tool that can be used to search the internet with a search_query.",
       "env_vars": [
         {
@@ -211,6 +285,509 @@
           "search_query"
         ],
         "title": "BraveSearchToolSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Scrapes structured data using Bright Data Dataset API from a URL and optional input parameters",
+      "env_vars": [],
+      "humanized_name": "Bright Data Dataset Tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "CrewAI-compatible tool for scraping structured data using Bright Data Datasets.\n\nAttributes:\n    name (str): Tool name displayed in the CrewAI environment.\n    description (str): Tool description shown to agents or users.\n    args_schema (Type[BaseModel]): Pydantic schema for validating input arguments.",
+        "properties": {
+          "additional_params": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Additional Params"
+          },
+          "dataset_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Dataset Type"
+          },
+          "format": {
+            "default": "json",
+            "title": "Format",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "zipcode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Zipcode"
+          }
+        },
+        "title": "BrightDataDatasetTool",
+        "type": "object"
+      },
+      "name": "BrightDataDatasetTool",
+      "package_dependencies": [],
+      "run_params_schema": {
+        "description": "Schema for validating input parameters for the BrightDataDatasetTool.\n\nAttributes:\n    dataset_type (str): Required Bright Data Dataset Type used to specify which dataset to access.\n    format (str): Response format (json by default). Multiple formats exist - json, ndjson, jsonl, csv\n    url (str): The URL from which structured data needs to be extracted.\n    zipcode (Optional[str]): An optional ZIP code to narrow down the data geographically.\n    additional_params (Optional[Dict]): Extra parameters for the Bright Data API call.",
+        "properties": {
+          "additional_params": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Additional params if any",
+            "title": "Additional Params"
+          },
+          "dataset_type": {
+            "description": "The Bright Data Dataset Type",
+            "title": "Dataset Type",
+            "type": "string"
+          },
+          "format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "json",
+            "description": "Response format (json by default)",
+            "title": "Format"
+          },
+          "url": {
+            "description": "The URL to extract data from",
+            "title": "Url",
+            "type": "string"
+          },
+          "zipcode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional zipcode",
+            "title": "Zipcode"
+          }
+        },
+        "required": [
+          "dataset_type",
+          "url"
+        ],
+        "title": "BrightDataDatasetToolSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Tool to perform web search using Bright Data SERP API.",
+      "env_vars": [],
+      "humanized_name": "Bright Data SERP Search",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "A web search tool that utilizes Bright Data's SERP API to perform queries and return either structured results\nor raw page content from search engines like Google or Bing.\n\nAttributes:\n    name (str): Tool name used by the agent.\n    description (str): A brief explanation of what the tool does.\n    args_schema (Type[BaseModel]): Schema class for validating tool arguments.\n    base_url (str): The Bright Data API endpoint used for making the POST request.\n    api_key (str): Bright Data API key loaded from the environment variable 'BRIGHT_DATA_API_KEY'.\n    zone (str): Zone identifier from Bright Data, loaded from the environment variable 'BRIGHT_DATA_ZONE'.\n\nRaises:\n    ValueError: If API key or zone environment variables are not set.",
+        "properties": {
+          "api_key": {
+            "default": "",
+            "title": "Api Key",
+            "type": "string"
+          },
+          "base_url": {
+            "default": "",
+            "title": "Base Url",
+            "type": "string"
+          },
+          "country": {
+            "default": "us",
+            "title": "Country",
+            "type": "string"
+          },
+          "device_type": {
+            "default": "desktop",
+            "title": "Device Type",
+            "type": "string"
+          },
+          "language": {
+            "default": "en",
+            "title": "Language",
+            "type": "string"
+          },
+          "parse_results": {
+            "default": true,
+            "title": "Parse Results",
+            "type": "boolean"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Query"
+          },
+          "search_engine": {
+            "default": "google",
+            "title": "Search Engine",
+            "type": "string"
+          },
+          "search_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Search Type"
+          },
+          "zone": {
+            "default": "",
+            "title": "Zone",
+            "type": "string"
+          }
+        },
+        "title": "BrightDataSearchTool",
+        "type": "object"
+      },
+      "name": "BrightDataSearchTool",
+      "package_dependencies": [],
+      "run_params_schema": {
+        "description": "Schema that defines the input arguments for the BrightDataSearchToolSchema.\n\nAttributes:\n    query (str): The search query to be executed (e.g., \"latest AI news\").\n    search_engine (Optional[str]): The search engine to use (\"google\", \"bing\", \"yandex\"). Default is \"google\".\n    country (Optional[str]): Two-letter country code for geo-targeting (e.g., \"us\", \"in\"). Default is \"us\".\n    language (Optional[str]): Language code for search results (e.g., \"en\", \"es\"). Default is \"en\".\n    search_type (Optional[str]): Type of search, such as \"isch\" (images), \"nws\" (news), \"jobs\", etc.\n    device_type (Optional[str]): Device type to simulate (\"desktop\", \"mobile\", \"ios\", \"android\"). Default is \"desktop\".\n    parse_results (Optional[bool]): If True, results will be returned in structured JSON. If False, raw HTML. Default is True.",
+        "properties": {
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "us",
+            "description": "Two-letter country code for geo-targeting (e.g., 'us', 'gb')",
+            "title": "Country"
+          },
+          "device_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "desktop",
+            "description": "Device type to simulate (e.g., 'mobile', 'desktop', 'ios')",
+            "title": "Device Type"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "en",
+            "description": "Language code (e.g., 'en', 'es') used in the query URL",
+            "title": "Language"
+          },
+          "parse_results": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": true,
+            "description": "Whether to parse and return JSON (True) or raw HTML/text (False)",
+            "title": "Parse Results"
+          },
+          "query": {
+            "description": "Search query to perform",
+            "title": "Query",
+            "type": "string"
+          },
+          "search_engine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "google",
+            "description": "Search engine domain (e.g., 'google', 'bing', 'yandex')",
+            "title": "Search Engine"
+          },
+          "search_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Type of search (e.g., 'isch' for images, 'nws' for news)",
+            "title": "Search Type"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "BrightDataSearchToolSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Tool to perform web scraping using Bright Data Web Unlocker",
+      "env_vars": [],
+      "humanized_name": "Bright Data Web Unlocker Scraping",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "A tool for performing web scraping using the Bright Data Web Unlocker API.\n\nThis tool allows automated and programmatic access to web pages by routing requests\nthrough Bright Data's unlocking and proxy infrastructure, which can bypass bot\nprotection mechanisms like CAPTCHA, geo-restrictions, and anti-bot detection.\n\nAttributes:\n    name (str): Name of the tool.\n    description (str): Description of what the tool does.\n    args_schema (Type[BaseModel]): Pydantic model schema for expected input arguments.\n    base_url (str): Base URL of the Bright Data Web Unlocker API.\n    api_key (str): Bright Data API key (must be set in the BRIGHT_DATA_API_KEY environment variable).\n    zone (str): Bright Data zone identifier (must be set in the BRIGHT_DATA_ZONE environment variable).\n\nMethods:\n    _run(**kwargs: Any) -> Any:\n        Sends a scraping request to Bright Data's Web Unlocker API and returns the result.",
+        "properties": {
+          "api_key": {
+            "default": "",
+            "title": "Api Key",
+            "type": "string"
+          },
+          "base_url": {
+            "default": "",
+            "title": "Base Url",
+            "type": "string"
+          },
+          "data_format": {
+            "default": "markdown",
+            "title": "Data Format",
+            "type": "string"
+          },
+          "format": {
+            "default": "raw",
+            "title": "Format",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "zone": {
+            "default": "",
+            "title": "Zone",
+            "type": "string"
+          }
+        },
+        "title": "BrightDataWebUnlockerTool",
+        "type": "object"
+      },
+      "name": "BrightDataWebUnlockerTool",
+      "package_dependencies": [],
+      "run_params_schema": {
+        "description": "Pydantic schema for input parameters used by the BrightDataWebUnlockerTool.\n\nThis schema defines the structure and validation for parameters passed when performing\na web scraping request using Bright Data's Web Unlocker.\n\nAttributes:\n    url (str): The target URL to scrape.\n    format (Optional[str]): Format of the response returned by Bright Data. Default 'raw' format.\n    data_format (Optional[str]): Response data format (html by default). markdown is one more option.",
+        "properties": {
+          "data_format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "markdown",
+            "description": "Response data format (html by default)",
+            "title": "Data Format"
+          },
+          "format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "raw",
+            "description": "Response format (raw is standard)",
+            "title": "Format"
+          },
+          "url": {
+            "description": "URL to perform the web scraping",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "BrightDataUnlockerToolSchema",
         "type": "object"
       }
     },
@@ -741,6 +1318,440 @@
       "run_params_schema": {}
     },
     {
+      "description": "Create a new Contextual AI RAG agent with documents and datastore",
+      "env_vars": [],
+      "humanized_name": "Contextual AI Create Agent Tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "Tool to create Contextual AI RAG agents with documents.",
+        "properties": {
+          "api_key": {
+            "title": "Api Key",
+            "type": "string"
+          },
+          "contextual_client": {
+            "default": null,
+            "title": "Contextual Client"
+          }
+        },
+        "required": [
+          "api_key"
+        ],
+        "title": "ContextualAICreateAgentTool",
+        "type": "object"
+      },
+      "name": "ContextualAICreateAgentTool",
+      "package_dependencies": [
+        "contextual-client"
+      ],
+      "run_params_schema": {
+        "description": "Schema for contextual create agent tool.",
+        "properties": {
+          "agent_description": {
+            "description": "Description for the new agent",
+            "title": "Agent Description",
+            "type": "string"
+          },
+          "agent_name": {
+            "description": "Name for the new agent",
+            "title": "Agent Name",
+            "type": "string"
+          },
+          "datastore_name": {
+            "description": "Name for the new datastore",
+            "title": "Datastore Name",
+            "type": "string"
+          },
+          "document_paths": {
+            "description": "List of file paths to upload",
+            "items": {
+              "type": "string"
+            },
+            "title": "Document Paths",
+            "type": "array"
+          }
+        },
+        "required": [
+          "agent_name",
+          "agent_description",
+          "datastore_name",
+          "document_paths"
+        ],
+        "title": "ContextualAICreateAgentSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Parse documents using Contextual AI's advanced document parser",
+      "env_vars": [],
+      "humanized_name": "Contextual AI Document Parser",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "Tool to parse documents using Contextual AI's parser.",
+        "properties": {
+          "api_key": {
+            "title": "Api Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "api_key"
+        ],
+        "title": "ContextualAIParseTool",
+        "type": "object"
+      },
+      "name": "ContextualAIParseTool",
+      "package_dependencies": [
+        "contextual-client"
+      ],
+      "run_params_schema": {
+        "description": "Schema for contextual parse tool.",
+        "properties": {
+          "enable_document_hierarchy": {
+            "default": true,
+            "description": "Enable document hierarchy",
+            "title": "Enable Document Hierarchy",
+            "type": "boolean"
+          },
+          "figure_caption_mode": {
+            "default": "concise",
+            "description": "Figure caption mode",
+            "title": "Figure Caption Mode",
+            "type": "string"
+          },
+          "file_path": {
+            "description": "Path to the document to parse",
+            "title": "File Path",
+            "type": "string"
+          },
+          "output_types": {
+            "default": [
+              "markdown-per-page"
+            ],
+            "description": "List of output types",
+            "items": {
+              "type": "string"
+            },
+            "title": "Output Types",
+            "type": "array"
+          },
+          "page_range": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Page range to parse (e.g., '0-5')",
+            "title": "Page Range"
+          },
+          "parse_mode": {
+            "default": "standard",
+            "description": "Parsing mode",
+            "title": "Parse Mode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_path"
+        ],
+        "title": "ContextualAIParseSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Use this tool to query a Contextual AI RAG agent with access to your documents",
+      "env_vars": [],
+      "humanized_name": "Contextual AI Query Tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "Tool to query Contextual AI RAG agents.",
+        "properties": {
+          "api_key": {
+            "title": "Api Key",
+            "type": "string"
+          },
+          "contextual_client": {
+            "default": null,
+            "title": "Contextual Client"
+          }
+        },
+        "required": [
+          "api_key"
+        ],
+        "title": "ContextualAIQueryTool",
+        "type": "object"
+      },
+      "name": "ContextualAIQueryTool",
+      "package_dependencies": [
+        "contextual-client"
+      ],
+      "run_params_schema": {
+        "description": "Schema for contextual query tool.",
+        "properties": {
+          "agent_id": {
+            "description": "ID of the Contextual AI agent to query",
+            "title": "Agent Id",
+            "type": "string"
+          },
+          "datastore_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional datastore ID for document readiness verification",
+            "title": "Datastore Id"
+          },
+          "query": {
+            "description": "Query to send to the Contextual AI agent.",
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query",
+          "agent_id"
+        ],
+        "title": "ContextualAIQuerySchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Rerank documents using Contextual AI's instruction-following reranker",
+      "env_vars": [],
+      "humanized_name": "Contextual AI Document Reranker",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "Tool to rerank documents using Contextual AI's instruction-following reranker.",
+        "properties": {
+          "api_key": {
+            "title": "Api Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "api_key"
+        ],
+        "title": "ContextualAIRerankTool",
+        "type": "object"
+      },
+      "name": "ContextualAIRerankTool",
+      "package_dependencies": [
+        "contextual-client"
+      ],
+      "run_params_schema": {
+        "description": "Schema for contextual rerank tool.",
+        "properties": {
+          "documents": {
+            "description": "List of document texts to rerank",
+            "items": {
+              "type": "string"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "instruction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional instruction for reranking behavior",
+            "title": "Instruction"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional metadata for each document",
+            "title": "Metadata"
+          },
+          "model": {
+            "default": "ctxl-rerank-en-v1-instruct",
+            "description": "Reranker model to use",
+            "title": "Model",
+            "type": "string"
+          },
+          "query": {
+            "description": "The search query to rerank documents against",
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query",
+          "documents"
+        ],
+        "title": "ContextualAIRerankSchema",
+        "type": "object"
+      }
+    },
+    {
       "description": "A tool to search the Couchbase database for relevant information on internal documents.",
       "env_vars": [],
       "humanized_name": "CouchbaseFTSVectorSearchTool",
@@ -797,6 +1808,16 @@
               null
             ],
             "title": "Bucket Name"
+          },
+          "cluster": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cluster"
           },
           "collection_name": {
             "anyOf": [
@@ -2160,6 +3181,113 @@
       }
     },
     {
+      "description": "A tool that leverages CrewAI Studio's capabilities to automatically generate complete CrewAI automations based on natural language descriptions. It translates high-level requirements into functional CrewAI implementations.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "Personal Access Token for CrewAI Enterprise API",
+          "name": "CREWAI_PERSONAL_ACCESS_TOKEN",
+          "required": true
+        },
+        {
+          "default": null,
+          "description": "Base URL for CrewAI Enterprise API",
+          "name": "CREWAI_PLUS_URL",
+          "required": false
+        }
+      ],
+      "humanized_name": "Generate CrewAI Automation",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "crewai_enterprise_url": {
+            "description": "The base URL of CrewAI Enterprise. If not provided, it will be loaded from the environment variable CREWAI_PLUS_URL with default https://app.crewai.com.",
+            "title": "Crewai Enterprise Url",
+            "type": "string"
+          },
+          "personal_access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The user's Personal Access Token to access CrewAI Enterprise API. If not provided, it will be loaded from the environment variable CREWAI_PERSONAL_ACCESS_TOKEN.",
+            "title": "Personal Access Token"
+          }
+        },
+        "title": "GenerateCrewaiAutomationTool",
+        "type": "object"
+      },
+      "name": "GenerateCrewaiAutomationTool",
+      "package_dependencies": [],
+      "run_params_schema": {
+        "properties": {
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The identifier for the CrewAI Enterprise organization. If not specified, a default organization will be used.",
+            "title": "Organization Id"
+          },
+          "prompt": {
+            "description": "The prompt to generate the CrewAI automation, e.g. 'Generate a CrewAI automation that will scrape the website and store the data in a database.'",
+            "title": "Prompt",
+            "type": "string"
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "title": "GenerateCrewaiAutomationToolSchema",
+        "type": "object"
+      }
+    },
+    {
       "description": "A tool that can be used to semantic search a query from a github repo's content. This is not the GitHub API, but instead a tool that can provide semantic search capabilities.",
       "env_vars": [],
       "humanized_name": "Search a github repo's content",
@@ -2397,6 +3525,89 @@
           "params"
         ],
         "title": "HyperbrowserLoadToolSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Invokes an CrewAI Platform Automation using API",
+      "env_vars": [],
+      "humanized_name": "invoke_amp_automation",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "A CrewAI tool for invoking external crew/flows APIs.\n\nThis tool provides CrewAI Platform API integration with external crew services, supporting:\n- Dynamic input schema configuration\n- Automatic polling for task completion\n- Bearer token authentication\n- Comprehensive error handling\n\nExample:\n    Basic usage:\n    >>> tool = InvokeCrewAIAutomationTool(\n    ...     crew_api_url=\"https://api.example.com\",\n    ...     crew_bearer_token=\"your_token\",\n    ...     crew_name=\"My Crew\",\n    ...     crew_description=\"Description of what the crew does\"\n    ... )\n    \n    With custom inputs:\n    >>> custom_inputs = {\n    ...     \"param1\": Field(..., description=\"Description of param1\"),\n    ...     \"param2\": Field(default=\"default_value\", description=\"Description of param2\")\n    ... }\n    >>> tool = InvokeCrewAIAutomationTool(\n    ...     crew_api_url=\"https://api.example.com\",\n    ...     crew_bearer_token=\"your_token\",\n    ...     crew_name=\"My Crew\",\n    ...     crew_description=\"Description of what the crew does\",\n    ...     crew_inputs=custom_inputs\n    ... )\n    \n    Example:\n    >>> tools=[\n    ...     InvokeCrewAIAutomationTool(\n    ...         crew_api_url=\"https://canary-crew-[...].crewai.com\",\n    ...         crew_bearer_token=\"[Your token: abcdef012345]\",\n    ...         crew_name=\"State of AI Report\",\n    ...         crew_description=\"Retrieves a report on state of AI for a given year.\",\n    ...         crew_inputs={\n    ...             \"year\": Field(..., description=\"Year to retrieve the report for (integer)\")\n    ...         }\n    ...     )\n    ... ]",
+        "properties": {
+          "crew_api_url": {
+            "title": "Crew Api Url",
+            "type": "string"
+          },
+          "crew_bearer_token": {
+            "title": "Crew Bearer Token",
+            "type": "string"
+          },
+          "max_polling_time": {
+            "default": 600,
+            "title": "Max Polling Time",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "crew_api_url",
+          "crew_bearer_token"
+        ],
+        "title": "InvokeCrewAIAutomationTool",
+        "type": "object"
+      },
+      "name": "InvokeCrewAIAutomationTool",
+      "package_dependencies": [],
+      "run_params_schema": {
+        "description": "Input schema for InvokeCrewAIAutomationTool.",
+        "properties": {
+          "prompt": {
+            "description": "The prompt or query to send to the crew",
+            "title": "Prompt",
+            "type": "string"
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "title": "InvokeCrewAIAutomationInput",
         "type": "object"
       }
     },
@@ -2906,62 +4117,6 @@
       "run_params_schema": {
         "description": "Input for MongoDBTool.",
         "properties": {
-          "include_embeddings": {
-            "default": false,
-            "description": "Whether to include the embedding vector of each result in metadata.",
-            "title": "Include Embeddings",
-            "type": "boolean"
-          },
-          "limit": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": 4,
-            "description": "number of documents to return.",
-            "title": "Limit"
-          },
-          "oversampling_factor": {
-            "default": 10,
-            "description": "Multiple of limit used when generating number of candidates at each step in the HNSW Vector Search",
-            "title": "Oversampling Factor",
-            "type": "integer"
-          },
-          "post_filter_pipeline": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": true,
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "description": "Pipeline of MongoDB aggregation stages to filter/process results after $vectorSearch.",
-            "title": "Post Filter Pipeline"
-          },
-          "pre_filter": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "description": "List of MQL match expressions comparing an indexed field",
-            "title": "Pre Filter"
-          },
           "query": {
             "description": "The query to search retrieve relevant information from the MongoDB database. Pass only the query, not the question.",
             "title": "Query",
@@ -3252,6 +4407,68 @@
       }
     },
     {
+      "description": "This tool uses an LLM's API to extract text from an image file.",
+      "env_vars": [],
+      "humanized_name": "Optical Character Recognition Tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "A tool for performing Optical Character Recognition on images.\n\nThis tool leverages LLMs to extract text from images. It can process\nboth local image files and images available via URLs.\n\nAttributes:\n    name (str): Name of the tool.\n    description (str): Description of the tool's functionality.\n    args_schema (Type[BaseModel]): Pydantic schema for input validation.\n\nPrivate Attributes:\n    _llm (Optional[LLM]): Language model instance for making API calls.",
+        "properties": {},
+        "title": "OCRTool",
+        "type": "object"
+      },
+      "name": "OCRTool",
+      "package_dependencies": [],
+      "run_params_schema": {
+        "description": "Input schema for Optical Character Recognition Tool.\n\nAttributes:\n    image_path_url (str): Path to a local image file or URL of an image.\n        For local files, provide the absolute or relative path.\n        For remote images, provide the complete URL starting with 'http' or 'https'.",
+        "properties": {
+          "image_path_url": {
+            "default": "The image path or URL.",
+            "title": "Image Path Url",
+            "type": "string"
+          }
+        },
+        "title": "OCRToolSchema",
+        "type": "object"
+      }
+    },
+    {
       "description": "Scrape Amazon product pages with Oxylabs Amazon Product Scraper",
       "env_vars": [
         {
@@ -3423,9 +4640,13 @@
         "properties": {
           "config": {
             "$ref": "#/$defs/OxylabsAmazonProductScraperConfig"
+          },
+          "oxylabs_api": {
+            "title": "Oxylabs Api"
           }
         },
         "required": [
+          "oxylabs_api",
           "config"
         ],
         "title": "OxylabsAmazonProductScraperTool",
@@ -3648,9 +4869,13 @@
         "properties": {
           "config": {
             "$ref": "#/$defs/OxylabsAmazonSearchScraperConfig"
+          },
+          "oxylabs_api": {
+            "title": "Oxylabs Api"
           }
         },
         "required": [
+          "oxylabs_api",
           "config"
         ],
         "title": "OxylabsAmazonSearchScraperTool",
@@ -3886,9 +5111,13 @@
         "properties": {
           "config": {
             "$ref": "#/$defs/OxylabsGoogleSearchScraperConfig"
+          },
+          "oxylabs_api": {
+            "title": "Oxylabs Api"
           }
         },
         "required": [
+          "oxylabs_api",
           "config"
         ],
         "title": "OxylabsGoogleSearchScraperTool",
@@ -4072,9 +5301,13 @@
         "properties": {
           "config": {
             "$ref": "#/$defs/OxylabsUniversalScraperConfig"
+          },
+          "oxylabs_api": {
+            "title": "Oxylabs Api"
           }
         },
         "required": [
+          "oxylabs_api",
           "config"
         ],
         "title": "OxylabsUniversalScraperTool",
@@ -5714,6 +6947,83 @@
       }
     },
     {
+      "description": "Scrapes website content using Serper's scraping API. This tool can extract clean, readable content from any website URL, optionally including markdown formatting for better structure.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Serper",
+          "name": "SERPER_API_KEY",
+          "required": true
+        }
+      ],
+      "humanized_name": "serper_scrape_website",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "properties": {},
+        "title": "SerperScrapeWebsiteTool",
+        "type": "object"
+      },
+      "name": "SerperScrapeWebsiteTool",
+      "package_dependencies": [],
+      "run_params_schema": {
+        "description": "Input schema for SerperScrapeWebsite.",
+        "properties": {
+          "include_markdown": {
+            "default": true,
+            "description": "Whether to include markdown formatting in the scraped content",
+            "title": "Include Markdown",
+            "type": "boolean"
+          },
+          "url": {
+            "description": "The URL of the website to scrape",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "SerperScrapeWebsiteInput",
+        "type": "object"
+      }
+    },
+    {
       "description": "A tool to perform to perform a job search in the US with a search_query.",
       "env_vars": [
         {
@@ -6349,6 +7659,152 @@
       }
     },
     {
+      "description": "A tool that can be used to semantic search a query from a database.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "A comprehensive URL string that can encapsulate host, port, username, password, and database information, often used in environments like SingleStore notebooks or specific frameworks. For example: 'me:p455w0rd@s2-host.com/my_db'",
+          "name": "SINGLESTOREDB_URL",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "Specifies the hostname, IP address, or URL of the SingleStoreDB workspace or cluster",
+          "name": "SINGLESTOREDB_HOST",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "Defines the port number on which the SingleStoreDB server is listening",
+          "name": "SINGLESTOREDB_PORT",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "Specifies the database user name",
+          "name": "SINGLESTOREDB_USER",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "Specifies the database user password",
+          "name": "SINGLESTOREDB_PASSWORD",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "Name of the database to connect to",
+          "name": "SINGLESTOREDB_DATABASE",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "File containing SSL key",
+          "name": "SINGLESTOREDB_SSL_KEY",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "File containing SSL certificate",
+          "name": "SINGLESTOREDB_SSL_CERT",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "File containing SSL certificate authority",
+          "name": "SINGLESTOREDB_SSL_CA",
+          "required": false
+        },
+        {
+          "default": null,
+          "description": "The timeout for connecting to the database in seconds",
+          "name": "SINGLESTOREDB_CONNECT_TIMEOUT",
+          "required": false
+        }
+      ],
+      "humanized_name": "Search a database's table(s) content",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "A tool for performing semantic searches on SingleStore database tables.\n\nThis tool provides a safe interface for executing SELECT and SHOW queries\nagainst a SingleStore database with connection pooling for optimal performance.",
+        "properties": {
+          "connection_args": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Connection Args",
+            "type": "object"
+          },
+          "connection_pool": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Connection Pool"
+          }
+        },
+        "title": "SingleStoreSearchTool",
+        "type": "object"
+      },
+      "name": "SingleStoreSearchTool",
+      "package_dependencies": [
+        "singlestoredb",
+        "SQLAlchemy"
+      ],
+      "run_params_schema": {
+        "description": "Input schema for SingleStoreSearchTool.\n\nThis schema defines the expected input format for the search tool,\nensuring that only valid SELECT and SHOW queries are accepted.",
+        "properties": {
+          "search_query": {
+            "description": "Mandatory semantic search query you want to use to search the database's content. Only SELECT and SHOW queries are supported.",
+            "title": "Search Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "search_query"
+        ],
+        "title": "SingleStoreSearchToolSchema",
+        "type": "object"
+      }
+    },
+    {
       "description": "Execute SQL queries or semantic search on Snowflake data warehouse. Supports both raw SQL and natural language queries.",
       "env_vars": [],
       "humanized_name": "Snowflake Database Search",
@@ -6771,7 +8227,7 @@
       }
     },
     {
-      "description": "Use this tool to control a web browser and interact with websites using natural language.\n    \n    Capabilities:\n    - Navigate to websites and follow links\n    - Click buttons, links, and other elements\n    - Fill in forms and input fields\n    - Search within websites\n    - Extract information from web pages\n    - Identify and analyze elements on a page\n    \n    To use this tool, provide a natural language instruction describing what you want to do.\n    For different types of tasks, specify the command_type:\n    - 'act': For performing actions (default)\n    - 'navigate': For navigating to a URL (shorthand for act with navigation)\n    - 'extract': For getting data from the page\n    - 'observe': For finding and analyzing elements",
+      "description": "Use this tool to control a web browser and interact with websites using natural language.\n\n    Capabilities:\n    - Navigate to websites and follow links\n    - Click buttons, links, and other elements\n    - Fill in forms and input fields\n    - Search within websites\n    - Extract information from web pages\n    - Identify and analyze elements on a page\n\n    To use this tool, provide a natural language instruction describing what you want to do.\n    For reliability on complex pages, use specific, atomic instructions with location hints:\n    - Good: \"Click the search box in the header\"\n    - Good: \"Type 'Italy' in the focused field\"\n    - Bad: \"Search for Italy and click the first result\"\n\n    For different types of tasks, specify the command_type:\n    - 'act': For performing one atomic action (default)\n    - 'navigate': For navigating to a URL\n    - 'extract': For getting data from a specific page section\n    - 'observe': For finding elements in a specific area",
       "env_vars": [],
       "humanized_name": "Web Automation Tool",
       "init_params_schema": {
@@ -6824,6 +8280,7 @@
             "type": "object"
           }
         },
+        "description": "A tool that uses Stagehand to automate web browser interactions using natural language with atomic action handling.\n\nStagehand allows AI agents to interact with websites through a browser,\nperforming actions like clicking buttons, filling forms, and extracting data.\n\nThe tool supports four main command types:\n1. act - Perform actions like clicking, typing, scrolling, or navigating\n2. navigate - Specifically navigate to a URL (shorthand for act with navigation)\n3. extract - Extract structured data from web pages\n4. observe - Identify and analyze elements on a page\n\nUsage examples:\n- Navigate to a website: instruction=\"Go to the homepage\", url=\"https://example.com\"\n- Click a button: instruction=\"Click the login button\"\n- Fill a form: instruction=\"Fill the login form with username 'user' and password 'pass'\"\n- Extract data: instruction=\"Extract all product prices and names\", command_type=\"extract\"\n- Observe elements: instruction=\"Find all navigation menu items\", command_type=\"observe\"\n- Complex tasks: instruction=\"Step 1: Navigate to https://example.com; Step 2: Scroll down to the 'Features' section; Step 3: Click 'Learn More'\", command_type=\"act\"\n\nExample of breaking down \"Search for OpenAI\" into multiple steps:\n1. First navigation: instruction=\"Go to Google\", url=\"https://google.com\", command_type=\"navigate\"\n2. Enter search term: instruction=\"Type 'OpenAI' in the search box\", command_type=\"act\"\n3. Submit search: instruction=\"Press the Enter key or click the search button\", command_type=\"act\"\n4. Click on result: instruction=\"Click on the OpenAI website link in the search results\", command_type=\"act\"",
         "properties": {
           "api_key": {
             "anyOf": [
@@ -6846,6 +8303,11 @@
             "default": false,
             "title": "Headless",
             "type": "boolean"
+          },
+          "max_retries_on_token_limit": {
+            "default": 3,
+            "title": "Max Retries On Token Limit",
+            "type": "integer"
           },
           "model_api_key": {
             "anyOf": [
@@ -6896,8 +8358,13 @@
                 "type": "null"
               }
             ],
-            "default": "http://api.stagehand.browserbase.com/v1",
+            "default": "https://api.stagehand.browserbase.com/v1",
             "title": "Server Url"
+          },
+          "use_simplified_dom": {
+            "default": true,
+            "title": "Use Simplified Dom",
+            "type": "boolean"
           },
           "verbose": {
             "default": 1,
@@ -6914,9 +8381,7 @@
         "type": "object"
       },
       "name": "StagehandTool",
-      "package_dependencies": [
-        "stagehand"
-      ],
+      "package_dependencies": [],
       "run_params_schema": {
         "description": "Input for StagehandTool.",
         "properties": {
@@ -6930,13 +8395,21 @@
               }
             ],
             "default": "act",
-            "description": "The type of command to execute (choose one): \n        - 'act': Perform an action like clicking buttons, filling forms, etc. (default)\n        - 'navigate': Specifically navigate to a URL\n        - 'extract': Extract structured data from the page \n        - 'observe': Identify and analyze elements on the page\n        ",
+            "description": "The type of command to execute (choose one):\n        - 'act': Perform an action like clicking buttons, filling forms, etc. (default)\n        - 'navigate': Specifically navigate to a URL\n        - 'extract': Extract structured data from the page\n        - 'observe': Identify and analyze elements on the page\n        ",
             "title": "Command Type"
           },
           "instruction": {
-            "description": "Natural language instruction describing what you want to do on the website. Be specific about the action you want to perform, data to extract, or elements to observe. If your task is complex, break it down into simple, sequential steps. For example: 'Step 1: Navigate to https://example.com; Step 2: Click the login button; Step 3: Enter your credentials; Step 4: Submit the form.' Complex tasks like 'Search for OpenAI' should be broken down as: 'Step 1: Navigate to https://google.com; Step 2: Type OpenAI in the search box; Step 3: Press Enter or click the search button'.",
-            "title": "Instruction",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Single atomic action with location context. For reliability on complex pages, use ONE specific action with location hints. Good examples: 'Click the search input field in the header', 'Type Italy in the focused field', 'Press Enter', 'Click the first link in the results area'. Avoid combining multiple actions. For 'navigate' command type, this can be omitted if only URL is provided.",
+            "title": "Instruction"
           },
           "url": {
             "anyOf": [
@@ -6952,9 +8425,6 @@
             "title": "Url"
           }
         },
-        "required": [
-          "instruction"
-        ],
         "title": "StagehandToolSchema",
         "type": "object"
       }
@@ -7053,6 +8523,408 @@
           "txt"
         ],
         "title": "TXTSearchToolSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Extracts content from one or more web pages using the Tavily API. Returns structured data.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Tavily extraction service",
+          "name": "TAVILY_API_KEY",
+          "required": true
+        }
+      ],
+      "humanized_name": "TavilyExtractorTool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Tavily API key. If not provided, it will be loaded from the environment variable TAVILY_API_KEY.",
+            "title": "Api Key"
+          },
+          "async_client": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Async Client"
+          },
+          "client": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Client"
+          },
+          "extract_depth": {
+            "default": "basic",
+            "description": "The depth of extraction. 'basic' for basic extraction, 'advanced' for advanced extraction.",
+            "enum": [
+              "basic",
+              "advanced"
+            ],
+            "title": "Extract Depth",
+            "type": "string"
+          },
+          "include_images": {
+            "default": false,
+            "description": "Whether to include images in the extraction.",
+            "title": "Include Images",
+            "type": "boolean"
+          },
+          "proxies": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional proxies to use for the Tavily API requests.",
+            "title": "Proxies"
+          },
+          "timeout": {
+            "default": 60,
+            "description": "The timeout for the extraction request in seconds.",
+            "title": "Timeout",
+            "type": "integer"
+          }
+        },
+        "title": "TavilyExtractorTool",
+        "type": "object"
+      },
+      "name": "TavilyExtractorTool",
+      "package_dependencies": [
+        "tavily-python"
+      ],
+      "run_params_schema": {
+        "description": "Input schema for TavilyExtractorTool.",
+        "properties": {
+          "urls": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "The URL(s) to extract data from. Can be a single URL or a list of URLs.",
+            "title": "Urls"
+          }
+        },
+        "required": [
+          "urls"
+        ],
+        "title": "TavilyExtractorToolSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "A tool that performs web searches using the Tavily Search API. It returns a JSON object containing the search results.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Tavily search service",
+          "name": "TAVILY_API_KEY",
+          "required": true
+        }
+      ],
+      "humanized_name": "Tavily Search",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "description": "Tool that uses the Tavily Search API to perform web searches.\n\nAttributes:\n    client: An instance of TavilyClient.\n    async_client: An instance of AsyncTavilyClient.\n    name: The name of the tool.\n    description: A description of the tool's purpose.\n    args_schema: The schema for the tool's arguments.\n    api_key: The Tavily API key.\n    proxies: Optional proxies for the API requests.\n    search_depth: The depth of the search.\n    topic: The topic to focus the search on.\n    time_range: The time range for the search.\n    days: The number of days to search back.\n    max_results: The maximum number of results to return.\n    include_domains: A list of domains to include in the search.\n    exclude_domains: A list of domains to exclude from the search.\n    include_answer: Whether to include a direct answer to the query.\n    include_raw_content: Whether to include the raw content of the search results.\n    include_images: Whether to include images in the search results.\n    timeout: The timeout for the search request in seconds.\n    max_content_length_per_result: Maximum length for the 'content' of each search result.",
+        "properties": {
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The Tavily API key. If not provided, it will be loaded from the environment variable TAVILY_API_KEY.",
+            "title": "Api Key"
+          },
+          "async_client": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Async Client"
+          },
+          "client": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Client"
+          },
+          "days": {
+            "default": 7,
+            "description": "The number of days to search back.",
+            "title": "Days",
+            "type": "integer"
+          },
+          "exclude_domains": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "A list of domains to exclude from the search.",
+            "title": "Exclude Domains"
+          },
+          "include_answer": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "enum": [
+                  "basic",
+                  "advanced"
+                ],
+                "type": "string"
+              }
+            ],
+            "default": false,
+            "description": "Whether to include a direct answer to the query.",
+            "title": "Include Answer"
+          },
+          "include_domains": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "A list of domains to include in the search.",
+            "title": "Include Domains"
+          },
+          "include_images": {
+            "default": false,
+            "description": "Whether to include images in the search results.",
+            "title": "Include Images",
+            "type": "boolean"
+          },
+          "include_raw_content": {
+            "default": false,
+            "description": "Whether to include the raw content of the search results.",
+            "title": "Include Raw Content",
+            "type": "boolean"
+          },
+          "max_content_length_per_result": {
+            "default": 1000,
+            "description": "Maximum length for the 'content' of each search result to avoid context window issues.",
+            "title": "Max Content Length Per Result",
+            "type": "integer"
+          },
+          "max_results": {
+            "default": 5,
+            "description": "The maximum number of results to return.",
+            "title": "Max Results",
+            "type": "integer"
+          },
+          "proxies": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional proxies to use for the Tavily API requests.",
+            "title": "Proxies"
+          },
+          "search_depth": {
+            "default": "basic",
+            "description": "The depth of the search.",
+            "enum": [
+              "basic",
+              "advanced"
+            ],
+            "title": "Search Depth",
+            "type": "string"
+          },
+          "time_range": {
+            "anyOf": [
+              {
+                "enum": [
+                  "day",
+                  "week",
+                  "month",
+                  "year"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The time range for the search.",
+            "title": "Time Range"
+          },
+          "timeout": {
+            "default": 60,
+            "description": "The timeout for the search request in seconds.",
+            "title": "Timeout",
+            "type": "integer"
+          },
+          "topic": {
+            "default": "general",
+            "description": "The topic to focus the search on.",
+            "enum": [
+              "general",
+              "news",
+              "finance"
+            ],
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "title": "TavilySearchTool",
+        "type": "object"
+      },
+      "name": "TavilySearchTool",
+      "package_dependencies": [
+        "tavily-python"
+      ],
+      "run_params_schema": {
+        "description": "Input schema for TavilySearchTool.",
+        "properties": {
+          "query": {
+            "description": "The search query string.",
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "TavilySearchToolSchema",
         "type": "object"
       }
     },
@@ -7174,10 +9046,9 @@
             "type": "object"
           },
           "Vectorizers": {
-            "description": "The available vectorization modules in Weaviate.\n\nThese modules encode binary data into lists of floats called vectors.\nSee the [docs](https://weaviate.io/developers/weaviate/modules/retriever-vectorizer-modules) for more details.\n\nAttributes:\n    NONE: No vectorizer.\n    TEXT2VEC_AWS: Weaviate module backed by AWS text-based embedding models.\n    TEXT2VEC_COHERE: Weaviate module backed by Cohere text-based embedding models.\n    TEXT2VEC_CONTEXTIONARY: Weaviate module backed by Contextionary text-based embedding models.\n    TEXT2VEC_GPT4ALL: Weaviate module backed by GPT-4-All text-based embedding models.\n    TEXT2VEC_HUGGINGFACE: Weaviate module backed by HuggingFace text-based embedding models.\n    TEXT2VEC_OPENAI: Weaviate module backed by OpenAI and Azure-OpenAI text-based embedding models.\n    TEXT2VEC_PALM: Weaviate module backed by PaLM text-based embedding models.\n    TEXT2VEC_TRANSFORMERS: Weaviate module backed by Transformers text-based embedding models.\n    TEXT2VEC_JINAAI: Weaviate module backed by Jina AI text-based embedding models.\n    TEXT2VEC_VOYAGEAI: Weaviate module backed by Voyage AI text-based embedding models.\n    TEXT2VEC_NVIDIA: Weaviate module backed by NVIDIA text-based embedding models.\n    TEXT2VEC_WEAVIATE: Weaviate module backed by Weaviate's self-hosted text-based embedding models.\n    IMG2VEC_NEURAL: Weaviate module backed by a ResNet-50 neural network for images.\n    MULTI2VEC_CLIP: Weaviate module backed by a Sentence-BERT CLIP model for images and text.\n    MULTI2VEC_PALM: Weaviate module backed by a palm model for images and text.\n    MULTI2VEC_BIND: Weaviate module backed by the ImageBind model for images, text, audio, depth, IMU, thermal, and video.\n    MULTI2VEC_VOYAGEAI: Weaviate module backed by a Voyage AI multimodal embedding models.\n    MULTI2VEC_NVIDIA: Weaviate module backed by NVIDIA multimodal embedding models.\n    REF2VEC_CENTROID: Weaviate module backed by a centroid-based model that calculates an object's vectors from its referenced vectors.",
+            "description": "The available vectorization modules in Weaviate.\n\nThese modules encode binary data into lists of floats called vectors.\nSee the [docs](https://weaviate.io/developers/weaviate/modules/retriever-vectorizer-modules) for more details.\n\nAttributes:\n    `NONE`\n        No vectorizer.\n    `TEXT2VEC_AWS`\n        Weaviate module backed by AWS text-based embedding models.\n    `TEXT2VEC_COHERE`\n        Weaviate module backed by Cohere text-based embedding models.\n    `TEXT2VEC_CONTEXTIONARY`\n        Weaviate module backed by Contextionary text-based embedding models.\n    `TEXT2VEC_GPT4ALL`\n        Weaviate module backed by GPT-4-All text-based embedding models.\n    `TEXT2VEC_HUGGINGFACE`\n        Weaviate module backed by HuggingFace text-based embedding models.\n    `TEXT2VEC_OPENAI`\n        Weaviate module backed by OpenAI and Azure-OpenAI text-based embedding models.\n    `TEXT2VEC_PALM`\n        Weaviate module backed by PaLM text-based embedding models.\n    `TEXT2VEC_TRANSFORMERS`\n        Weaviate module backed by Transformers text-based embedding models.\n    `TEXT2VEC_JINAAI`\n        Weaviate module backed by Jina AI text-based embedding models.\n    `TEXT2VEC_VOYAGEAI`\n        Weaviate module backed by Voyage AI text-based embedding models.\n    `TEXT2VEC_WEAVIATE`\n        Weaviate module backed by Weaviate's self-hosted text-based embedding models.\n    `IMG2VEC_NEURAL`\n        Weaviate module backed by a ResNet-50 neural network for images.\n    `MULTI2VEC_CLIP`\n        Weaviate module backed by a Sentence-BERT CLIP model for images and text.\n    `MULTI2VEC_PALM`\n        Weaviate module backed by a palm model for images and text.\n    `MULTI2VEC_BIND`\n        Weaviate module backed by the ImageBind model for images, text, audio, depth, IMU, thermal, and video.\n    `MULTI2VEC_VOYAGEAI`\n        Weaviate module backed by a Voyage AI multimodal embedding models.\n    `REF2VEC_CENTROID`\n        Weaviate module backed by a centroid-based model that calculates an object's vectors from its referenced vectors.",
             "enum": [
               "none",
-              "text2colbert-jinaai",
               "text2vec-aws",
               "text2vec-cohere",
               "text2vec-contextionary",
@@ -7185,7 +9056,6 @@
               "text2vec-gpt4all",
               "text2vec-huggingface",
               "text2vec-mistral",
-              "text2vec-nvidia",
               "text2vec-ollama",
               "text2vec-openai",
               "text2vec-palm",
@@ -7200,7 +9070,6 @@
               "multi2vec-bind",
               "multi2vec-palm",
               "multi2vec-voyageai",
-              "multi2vec-nvidia",
               "ref2vec-centroid"
             ],
             "title": "Vectorizers",
@@ -7209,6 +9078,18 @@
         },
         "description": "Tool to search the Weaviate database",
         "properties": {
+          "alpha": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 0.75,
+            "title": "Alpha"
+          },
           "collection_name": {
             "anyOf": [
               {
