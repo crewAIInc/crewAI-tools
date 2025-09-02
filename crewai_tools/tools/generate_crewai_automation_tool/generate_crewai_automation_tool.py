@@ -48,7 +48,7 @@ class GenerateCrewaiAutomationTool(BaseTool):
     def _run(self, **kwargs) -> str:
         input_data = GenerateCrewaiAutomationToolSchema(**kwargs)
         response = requests.post(
-            f"{self.crewai_enterprise_url}/api/v1/studio",
+            f"{self.crewai_enterprise_url}/crewai_plus/api/v1/studio",
             headers=self._get_headers(input_data.organization_id),
             json={"prompt": input_data.prompt},
         )

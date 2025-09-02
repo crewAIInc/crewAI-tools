@@ -79,7 +79,7 @@ def test_successful_generation_without_org_id(mock_post, tool):
         == "Generated CrewAI Studio project URL: https://app.crewai.com/studio/project-123"
     )
     mock_post.assert_called_once_with(
-        "https://app.crewai.com/api/v1/studio",
+        "https://app.crewai.com/crewai_plus/api/v1/studio",
         headers={
             "Authorization": "Bearer test_token",
             "Content-Type": "application/json",
@@ -104,7 +104,7 @@ def test_successful_generation_with_org_id(mock_post, tool):
         == "Generated CrewAI Studio project URL: https://app.crewai.com/studio/project-456"
     )
     mock_post.assert_called_once_with(
-        "https://app.crewai.com/api/v1/studio",
+        "https://app.crewai.com/crewai_plus/api/v1/studio",
         headers={
             "Authorization": "Bearer test_token",
             "Content-Type": "application/json",
@@ -126,7 +126,7 @@ def test_custom_base_url_usage(mock_post, custom_url_tool):
     custom_url_tool.run(prompt="Create automation")
 
     mock_post.assert_called_once_with(
-        "https://custom.crewai.com/api/v1/studio",
+        "https://custom.crewai.com/crewai_plus/api/v1/studio",
         headers={
             "Authorization": "Bearer test_token",
             "Content-Type": "application/json",
