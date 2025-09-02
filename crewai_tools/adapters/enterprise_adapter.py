@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import logging
 from typing import List, Any, Dict, Literal, Optional, Union, get_origin, Type, cast
 from pydantic import Field, create_model
 from crewai.tools import BaseTool
@@ -241,6 +242,7 @@ class EnterpriseActionTool(BaseTool):
                 if field_name not in cleaned_kwargs:
                     cleaned_kwargs[field_name] = None
 
+
             api_url = f"{self.enterprise_api_base_url}/actions/{self.action_name}/execute"
             headers = {
                 "Authorization": f"Bearer {self.enterprise_action_token}",
@@ -272,7 +274,7 @@ class EnterpriseActionKitToolAdapter:
         enterprise_api_base_url: Optional[str] = None,
     ):
         """Initialize the adapter with an enterprise action token."""
-        self.enterprise_action_token = enterprise_action_token
+        self._set_enterprise_action_token(enterprise_action_token)
         self._actions_schema = {}
         self._tools = None
         self.enterprise_api_base_url = enterprise_api_base_url or get_enterprise_api_base_url()
@@ -287,15 +289,6 @@ class EnterpriseActionKitToolAdapter:
     def _fetch_actions(self):
         """Fetch available actions from the API."""
         try:
-            if (
-                self.enterprise_action_token is None
-                or self.enterprise_action_token == ""
-            ):
-                token = os.environ.get("CREWAI_ENTERPRISE_TOOLS_TOKEN")
-                if token:
-                    self.enterprise_action_token = token
-                else:
-                    return "No enterprise action token provided"
 
             actions_url = f"{self.enterprise_api_base_url}/actions"
             headers = {"Authorization": f"Bearer {self.enterprise_action_token}"}
@@ -413,6 +406,16 @@ class EnterpriseActionKitToolAdapter:
             tools.append(tool)
 
         self._tools = tools
+
+    def _set_enterprise_action_token(self, enterprise_action_token: Optional[str]):
+        if enterprise_action_token and not enterprise_action_token.startswith("PK_"):
+            logging.warning(
+                "Legacy token detected, please consider using the new Enterprise Action Auth token. Check out our docs for more information https://docs.crewai.com/en/enterprise/features/integrations."
+            )
+
+        token = enterprise_action_token or os.environ.get("CREWAI_ENTERPRISE_TOOLS_TOKEN")
+
+        self.enterprise_action_token = token
 
     def __enter__(self):
         return self.tools()
