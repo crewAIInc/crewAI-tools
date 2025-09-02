@@ -10,7 +10,7 @@ Set your CrewAI Personal Access Token (CrewAI Enterprise > Settings > Account > 
 
 ```bash
 export CREWAI_PERSONAL_ACCESS_TOKEN="your_personal_access_token_here"
-export CREWAI_BASE_URL="https://app.crewai.com"  # optional
+export CREWAI_PLUS_URL="https://app.crewai.com"  # optional
 ```
 
 ## Example

@@ -13,7 +13,7 @@ from crewai_tools.tools.generate_crewai_automation_tool.generate_crewai_automati
 @pytest.fixture(autouse=True)
 def mock_env():
     with patch.dict(os.environ, {"CREWAI_PERSONAL_ACCESS_TOKEN": "test_token"}):
-        os.environ.pop("CREWAI_BASE_URL", None)
+        os.environ.pop("CREWAI_PLUS_URL", None)
         yield
 
 
@@ -24,7 +24,7 @@ def tool():
 
 @pytest.fixture
 def custom_url_tool():
-    with patch.dict(os.environ, {"CREWAI_BASE_URL": "https://custom.crewai.com"}):
+    with patch.dict(os.environ, {"CREWAI_PLUS_URL": "https://custom.crewai.com"}):
         return GenerateCrewaiAutomationTool()
 
 
