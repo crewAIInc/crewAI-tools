@@ -16,6 +16,7 @@ from .tools import (
     BrightDataSearchTool,
     BrightDataDatasetTool,
     BrowserbaseLoadTool,
+    CambAITTSTool,
     CodeDocsSearchTool,
     CodeInterpreterTool,
     ComposioTool,
