@@ -788,6 +788,23 @@ wheels = [
 ]
 
 [[package]]
+name = "contextual-client"
+version = "0.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "distro" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "sniffio" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/02/4d/1219b84a73551c1f70be465c8e4b496ebf788152f7b124a84cc3895d2390/contextual_client-0.8.0.tar.gz", hash = "sha256:e97c3e7c5d9b5a97f23fb7b4adfe34d8d9a42817415335b1b48f6d6774bc2747", size = 148896, upload-time = "2025-08-26T23:40:34.967Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/80/f1/336d9fe785004b38f3850367833be8c7d91a4a8f2ceefae5e1cfa5d08a05/contextual_client-0.8.0-py3-none-any.whl", hash = "sha256:41b6fba00e7bddd1ca06bbd3ddc7269c400e049f7c82b2bcc5302746c704dda3", size = 154607, upload-time = "2025-08-26T23:40:33.545Z" },
+]
+
+[[package]]
 name = "contourpy"
 version = "1.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -982,7 +999,7 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.165.1"
+version = "0.175.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
@@ -1012,14 +1029,14 @@ dependencies = [
     { name = "tomli-w" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3c/fd/4f1d30f8966a5d21c785f80b1edce2a0505373180ddeba5c2026c969dd5a/crewai-0.165.1.tar.gz", hash = "sha256:8f0c1e13fad39092ed7e2116722ec01361cb68a0ed5a05158374d1262cc49b8f", size = 6450486, upload-time = "2025-08-19T03:06:45.623Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a8/21/1f549b409d0ee77b54cde03a69d935bbe6d9edaedb9d5fe461a90cd76c1b/crewai-0.175.0.tar.gz", hash = "sha256:f8c1a5464a366aaefa24b2b1a2b9ac4c2bb66104b7d166b9202e9df4b73db087", size = 6549349, upload-time = "2025-08-28T02:33:07.052Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/01/68d92b7fffed5995a9b069e7517d353033d1735dac7d0349e5c62a18a842/crewai-0.165.1-py3-none-any.whl", hash = "sha256:9bdc8e26dfddd54a2a7046cc8625ea37a4cbd9588fa4d372317325421523ec25", size = 380622, upload-time = "2025-08-19T03:06:43.239Z" },
+    { url = "https://files.pythonhosted.org/packages/dc/77/ce6c6f013d4be3ae7b22a6c15a1adf460c2c4ca379ea96b84e81b3b5b7a0/crewai-0.175.0-py3-none-any.whl", hash = "sha256:e2cc92b423c226cfa1c4c45ac4881f2a4f8d9d16ae75fe09a6bad8d2dbeb13f6", size = 413752, upload-time = "2025-08-28T02:33:05.443Z" },
 ]
 
 [[package]]
 name = "crewai-tools"
-version = "0.65.0"
+version = "0.69.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
@@ -1056,6 +1073,10 @@ browserbase = [
 ]
 composio-core = [
     { name = "composio-core" },
+]
+contextual = [
+    { name = "contextual-client" },
+    { name = "nest-asyncio" },
 ]
 couchbase = [
     { name = "couchbase" },
@@ -1160,8 +1181,9 @@ requires-dist = [
     { name = "chromadb", specifier = "==0.5.23" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
+    { name = "contextual-client", marker = "extra == 'contextual'", specifier = ">=0.1.0" },
     { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
-    { name = "crewai", specifier = ">=0.165.1" },
+    { name = "crewai", specifier = ">=0.175.0" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },
@@ -1178,6 +1200,7 @@ requires-dist = [
     { name = "mcpadapt", marker = "extra == 'mcp'", specifier = ">=0.1.9" },
     { name = "multion", marker = "extra == 'multion'", specifier = ">=1.1.0" },
     { name = "nest-asyncio", marker = "extra == 'bedrock'", specifier = ">=1.6.0" },
+    { name = "nest-asyncio", marker = "extra == 'contextual'", specifier = ">=1.6.0" },
     { name = "openai", specifier = ">=1.12.0" },
     { name = "oxylabs", marker = "extra == 'oxylabs'", specifier = "==2.0.0" },
     { name = "patronus", marker = "extra == 'patronus'", specifier = ">=0.0.16" },
@@ -1208,7 +1231,7 @@ requires-dist = [
     { name = "unstructured", extras = ["local-inference", "all-docs"], marker = "extra == 'xml'", specifier = ">=0.17.2" },
     { name = "weaviate-client", marker = "extra == 'weaviate-client'", specifier = ">=4.10.2" },
 ]
-provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "composio-core", "browserbase", "weaviate-client", "patronus", "serpapi", "beautifulsoup4", "selenium", "spider-client", "scrapegraph-py", "linkup-sdk", "tavily-python", "hyperbrowser", "snowflake", "singlestore", "exa-py", "qdrant-client", "apify", "databricks-sdk", "couchbase", "mcp", "stagehand", "github", "rag", "xml", "oxylabs", "mongodb", "bedrock"]
+provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "composio-core", "browserbase", "weaviate-client", "patronus", "serpapi", "beautifulsoup4", "selenium", "spider-client", "scrapegraph-py", "linkup-sdk", "tavily-python", "hyperbrowser", "snowflake", "singlestore", "exa-py", "qdrant-client", "apify", "databricks-sdk", "couchbase", "mcp", "stagehand", "github", "rag", "xml", "oxylabs", "mongodb", "bedrock", "contextual"]
 
 [package.metadata.requires-dev]
 dev = [
