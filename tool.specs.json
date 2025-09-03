@@ -2508,16 +2508,6 @@
             "required": false,
             "title": "Api Key"
           },
-          "client": {
-            "anyOf": [
-              {},
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Client"
-          },
           "content": {
             "anyOf": [
               {
@@ -3187,6 +3177,113 @@
           "query"
         ],
         "title": "FirecrawlSearchToolSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "A tool that leverages CrewAI Studio's capabilities to automatically generate complete CrewAI automations based on natural language descriptions. It translates high-level requirements into functional CrewAI implementations.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "Personal Access Token for CrewAI Enterprise API",
+          "name": "CREWAI_PERSONAL_ACCESS_TOKEN",
+          "required": true
+        },
+        {
+          "default": null,
+          "description": "Base URL for CrewAI Enterprise API",
+          "name": "CREWAI_PLUS_URL",
+          "required": false
+        }
+      ],
+      "humanized_name": "Generate CrewAI Automation",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "crewai_enterprise_url": {
+            "description": "The base URL of CrewAI Enterprise. If not provided, it will be loaded from the environment variable CREWAI_PLUS_URL with default https://app.crewai.com.",
+            "title": "Crewai Enterprise Url",
+            "type": "string"
+          },
+          "personal_access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The user's Personal Access Token to access CrewAI Enterprise API. If not provided, it will be loaded from the environment variable CREWAI_PERSONAL_ACCESS_TOKEN.",
+            "title": "Personal Access Token"
+          }
+        },
+        "title": "GenerateCrewaiAutomationTool",
+        "type": "object"
+      },
+      "name": "GenerateCrewaiAutomationTool",
+      "package_dependencies": [],
+      "run_params_schema": {
+        "properties": {
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The identifier for the CrewAI Enterprise organization. If not specified, a default organization will be used.",
+            "title": "Organization Id"
+          },
+          "prompt": {
+            "description": "The prompt to generate the CrewAI automation, e.g. 'Generate a CrewAI automation that will scrape the website and store the data in a database.'",
+            "title": "Prompt",
+            "type": "string"
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "title": "GenerateCrewaiAutomationToolSchema",
         "type": "object"
       }
     },
@@ -8135,6 +8232,18 @@
       "humanized_name": "Web Automation Tool",
       "init_params_schema": {
         "$defs": {
+          "AvailableModel": {
+            "enum": [
+              "gpt-4o",
+              "gpt-4o-mini",
+              "claude-3-5-sonnet-latest",
+              "claude-3-7-sonnet-latest",
+              "computer-use-preview",
+              "gemini-2.0-flash"
+            ],
+            "title": "AvailableModel",
+            "type": "string"
+          },
           "EnvVar": {
             "properties": {
               "default": {
@@ -8211,6 +8320,17 @@
             ],
             "default": null,
             "title": "Model Api Key"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/AvailableModel"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "claude-3-7-sonnet-latest"
           },
           "project_id": {
             "anyOf": [
@@ -8809,82 +8929,6 @@
       }
     },
     {
-      "description": "Tool for semantic search using VectorX vector DB with optional sparse embedding support (SPLADE).",
-      "env_vars": [],
-      "humanized_name": "VectorXVectorSearchTool",
-      "init_params_schema": {
-        "$defs": {
-          "EnvVar": {
-            "properties": {
-              "default": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "default": null,
-                "title": "Default"
-              },
-              "description": {
-                "title": "Description",
-                "type": "string"
-              },
-              "name": {
-                "title": "Name",
-                "type": "string"
-              },
-              "required": {
-                "default": true,
-                "title": "Required",
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "name",
-              "description"
-            ],
-            "title": "EnvVar",
-            "type": "object"
-          }
-        },
-        "description": "CrewAI Tool for semantic search using VectorX vector database.\n\nSupports both dense (semantic) and sparse (keyword-like via SPLADE) search.\nDefault embedding model is Gemini via `google-genai`.\n\nAttributes:\n    api_token: API token for VectorX.\n    collection_name: Name of the index/collection in VectorX.\n    embed_fn: Custom embedding function (optional).\n    encryption_key: Encryption key for secure collections.\n    space_type: Vector distance metric (e.g., \"cosine\").\n    use_sparse: Whether to use sparse (SPLADE) embedding.\n    sparse_embedder: SPLADE embedder instance.\n    sparse_vocab_size: Vocabulary size for sparse encoder.\n    top_k: Number of results to retrieve.",
-        "properties": {},
-        "title": "VectorXVectorSearchTool",
-        "type": "object"
-      },
-      "name": "VectorXVectorSearchTool",
-      "package_dependencies": [],
-      "run_params_schema": {
-        "description": "Argument schema for VectorX search tool.",
-        "properties": {
-          "query": {
-            "title": "Query",
-            "type": "string"
-          },
-          "top_k": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Top K"
-          }
-        },
-        "required": [
-          "query"
-        ],
-        "title": "VectorXSearchArgs",
-        "type": "object"
-      }
-    },
-    {
       "description": "This tool uses OpenAI's Vision API to describe the contents of an image.",
       "env_vars": [
         {
@@ -9002,10 +9046,9 @@
             "type": "object"
           },
           "Vectorizers": {
-            "description": "The available vectorization modules in Weaviate.\n\nThese modules encode binary data into lists of floats called vectors.\nSee the [docs](https://weaviate.io/developers/weaviate/modules/retriever-vectorizer-modules) for more details.\n\nAttributes:\n    NONE: No vectorizer.\n    TEXT2VEC_AWS: Weaviate module backed by AWS text-based embedding models.\n    TEXT2VEC_COHERE: Weaviate module backed by Cohere text-based embedding models.\n    TEXT2VEC_CONTEXTIONARY: Weaviate module backed by Contextionary text-based embedding models.\n    TEXT2VEC_GPT4ALL: Weaviate module backed by GPT-4-All text-based embedding models.\n    TEXT2VEC_HUGGINGFACE: Weaviate module backed by HuggingFace text-based embedding models.\n    TEXT2VEC_OPENAI: Weaviate module backed by OpenAI and Azure-OpenAI text-based embedding models.\n    TEXT2VEC_PALM: Weaviate module backed by PaLM text-based embedding models.\n    TEXT2VEC_TRANSFORMERS: Weaviate module backed by Transformers text-based embedding models.\n    TEXT2VEC_JINAAI: Weaviate module backed by Jina AI text-based embedding models.\n    TEXT2VEC_VOYAGEAI: Weaviate module backed by Voyage AI text-based embedding models.\n    TEXT2VEC_NVIDIA: Weaviate module backed by NVIDIA text-based embedding models.\n    TEXT2VEC_WEAVIATE: Weaviate module backed by Weaviate's self-hosted text-based embedding models.\n    IMG2VEC_NEURAL: Weaviate module backed by a ResNet-50 neural network for images.\n    MULTI2VEC_CLIP: Weaviate module backed by a Sentence-BERT CLIP model for images and text.\n    MULTI2VEC_PALM: Weaviate module backed by a palm model for images and text.\n    MULTI2VEC_BIND: Weaviate module backed by the ImageBind model for images, text, audio, depth, IMU, thermal, and video.\n    MULTI2VEC_VOYAGEAI: Weaviate module backed by a Voyage AI multimodal embedding models.\n    MULTI2VEC_NVIDIA: Weaviate module backed by NVIDIA multimodal embedding models.\n    REF2VEC_CENTROID: Weaviate module backed by a centroid-based model that calculates an object's vectors from its referenced vectors.",
+            "description": "The available vectorization modules in Weaviate.\n\nThese modules encode binary data into lists of floats called vectors.\nSee the [docs](https://weaviate.io/developers/weaviate/modules/retriever-vectorizer-modules) for more details.\n\nAttributes:\n    `NONE`\n        No vectorizer.\n    `TEXT2VEC_AWS`\n        Weaviate module backed by AWS text-based embedding models.\n    `TEXT2VEC_COHERE`\n        Weaviate module backed by Cohere text-based embedding models.\n    `TEXT2VEC_CONTEXTIONARY`\n        Weaviate module backed by Contextionary text-based embedding models.\n    `TEXT2VEC_GPT4ALL`\n        Weaviate module backed by GPT-4-All text-based embedding models.\n    `TEXT2VEC_HUGGINGFACE`\n        Weaviate module backed by HuggingFace text-based embedding models.\n    `TEXT2VEC_OPENAI`\n        Weaviate module backed by OpenAI and Azure-OpenAI text-based embedding models.\n    `TEXT2VEC_PALM`\n        Weaviate module backed by PaLM text-based embedding models.\n    `TEXT2VEC_TRANSFORMERS`\n        Weaviate module backed by Transformers text-based embedding models.\n    `TEXT2VEC_JINAAI`\n        Weaviate module backed by Jina AI text-based embedding models.\n    `TEXT2VEC_VOYAGEAI`\n        Weaviate module backed by Voyage AI text-based embedding models.\n    `TEXT2VEC_WEAVIATE`\n        Weaviate module backed by Weaviate's self-hosted text-based embedding models.\n    `IMG2VEC_NEURAL`\n        Weaviate module backed by a ResNet-50 neural network for images.\n    `MULTI2VEC_CLIP`\n        Weaviate module backed by a Sentence-BERT CLIP model for images and text.\n    `MULTI2VEC_PALM`\n        Weaviate module backed by a palm model for images and text.\n    `MULTI2VEC_BIND`\n        Weaviate module backed by the ImageBind model for images, text, audio, depth, IMU, thermal, and video.\n    `MULTI2VEC_VOYAGEAI`\n        Weaviate module backed by a Voyage AI multimodal embedding models.\n    `REF2VEC_CENTROID`\n        Weaviate module backed by a centroid-based model that calculates an object's vectors from its referenced vectors.",
             "enum": [
               "none",
-              "text2colbert-jinaai",
               "text2vec-aws",
               "text2vec-cohere",
               "text2vec-contextionary",
@@ -9013,8 +9056,6 @@
               "text2vec-gpt4all",
               "text2vec-huggingface",
               "text2vec-mistral",
-              "text2vec-model2vec",
-              "text2vec-nvidia",
               "text2vec-ollama",
               "text2vec-openai",
               "text2vec-palm",
@@ -9026,11 +9067,9 @@
               "multi2vec-clip",
               "multi2vec-cohere",
               "multi2vec-jinaai",
-              "multi2multivec-jinaai",
               "multi2vec-bind",
               "multi2vec-palm",
               "multi2vec-voyageai",
-              "multi2vec-nvidia",
               "ref2vec-centroid"
             ],
             "title": "Vectorizers",
