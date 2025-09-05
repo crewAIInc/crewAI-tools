@@ -23,6 +23,7 @@ dependencies = [
     "tiktoken>=0.8.0",
     "stagehand>=0.4.1",
     "portalocker==2.7.0",
+    "steel-sdk>=0.9.2",
 ]
 
 [project.urls]
@@ -34,6 +35,9 @@ Documentation = "https://docs.crewai.com"
 [project.scripts]
 
 [project.optional-dependencies]
+steel-sdk = [
+    "steel-sdk>=0.9.2",
+]
 scrapfly-sdk = [
     "scrapfly-sdk>=0.8.19",
 ]

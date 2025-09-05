@@ -83,6 +83,7 @@ from .tools import (
     SnowflakeSearchTool,
     SpiderTool,
     StagehandTool,
+    SteelScrapeWebsiteTool,
     TavilyExtractorTool,
     TavilySearchTool,
     TXTSearchTool,
