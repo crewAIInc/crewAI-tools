@@ -14,6 +14,10 @@ Use when you need accurate, up-to-date web snippets and URLs from trusted source
 
 - YOU_API_KEY (required) — used as `X-API-Key`
 
+## Parameters
+
+- `query` (str, required): Natural‑language search query. Returns structured results (web/news) with snippets and URLs.
+
 ## Usage (published)
 
 ```python
