@@ -1,4 +1,6 @@
 import os
+import json
+from urllib.parse import urlparse
 from unittest.mock import patch
 
 import pytest
@@ -35,7 +37,11 @@ def test_happy_path(mock_post, monkeypatch):
 
     tool = ParallelSearchTool()
     result = tool.run(objective="When was the UN established?", search_queries=["Founding year UN"]) 
-    assert "search_id" in result
-    assert "https://www.un.org" in result
+    data = json.loads(result)
+    assert "search_id" in data
+    urls = [r.get("url", "") for r in data.get("results", [])]
+    # Validate host against allowed set instead of substring matching
+    allowed_hosts = {"www.un.org", "un.org"}
+    assert any(urlparse(u).netloc in allowed_hosts for u in urls)
 
 
