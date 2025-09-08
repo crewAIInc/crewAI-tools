@@ -121,6 +121,7 @@ from .youtube_channel_search_tool.youtube_channel_search_tool import (
 )
 from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSearchTool
 from .zapier_action_tool.zapier_action_tool import ZapierActionTools
+from .you_search_tool.you_search_tool import YouSearchTool
 from .parallel_tools import (
     ParallelSearchTool,
 )
