@@ -57,6 +57,12 @@ from .multion_tool.multion_tool import MultiOnTool
 from .mysql_search_tool.mysql_search_tool import MySQLSearchTool
 from .nl2sql.nl2sql_tool import NL2SQLTool
 from .ocr_tool.ocr_tool import OCRTool
+from .olostep_google_search_tool.olostep_google_search_tool import (
+    OlostepGoogleSearchTool,
+)
+from .olostep_web_scraper_tool.olostep_web_scraper_tool import (
+    OlostepWebScraperTool,
+)
 from .oxylabs_amazon_product_scraper_tool.oxylabs_amazon_product_scraper_tool import (
     OxylabsAmazonProductScraperTool,
 )

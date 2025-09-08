@@ -52,6 +52,8 @@ from .tools import (
     MySQLSearchTool,
     NL2SQLTool,
     OCRTool,
+    OlostepGoogleSearchTool,
+    OlostepWebScraperTool,
     OxylabsAmazonProductScraperTool,
     OxylabsAmazonSearchScraperTool,
     OxylabsGoogleSearchScraperTool,
