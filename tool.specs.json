@@ -2508,6 +2508,16 @@
             "required": false,
             "title": "Api Key"
           },
+          "client": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Client"
+          },
           "content": {
             "anyOf": [
               {
@@ -5525,6 +5535,146 @@
           "search_query"
         ],
         "title": "PGSearchToolSchema",
+        "type": "object"
+      }
+    },
+    {
+      "description": "Search the web using Parallel's Search API (v1beta). Returns ranked results with compressed excerpts optimized for LLMs.",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Parallel",
+          "name": "PARALLEL_API_KEY",
+          "required": true
+        }
+      ],
+      "humanized_name": "Parallel Web Search Tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "search_url": {
+            "default": "https://api.parallel.ai/v1beta/search",
+            "title": "Search Url",
+            "type": "string"
+          }
+        },
+        "title": "ParallelSearchTool",
+        "type": "object"
+      },
+      "name": "ParallelSearchTool",
+      "package_dependencies": [
+        "requests"
+      ],
+      "run_params_schema": {
+        "description": "Input schema for ParallelSearchTool using the Search API (v1beta).\n\nAt least one of objective or search_queries is required.",
+        "properties": {
+          "max_chars_per_result": {
+            "default": 6000,
+            "description": "Maximum characters per result excerpt (values >30000 not guaranteed)",
+            "minimum": 100,
+            "title": "Max Chars Per Result",
+            "type": "integer"
+          },
+          "max_results": {
+            "default": 10,
+            "description": "Maximum number of search results to return (processor limits apply)",
+            "maximum": 40,
+            "minimum": 1,
+            "title": "Max Results",
+            "type": "integer"
+          },
+          "objective": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Natural-language goal for the web research (<=5000 chars)",
+            "title": "Objective"
+          },
+          "processor": {
+            "default": "base",
+            "description": "Search processor: 'base' (fast/low cost) or 'pro' (higher quality/freshness)",
+            "pattern": "^(base|pro)$",
+            "title": "Processor",
+            "type": "string"
+          },
+          "search_queries": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                "maxItems": 5,
+                "minItems": 1,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional list of keyword queries (<=5 items, each <=200 chars)",
+            "title": "Search Queries"
+          },
+          "source_policy": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional source policy configuration",
+            "title": "Source Policy"
+          }
+        },
+        "title": "ParallelSearchInput",
         "type": "object"
       }
     },
@@ -9044,36 +9194,6 @@
             ],
             "title": "EnvVar",
             "type": "object"
-          },
-          "Vectorizers": {
-            "description": "The available vectorization modules in Weaviate.\n\nThese modules encode binary data into lists of floats called vectors.\nSee the [docs](https://weaviate.io/developers/weaviate/modules/retriever-vectorizer-modules) for more details.\n\nAttributes:\n    `NONE`\n        No vectorizer.\n    `TEXT2VEC_AWS`\n        Weaviate module backed by AWS text-based embedding models.\n    `TEXT2VEC_COHERE`\n        Weaviate module backed by Cohere text-based embedding models.\n    `TEXT2VEC_CONTEXTIONARY`\n        Weaviate module backed by Contextionary text-based embedding models.\n    `TEXT2VEC_GPT4ALL`\n        Weaviate module backed by GPT-4-All text-based embedding models.\n    `TEXT2VEC_HUGGINGFACE`\n        Weaviate module backed by HuggingFace text-based embedding models.\n    `TEXT2VEC_OPENAI`\n        Weaviate module backed by OpenAI and Azure-OpenAI text-based embedding models.\n    `TEXT2VEC_PALM`\n        Weaviate module backed by PaLM text-based embedding models.\n    `TEXT2VEC_TRANSFORMERS`\n        Weaviate module backed by Transformers text-based embedding models.\n    `TEXT2VEC_JINAAI`\n        Weaviate module backed by Jina AI text-based embedding models.\n    `TEXT2VEC_VOYAGEAI`\n        Weaviate module backed by Voyage AI text-based embedding models.\n    `TEXT2VEC_WEAVIATE`\n        Weaviate module backed by Weaviate's self-hosted text-based embedding models.\n    `IMG2VEC_NEURAL`\n        Weaviate module backed by a ResNet-50 neural network for images.\n    `MULTI2VEC_CLIP`\n        Weaviate module backed by a Sentence-BERT CLIP model for images and text.\n    `MULTI2VEC_PALM`\n        Weaviate module backed by a palm model for images and text.\n    `MULTI2VEC_BIND`\n        Weaviate module backed by the ImageBind model for images, text, audio, depth, IMU, thermal, and video.\n    `MULTI2VEC_VOYAGEAI`\n        Weaviate module backed by a Voyage AI multimodal embedding models.\n    `REF2VEC_CENTROID`\n        Weaviate module backed by a centroid-based model that calculates an object's vectors from its referenced vectors.",
-            "enum": [
-              "none",
-              "text2vec-aws",
-              "text2vec-cohere",
-              "text2vec-contextionary",
-              "text2vec-databricks",
-              "text2vec-gpt4all",
-              "text2vec-huggingface",
-              "text2vec-mistral",
-              "text2vec-ollama",
-              "text2vec-openai",
-              "text2vec-palm",
-              "text2vec-transformers",
-              "text2vec-jinaai",
-              "text2vec-voyageai",
-              "text2vec-weaviate",
-              "img2vec-neural",
-              "multi2vec-clip",
-              "multi2vec-cohere",
-              "multi2vec-jinaai",
-              "multi2vec-bind",
-              "multi2vec-palm",
-              "multi2vec-voyageai",
-              "ref2vec-centroid"
-            ],
-            "title": "Vectorizers",
-            "type": "string"
           }
         },
         "description": "Tool to search the Weaviate database",
@@ -9153,14 +9273,13 @@
           },
           "vectorizer": {
             "anyOf": [
-              {
-                "$ref": "#/$defs/Vectorizers"
-              },
+              {},
               {
                 "type": "null"
               }
             ],
-            "default": null
+            "default": null,
+            "title": "Vectorizer"
           },
           "weaviate_api_key": {
             "description": "The API key for the Weaviate cluster",

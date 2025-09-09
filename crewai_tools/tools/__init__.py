@@ -126,3 +126,6 @@ from .vectorx_vector_search_tool.vectorx_search_tool import (
     VectorXSearchArgs,
     SpladeSparseEmbedder,
 )
+from .parallel_tools import (
+    ParallelSearchTool,
+)
