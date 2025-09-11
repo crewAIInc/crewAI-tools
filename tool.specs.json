@@ -8580,6 +8580,118 @@
       }
     },
     {
+      "description": "Scrape webpages using Steel and return the contents",
+      "env_vars": [
+        {
+          "default": null,
+          "description": "API key for Steel services",
+          "name": "STEEL_API_KEY",
+          "required": true
+        }
+      ],
+      "humanized_name": "Steel web scrape tool",
+      "init_params_schema": {
+        "$defs": {
+          "EnvVar": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Default"
+              },
+              "description": {
+                "title": "Description",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "required": {
+                "default": true,
+                "title": "Required",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "title": "EnvVar",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Api Key"
+          },
+          "formats": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Formats"
+          },
+          "proxy": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Proxy"
+          }
+        },
+        "title": "SteelScrapeWebsiteTool",
+        "type": "object"
+      },
+      "name": "SteelScrapeWebsiteTool",
+      "package_dependencies": [
+        "steel-sdk"
+      ],
+      "run_params_schema": {
+        "properties": {
+          "url": {
+            "description": "Website URL",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "SteelScrapeWebsiteToolSchema",
+        "type": "object"
+      }
+    },
+    {
       "description": "A tool that can be used to semantic search a query from a txt's content.",
       "env_vars": [],
       "humanized_name": "Search a txt's content",
