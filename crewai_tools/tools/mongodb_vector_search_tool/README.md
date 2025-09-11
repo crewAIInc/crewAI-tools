@@ -10,7 +10,7 @@ https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-overview/
 Install the crewai_tools package with MongoDB support by executing the following command in your terminal:
 
 ```shell
-pip install crewai-tools[mongodb]
+pip install 'crewai-tools[mongodb]'
 ```
 
 or
