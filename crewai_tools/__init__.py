@@ -86,6 +86,7 @@ from .tools import (
     TavilyExtractorTool,
     TavilySearchTool,
     TXTSearchTool,
+    YouSearchTool,
     VisionTool,
     WeaviateVectorSearchTool,
     WebsiteSearchTool,
