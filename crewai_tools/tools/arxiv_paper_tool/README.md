@@ -29,6 +29,7 @@ This tool:
 | `download_pdfs`         | `bool` | ❌        | Whether to download the corresponding PDFs. Defaults to `False`.                  |
 | `save_dir`              | `str`  | ❌        | Directory to save PDFs (created if it doesn’t exist). Defaults to `./arxiv_pdfs`. |
 | `use_title_as_filename` | `bool` | ❌        | Use the paper title as the filename (sanitized). Defaults to `False`.             |
+| `extra_params`          | `dict[str, str]` | ❌        | Extend or override the query parameters used for a search, see options at [Arxiv's API documentation](https://info.arxiv.org/help/api/user-manual.html#311-query-interface) |
 
 ---
 
@@ -100,9 +101,24 @@ result = tool._run(
 print(result)
 ```
 
+### Example 5: Order results by the most recently submitted
+
+```python
+tool = ArxivPaperTool(
+    extra_params={
+        "sortBy": "submittedDate",
+        "sortOrder": "descending"
+    }
+)
+result = tool._run(
+    search_query="explainable ai",
+)
+print(result)
+```
+
 ---
 
-### Example 5: All Options Combined
+### Example 6: All Options Combined
 
 ```python
 tool = ArxivPaperTool(
