@@ -65,6 +65,7 @@ from .tools import (
     RagTool,
     ScrapeElementFromWebsiteTool,
     ScrapegraphScrapeTool,
+    ScrapegraphSearchTool,
     ScrapegraphScrapeToolSchema,
     ScrapeWebsiteTool,
     ScrapflyScrapeWebsiteTool,
