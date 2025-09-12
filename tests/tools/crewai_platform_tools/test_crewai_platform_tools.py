@@ -65,6 +65,7 @@ class TestCrewaiPlatformTools(unittest.TestCase):
         args, kwargs = mock_get.call_args
         assert "apps=github,slack" in args[0] or kwargs.get("params", {}).get("apps") == "github,slack"
 
+    @patch.dict("os.environ", {"CREWAI_PLATFORM_INTEGRATION_TOKEN": "test_token"})
     def test_crewai_platform_tools_empty_apps(self):
         with patch("crewai_tools.tools.crewai_platform_tools.crewai_platform_tool_builder.requests.get") as mock_get:
             mock_response = Mock()
@@ -86,3 +87,9 @@ class TestCrewaiPlatformTools(unittest.TestCase):
         assert tools is not None
         assert isinstance(tools, list)
         assert len(tools) == 0
+
+    def test_crewai_platform_tools_no_token(self):
+        with patch.dict("os.environ", {}, clear=True):
+            with self.assertRaises(ValueError) as context:
+                CrewaiPlatformTools(apps=["github"])
+            assert "No platform integration token found" in str(context.exception)

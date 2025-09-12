@@ -109,6 +109,7 @@ class TestCrewAIPlatformActionTool(unittest.TestCase):
         assert "API request failed" in result
         assert "Invalid request" in result
 
+    @patch.dict("os.environ", {"CREWAI_PLATFORM_INTEGRATION_TOKEN": "test_token"})
     @patch("crewai_tools.tools.crewai_platform_tools.crewai_platform_action_tool.requests.post")
     def test_run_exception(self, mock_post):
         schema = {
@@ -136,3 +137,29 @@ class TestCrewAIPlatformActionTool(unittest.TestCase):
         result = tool._run(message="test message")
 
         assert "Error executing action test_action: Network error" in result
+
+    def test_run_without_token(self):
+        schema = {
+            "function": {
+                "name": "test_action",
+                "description": "Test action",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "message": {"type": "string", "description": "Message"}
+                    },
+                    "required": ["message"]
+                }
+            }
+        }
+
+        tool = CrewAIPlatformActionTool(
+            description="Test tool",
+            action_name="test_action",
+            action_schema=schema
+        )
+
+        with patch.dict("os.environ", {}, clear=True):
+            result = tool._run(message="test message")
+            assert "Error executing action test_action:" in result
+            assert "No platform integration token found" in result

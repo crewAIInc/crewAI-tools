@@ -85,6 +85,14 @@ class TestCrewaiPlatformToolBuilder(unittest.TestCase):
         assert "create_issue" in builder._actions_schema
         assert builder._actions_schema["create_issue"]["function"]["name"] == "create_issue"
 
+    def test_fetch_actions_no_token(self):
+        builder = CrewaiPlatformToolBuilder(apps=["github"])
+
+        with patch.dict("os.environ", {}, clear=True):
+            with self.assertRaises(ValueError) as context:
+                builder._fetch_actions()
+            assert "No platform integration token found" in str(context.exception)
+
     @patch.dict("os.environ", {"CREWAI_PLATFORM_INTEGRATION_TOKEN": "test_token"})
     @patch("crewai_tools.tools.crewai_platform_tools.crewai_platform_tool_builder.requests.get")
     def test_create_tools(self, mock_get):
@@ -164,6 +172,7 @@ class TestCrewaiPlatformToolBuilder(unittest.TestCase):
 
             assert tools1 is tools2
 
+    @patch.dict("os.environ", {"CREWAI_PLATFORM_INTEGRATION_TOKEN": "test_token"})
     def test_empty_apps_list(self):
         builder = CrewaiPlatformToolBuilder(apps=[])
 
