@@ -1,11 +1,11 @@
 import os
 import tempfile
 from pathlib import Path
-from unittest.mock import ANY, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
-from embedchain.models.data_type import DataType
 
+from crewai_tools.rag.data_types import DataType
 from crewai_tools.tools import (
     CodeDocsSearchTool,
     CSVSearchTool,
@@ -154,7 +154,7 @@ def test_website_search_tool(mock_adapter):
     result = tool._run(search_query=search_query)
 
     mock_adapter.query.assert_called_once_with("what is crewai?")
-    mock_adapter.add.assert_called_once_with(website, data_type=DataType.WEB_PAGE)
+    mock_adapter.add.assert_called_once_with(website, data_type=DataType.WEBSITE)
 
     assert "this is a test" in result.lower()
 
@@ -165,7 +165,7 @@ def test_website_search_tool(mock_adapter):
     result = tool._run(website=website, search_query=search_query)
 
     mock_adapter.query.assert_called_once_with("what is crewai?")
-    mock_adapter.add.assert_called_once_with(website, data_type=DataType.WEB_PAGE)
+    mock_adapter.add.assert_called_once_with(website, data_type=DataType.WEBSITE)
 
     assert "this is a test" in result.lower()
 
@@ -264,7 +264,9 @@ def test_github_search_tool(mock_adapter):
     result = tool._run(search_query="tell me about crewai repo")
     assert "repo description" in result
     mock_adapter.add.assert_called_once_with(
-        "repo:crewai/crewai type:code", data_type="github", loader=ANY
+        "https://github.com/crewai/crewai",
+        data_type=DataType.GITHUB,
+        metadata={"content_types": ["code"], "gh_token": "test_token"}
     )
     mock_adapter.query.assert_called_once_with("tell me about crewai repo")
 
@@ -280,7 +282,9 @@ def test_github_search_tool(mock_adapter):
     )
     assert "repo description" in result
     mock_adapter.add.assert_called_once_with(
-        "repo:crewai/crewai type:code,issue", data_type="github", loader=ANY
+        "https://github.com/crewai/crewai",
+        data_type=DataType.GITHUB,
+        metadata={"content_types": ["code", "issue"], "gh_token": "test_token"}
     )
     mock_adapter.query.assert_called_once_with("tell me about crewai repo")
 
@@ -295,7 +299,9 @@ def test_github_search_tool(mock_adapter):
     )
     assert "repo description" in result
     mock_adapter.add.assert_called_once_with(
-        "repo:crewai/crewai type:code,repo,pr,issue", data_type="github", loader=ANY
+        "https://github.com/crewai/crewai",
+        data_type=DataType.GITHUB,
+        metadata={"content_types": ["code", "repo", "pr", "issue"], "gh_token": "test_token"}
     )
     mock_adapter.query.assert_called_once_with("tell me about crewai repo")
 
