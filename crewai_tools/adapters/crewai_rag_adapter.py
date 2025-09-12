@@ -1,6 +1,7 @@
 """Adapter for CrewAI's native RAG system."""
 
-from typing import Any, TypedDict, Unpack, TypeAlias
+from typing import Any, TypedDict, TypeAlias
+from typing_extensions import Unpack
 from pathlib import Path
 
 from pydantic import Field
@@ -96,11 +97,27 @@ class CrewAIRagAdapter(Adapter):
                 if not os.path.isdir(source_ref):
                     raise ValueError(f"Directory does not exist: {source_ref}")
                 
+                # Define binary and non-text file extensions to skip
+                binary_extensions = {'.pyc', '.pyo', '.png', '.jpg', '.jpeg', '.gif', 
+                                    '.bmp', '.ico', '.svg', '.webp', '.pdf', '.zip', 
+                                    '.tar', '.gz', '.bz2', '.7z', '.rar', '.exe', 
+                                    '.dll', '.so', '.dylib', '.bin', '.dat', '.db',
+                                    '.sqlite', '.class', '.jar', '.war', '.ear'}
+                
                 for root, dirs, files in os.walk(source_ref):
                     dirs[:] = [d for d in dirs if not d.startswith('.')]
                     
                     for filename in files:
                         if filename.startswith('.'):
+                            continue
+                        
+                        # Skip binary files based on extension
+                        file_ext = os.path.splitext(filename)[1].lower()
+                        if file_ext in binary_extensions:
+                            continue
+                        
+                        # Skip __pycache__ directories
+                        if '__pycache__' in root:
                             continue
                         
                         file_path: str = os.path.join(root, filename)
@@ -125,8 +142,8 @@ class CrewAIRagAdapter(Adapter):
                                 "content": file_result.content,
                                 "metadata": file_metadata
                             })
-                        except Exception as e:
-                            print(f"Error processing {file_path}: {e}")
+                        except Exception:
+                            # Silently skip files that can't be processed
                             continue
             else:
                 metadata: dict[str, Any] = base_metadata.copy()
