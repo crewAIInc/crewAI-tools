@@ -1,14 +1,9 @@
 from typing import Optional, Type
 
-try:
-    from embedchain.loaders.directory_loader import DirectoryLoader
-    EMBEDCHAIN_AVAILABLE = True
-except ImportError:
-    EMBEDCHAIN_AVAILABLE = False
-
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+from crewai_tools.rag.data_types import DataType
 
 
 class FixedDirectorySearchToolSchema(BaseModel):
@@ -34,8 +29,6 @@ class DirectorySearchTool(RagTool):
     args_schema: Type[BaseModel] = DirectorySearchToolSchema
 
     def __init__(self, directory: Optional[str] = None, **kwargs):
-        if not EMBEDCHAIN_AVAILABLE:
-            raise ImportError("embedchain is not installed. Please install it with `pip install crewai-tools[embedchain]`")
         super().__init__(**kwargs)
         if directory is not None:
             self.add(directory)
@@ -44,10 +37,7 @@ class DirectorySearchTool(RagTool):
             self._generate_description()
 
     def add(self, directory: str) -> None:
-        super().add(
-            directory,
-            loader=DirectoryLoader(config=dict(recursive=True)),
-        )
+        super().add(directory, data_type=DataType.DIRECTORY)
 
     def _run(
         self,

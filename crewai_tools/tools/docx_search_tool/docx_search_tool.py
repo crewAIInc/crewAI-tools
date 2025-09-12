@@ -1,14 +1,10 @@
 from typing import Any, Optional, Type
 
-try:
-    from embedchain.models.data_type import DataType
-    EMBEDCHAIN_AVAILABLE = True
-except ImportError:
-    EMBEDCHAIN_AVAILABLE = False
 
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+from crewai_tools.rag.data_types import DataType
 
 
 class FixedDOCXSearchToolSchema(BaseModel):
@@ -48,8 +44,6 @@ class DOCXSearchTool(RagTool):
             self._generate_description()
 
     def add(self, docx: str) -> None:
-        if not EMBEDCHAIN_AVAILABLE:
-            raise ImportError("embedchain is not installed. Please install it with `pip install crewai-tools[embedchain]`")
         super().add(docx, data_type=DataType.DOCX)
 
     def _run(
