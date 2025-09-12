@@ -16,7 +16,6 @@ dependencies = [
     "pytube>=15.0.0",
     "requests>=2.31.0",
     "docker>=7.1.0",
-    "embedchain>=0.1.114",
     "crewai>=0.177.0",
     "click>=8.1.8",
     "lancedb>=0.5.4",
@@ -34,6 +33,9 @@ Documentation = "https://docs.crewai.com"
 [project.scripts]
 
 [project.optional-dependencies]
+embedchain = [
+    "embedchain>=0.1.114",
+]
 scrapfly-sdk = [
     "scrapfly-sdk>=0.8.19",
 ]
