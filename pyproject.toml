@@ -33,9 +33,6 @@ Documentation = "https://docs.crewai.com"
 [project.scripts]
 
 [project.optional-dependencies]
-embedchain = [
-    "embedchain>=0.1.114",
-]
 scrapfly-sdk = [
     "scrapfly-sdk>=0.8.19",
 ]
@@ -163,4 +160,6 @@ dev = [
     "pytest-asyncio>=0.25.2",
     "pytest>=8.0.0",
     "pytest-recording>=0.13.3",
+    "mypy>=1.18.1",
+    "ruff>=0.13.0",
 ]
