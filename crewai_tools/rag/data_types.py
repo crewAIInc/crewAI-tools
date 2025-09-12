@@ -25,6 +25,8 @@ class DataType(str, Enum):
     # Web types
     WEBSITE = "website"
     DOCS_SITE = "docs_site"
+    YOUTUBE_VIDEO = "youtube_video"
+    YOUTUBE_CHANNEL = "youtube_channel"
 
     # Raw types
     TEXT = "text"
