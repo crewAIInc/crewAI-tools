@@ -56,7 +56,7 @@ class CSVLoader(BaseLoader):
 
             metadata = {
                 "format": "csv",
-                "columns": headers,
+                "columns": " | ".join(headers) if headers else "",
                 "rows": len(text_parts) - 2 if headers else 0
             }
 
