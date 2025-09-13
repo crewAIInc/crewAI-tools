@@ -173,3 +173,51 @@ result = eval("5/1")
         "WARNING: Running code in unsafe mode", color="bold_magenta"
     )
     assert 5.0 == result
+
+
+def test_code_interpreter_schema_validation_valid_list():
+    """Test that CodeInterpreterSchema accepts valid List[str] for libraries_used."""
+    from crewai_tools.tools.code_interpreter_tool.code_interpreter_tool import CodeInterpreterSchema
+    
+    valid_input = CodeInterpreterSchema(
+        code="print('Hello, World!')",
+        libraries_used=["numpy", "pandas", "beautifulsoup4"]
+    )
+    assert valid_input.code == "print('Hello, World!')"
+    assert valid_input.libraries_used == ["numpy", "pandas", "beautifulsoup4"]
+
+
+def test_code_interpreter_schema_validation_invalid_string():
+    """Test that CodeInterpreterSchema rejects comma-separated string for libraries_used."""
+    from crewai_tools.tools.code_interpreter_tool.code_interpreter_tool import CodeInterpreterSchema
+    from pydantic import ValidationError
+    
+    with pytest.raises(ValidationError) as exc_info:
+        CodeInterpreterSchema(
+            code="print('Hello, World!')",
+            libraries_used="numpy,pandas,beautifulsoup4"
+        )
+    
+    assert "libraries_used" in str(exc_info.value)
+
+
+def test_code_interpreter_schema_validation_empty_list():
+    """Test that CodeInterpreterSchema accepts empty list for libraries_used."""
+    from crewai_tools.tools.code_interpreter_tool.code_interpreter_tool import CodeInterpreterSchema
+    
+    valid_input = CodeInterpreterSchema(
+        code="print('Hello, World!')",
+        libraries_used=[]
+    )
+    assert valid_input.libraries_used == []
+
+
+def test_code_interpreter_schema_field_description():
+    """Test that the Field description example shows proper List[str] format."""
+    from crewai_tools.tools.code_interpreter_tool.code_interpreter_tool import CodeInterpreterSchema
+    
+    schema_dict = CodeInterpreterSchema.model_json_schema()
+    libraries_used_description = schema_dict["properties"]["libraries_used"]["description"]
+    
+    assert "['numpy', 'pandas', 'beautifulsoup4']" in libraries_used_description
+    assert "numpy,pandas,beautifulsoup4" not in libraries_used_description

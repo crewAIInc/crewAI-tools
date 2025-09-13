@@ -34,7 +34,7 @@ class CodeInterpreterSchema(BaseModel):
 
     libraries_used: List[str] = Field(
         ...,
-        description="List of libraries used in the code with proper installing names separated by commas. Example: numpy,pandas,beautifulsoup4",
+        description="List of libraries used in the code with proper installing names. Example: ['numpy', 'pandas', 'beautifulsoup4']",
     )
 
 
