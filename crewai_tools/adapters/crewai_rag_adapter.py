@@ -11,6 +11,7 @@ from crewai.rag.core.base_client import BaseClient
 
 from crewai_tools.tools.rag.rag_tool import Adapter
 from crewai_tools.rag.data_types import DataType
+from crewai_tools.rag.misc import sanitize_metadata_for_chromadb
 
 ContentItem: TypeAlias = str | Path | dict[str, Any]
 
@@ -140,7 +141,7 @@ class CrewAIRagAdapter(Adapter):
                             documents.append({
                                 "doc_id": file_result.doc_id,
                                 "content": file_result.content,
-                                "metadata": file_metadata
+                                "metadata": sanitize_metadata_for_chromadb(file_metadata)
                             })
                         except Exception:
                             # Silently skip files that can't be processed
@@ -162,7 +163,7 @@ class CrewAIRagAdapter(Adapter):
                 documents.append({
                     "doc_id": loader_result.doc_id,
                     "content": loader_result.content,
-                    "metadata": metadata
+                    "metadata": sanitize_metadata_for_chromadb(metadata)
                 })
         
         if documents:
