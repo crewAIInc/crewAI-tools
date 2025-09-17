@@ -25,6 +25,7 @@ dependencies = [
     "beautifulsoup4>=4.13.4",
     "pypdf>=5.9.0",
     "python-docx>=1.2.0",
+    "youtube-transcript-api>=1.2.2",
 ]
 
 [project.urls]
