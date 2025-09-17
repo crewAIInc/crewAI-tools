@@ -32,7 +32,7 @@ class PDFLoader(BaseLoader):
             except ImportError:
                 raise ImportError(
                     "PDF support requires pypdf or PyPDF2. "
-                    "Install with: pip install pypdf"
+                    "Install with: uv add pypdf"
                 )
         
         file_path = source.source
