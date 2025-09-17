@@ -3,15 +3,19 @@
 from typing import Any, TypedDict, TypeAlias
 from typing_extensions import Unpack
 from pathlib import Path
+import hashlib
 
-from pydantic import Field
+from pydantic import Field, PrivateAttr
 from crewai.rag.config.utils import get_rag_client
+from crewai.rag.config.types import RagConfigType
 from crewai.rag.types import BaseRecord, SearchResult
 from crewai.rag.core.base_client import BaseClient
+from crewai.rag.factory import create_client
 
 from crewai_tools.tools.rag.rag_tool import Adapter
 from crewai_tools.rag.data_types import DataType
 from crewai_tools.rag.misc import sanitize_metadata_for_chromadb
+from crewai_tools.rag.chunkers.base_chunker import BaseChunker
 
 ContentItem: TypeAlias = str | Path | dict[str, Any]
 
@@ -28,15 +32,23 @@ class AddDocumentParams(TypedDict, total=False):
 
 
 class CrewAIRagAdapter(Adapter):
-    """Adapter that uses CrewAI's native RAG system instead of embedchain."""
+    """Adapter that uses CrewAI's native RAG system.
+    
+    Supports custom vector database configuration through the config parameter.
+    """
     
     collection_name: str = "default"
     summarize: bool = False
-    client: BaseClient = Field(default_factory=get_rag_client)
+    config: RagConfigType | None = None
+    _client: BaseClient | None = PrivateAttr(default=None)
     
     def model_post_init(self, __context: Any) -> None:
         """Initialize the CrewAI RAG client after model initialization."""
-        self.client.get_or_create_collection(collection_name=self.collection_name)
+        if self.config is not None:
+            self._client = create_client(self.config)
+        else:
+            self._client = get_rag_client()
+        self._client.get_or_create_collection(collection_name=self.collection_name)
     
     def query(self, question: str) -> str:
         """Query the knowledge base with a question.
@@ -47,10 +59,11 @@ class CrewAIRagAdapter(Adapter):
         Returns:
             Relevant content from the knowledge base
         """
-        results: list[SearchResult] = self.client.search(
+        results: list[SearchResult] = self._client.search(
             collection_name=self.collection_name,
             query=question,
-            limit=5
+            limit=5,
+            score_threshold=0.6
         )
         
         if not results:
@@ -125,49 +138,71 @@ class CrewAIRagAdapter(Adapter):
                         try:
                             file_data_type: DataType = DataTypes.from_content(file_path)
                             file_loader = file_data_type.get_loader()
+                            file_chunker = file_data_type.get_chunker()
                             
                             file_source = SourceContent(file_path)
                             file_result: LoaderResult = file_loader.load(file_source)
                             
-                            file_metadata: dict[str, Any] = base_metadata.copy()
-                            file_metadata.update(file_result.metadata)
-                            file_metadata["data_type"] = str(file_data_type)
-                            file_metadata["directory_source"] = source_ref
-                            file_metadata["file_path"] = file_path
+                            file_chunks = file_chunker.chunk(file_result.content)
                             
-                            if isinstance(arg, dict):
-                                file_metadata.update(arg.get("metadata", {}))
-                            
-                            documents.append({
-                                "doc_id": file_result.doc_id,
-                                "content": file_result.content,
-                                "metadata": sanitize_metadata_for_chromadb(file_metadata)
-                            })
+                            for chunk_idx, file_chunk in enumerate(file_chunks):
+                                file_metadata: dict[str, Any] = base_metadata.copy()
+                                file_metadata.update(file_result.metadata)
+                                file_metadata["data_type"] = str(file_data_type)
+                                file_metadata["file_path"] = file_path
+                                file_metadata["chunk_index"] = chunk_idx
+                                file_metadata["total_chunks"] = len(file_chunks)
+                                
+                                if isinstance(arg, dict):
+                                    file_metadata.update(arg.get("metadata", {}))
+                                
+                                chunk_id = hashlib.sha256(f"{file_result.doc_id}_{chunk_idx}_{file_chunk}".encode()).hexdigest()
+                                
+                                documents.append({
+                                    "doc_id": chunk_id,
+                                    "content": file_chunk,
+                                    "metadata": sanitize_metadata_for_chromadb(file_metadata)
+                                })
                         except Exception:
                             # Silently skip files that can't be processed
                             continue
             else:
                 metadata: dict[str, Any] = base_metadata.copy()
                 
+                if data_type in [DataType.PDF_FILE, DataType.TEXT_FILE, DataType.DOCX, 
+                                  DataType.CSV, DataType.JSON, DataType.XML, DataType.MDX]:
+                    if not os.path.isfile(source_ref):
+                        raise FileNotFoundError(f"File does not exist: {source_ref}")
+                
                 loader = data_type.get_loader()
+                chunker = data_type.get_chunker()
                 
                 source_content = SourceContent(source_ref)
                 loader_result: LoaderResult = loader.load(source_content)
                 
-                metadata.update(loader_result.metadata)
-                metadata["data_type"] = str(data_type)
+                chunks = chunker.chunk(loader_result.content)
                 
-                if isinstance(arg, dict):
-                    metadata.update(arg.get("metadata", {}))
-                
-                documents.append({
-                    "doc_id": loader_result.doc_id,
-                    "content": loader_result.content,
-                    "metadata": sanitize_metadata_for_chromadb(metadata)
-                })
+                for i, chunk in enumerate(chunks):
+                    chunk_metadata: dict[str, Any] = metadata.copy()
+                    chunk_metadata.update(loader_result.metadata)
+                    chunk_metadata["data_type"] = str(data_type)
+                    chunk_metadata["chunk_index"] = i
+                    chunk_metadata["total_chunks"] = len(chunks)
+                    chunk_metadata["source"] = source_ref
+                    
+                    if isinstance(arg, dict):
+                        chunk_metadata.update(arg.get("metadata", {}))
+                    
+                    chunk_id = hashlib.sha256(f"{loader_result.doc_id}_{i}_{chunk}".encode()).hexdigest()
+                    
+                    documents.append({
+                        "doc_id": chunk_id,
+                        "content": chunk,
+                        "metadata": sanitize_metadata_for_chromadb(chunk_metadata)
+                    })
         
         if documents:
-            self.client.add_documents(
+            self._client.add_documents(
                 collection_name=self.collection_name,
                 documents=documents
             )

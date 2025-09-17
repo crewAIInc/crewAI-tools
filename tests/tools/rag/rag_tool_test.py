@@ -18,7 +18,7 @@ def test_rag_tool_initialization():
     
     adapter = cast(CrewAIRagAdapter, tool.adapter)
     assert adapter.collection_name == "rag_tool_collection"
-    assert adapter.client is not None
+    assert adapter._client is not None
 
 
 def test_rag_tool_add_and_query():
