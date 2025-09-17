@@ -49,6 +49,8 @@ class DataType(str, Enum):
 
             DataType.WEBSITE: ("web_chunker", "WebsiteChunker"),
             DataType.DIRECTORY: ("text_chunker", "TextChunker"),
+            DataType.YOUTUBE_VIDEO: ("text_chunker", "TextChunker"),
+            DataType.YOUTUBE_CHANNEL: ("text_chunker", "TextChunker"),
         }
 
         if self not in chunkers:
@@ -76,6 +78,8 @@ class DataType(str, Enum):
             DataType.DOCX: ("docx_loader", "DOCXLoader"),
             DataType.CSV: ("csv_loader", "CSVLoader"),
             DataType.DIRECTORY: ("directory_loader", "DirectoryLoader"),
+            DataType.YOUTUBE_VIDEO: ("youtube_video_loader", "YoutubeVideoLoader"),
+            DataType.YOUTUBE_CHANNEL: ("youtube_channel_loader", "YoutubeChannelLoader"),
         }
 
         if self not in loaders:
