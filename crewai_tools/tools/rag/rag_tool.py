@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from crewai.tools import BaseTool
+
+if TYPE_CHECKING:
+    from crewai.rag.config.types import RagConfigType
 
 
 class Adapter(BaseModel, ABC):
@@ -33,7 +36,7 @@ class RagTool(BaseTool):
     description: str = "A knowledge base that can be used to answer questions."
     summarize: bool = False
     adapter: Adapter = Field(default_factory=_AdapterPlaceholder)
-    config: dict[str, Any] | None = None
+    config: Any | None = None
 
     @model_validator(mode="after")
     def _set_default_adapter(self):
@@ -42,7 +45,8 @@ class RagTool(BaseTool):
             
             self.adapter = CrewAIRagAdapter(
                 collection_name="rag_tool_collection",
-                summarize=self.summarize
+                summarize=self.summarize,
+                config=self.config
             )
 
         return self
