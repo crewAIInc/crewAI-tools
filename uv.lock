@@ -965,7 +965,7 @@ wheels = [
 [[package]]
 name = "crewai"
 version = "0.186.1"
-source = { git = "https://github.com/crewAIInc/crewAI.git?rev=gl%2Ffeat%2Fplugin-rag-factory#4f30713a40ce5e17f787b6d88155820aa64838c0" }
+source = { git = "https://github.com/crewAIInc/crewAI.git?rev=main#f28e78c5baed2c7fa67abc23f9797559a619dc71" }
 dependencies = [
     { name = "appdirs" },
     { name = "blinker" },
@@ -1150,7 +1150,7 @@ requires-dist = [
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "contextual-client", marker = "extra == 'contextual'", specifier = ">=0.1.0" },
     { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
-    { name = "crewai", git = "https://github.com/crewAIInc/crewAI.git?rev=gl%2Ffeat%2Fplugin-rag-factory" },
+    { name = "crewai", git = "https://github.com/crewAIInc/crewAI.git?rev=main" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },
