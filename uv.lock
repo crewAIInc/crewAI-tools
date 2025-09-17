@@ -964,8 +964,8 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.177.0"
-source = { registry = "https://pypi.org/simple" }
+version = "0.186.1"
+source = { git = "https://github.com/crewAIInc/crewAI.git?rev=gl%2Ffeat%2Fplugin-rag-factory#4f30713a40ce5e17f787b6d88155820aa64838c0" }
 dependencies = [
     { name = "appdirs" },
     { name = "blinker" },
@@ -994,16 +994,13 @@ dependencies = [
     { name = "tomli-w" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8a/fa/fb7a7f78e71704da4870d54ff33bfdf4bb92f1fca9b6a20311431d4baa60/crewai-0.177.0.tar.gz", hash = "sha256:cd34f024881afa163894793e51875a45b02a06f82b342785515455a2e48bb2c0", size = 6552439, upload-time = "2025-09-04T00:27:01.277Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/cd/65/7f9d2ee674fd517126668f240d02656bbae2c5e307ec2ed5fd9a32f1bb89/crewai-0.177.0-py3-none-any.whl", hash = "sha256:4718335f0c8236ef42740166fe86f9636a9cf628eeea87205d85599ed1b771b4", size = 418731, upload-time = "2025-09-04T00:26:59.34Z" },
-]
 
 [[package]]
 name = "crewai-tools"
 version = "0.71.0"
 source = { editable = "." }
 dependencies = [
+    { name = "beautifulsoup4" },
     { name = "chromadb" },
     { name = "click" },
     { name = "crewai" },
@@ -1012,7 +1009,9 @@ dependencies = [
     { name = "openai" },
     { name = "portalocker" },
     { name = "pydantic" },
+    { name = "pypdf" },
     { name = "pyright" },
+    { name = "python-docx" },
     { name = "pytube" },
     { name = "requests" },
     { name = "stagehand" },
@@ -1140,6 +1139,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "beautifulsoup4", specifier = ">=4.13.4" },
     { name = "beautifulsoup4", marker = "extra == 'beautifulsoup4'", specifier = ">=4.12.3" },
     { name = "beautifulsoup4", marker = "extra == 'bedrock'", specifier = ">=4.13.4" },
     { name = "bedrock-agentcore", marker = "extra == 'bedrock'", specifier = ">=0.1.0" },
@@ -1149,7 +1149,7 @@ requires-dist = [
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "contextual-client", marker = "extra == 'contextual'", specifier = ">=0.1.0" },
     { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
-    { name = "crewai", specifier = ">=0.177.0" },
+    { name = "crewai", git = "https://github.com/crewAIInc/crewAI.git?rev=gl%2Ffeat%2Fplugin-rag-factory" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },
@@ -1174,7 +1174,9 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.6.1" },
     { name = "pygithub", marker = "extra == 'github'", specifier = "==1.59.1" },
     { name = "pymongo", marker = "extra == 'mongodb'", specifier = ">=4.13" },
+    { name = "pypdf", specifier = ">=5.9.0" },
     { name = "pyright", specifier = ">=1.1.350" },
+    { name = "python-docx", specifier = ">=1.2.0" },
     { name = "python-docx", marker = "extra == 'rag'", specifier = ">=1.1.0" },
     { name = "pytube", specifier = ">=15.0.0" },
     { name = "qdrant-client", marker = "extra == 'qdrant-client'", specifier = ">=1.12.1" },
