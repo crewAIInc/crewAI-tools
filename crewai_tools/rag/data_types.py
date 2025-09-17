@@ -36,6 +36,7 @@ class DataType(str, Enum):
         from importlib import import_module
 
         chunkers = {
+            DataType.PDF_FILE: ("text_chunker", "TextChunker"),
             DataType.TEXT_FILE: ("text_chunker", "TextChunker"),
             DataType.TEXT: ("text_chunker", "TextChunker"),
             DataType.DOCX: ("text_chunker", "DocxChunker"),
@@ -47,9 +48,12 @@ class DataType(str, Enum):
             DataType.XML: ("structured_chunker", "XmlChunker"),
 
             DataType.WEBSITE: ("web_chunker", "WebsiteChunker"),
+            DataType.DIRECTORY: ("text_chunker", "TextChunker"),
         }
 
-        module_name, class_name = chunkers.get(self, ("default_chunker", "DefaultChunker"))
+        if self not in chunkers:
+            raise ValueError(f"No chunker defined for {self}")
+        module_name, class_name = chunkers[self]
         module_path = f"crewai_tools.rag.chunkers.{module_name}"
 
         try:
@@ -62,6 +66,7 @@ class DataType(str, Enum):
         from importlib import import_module
 
         loaders = {
+            DataType.PDF_FILE: ("pdf_loader", "PDFLoader"),
             DataType.TEXT_FILE: ("text_loader", "TextFileLoader"),
             DataType.TEXT: ("text_loader", "TextLoader"),
             DataType.XML: ("xml_loader", "XMLLoader"),
@@ -73,7 +78,9 @@ class DataType(str, Enum):
             DataType.DIRECTORY: ("directory_loader", "DirectoryLoader"),
         }
 
-        module_name, class_name = loaders.get(self, ("text_loader", "TextLoader"))
+        if self not in loaders:
+            raise ValueError(f"No loader defined for {self}")
+        module_name, class_name = loaders[self]
         module_path = f"crewai_tools.rag.loaders.{module_name}"
         try:
             module = import_module(module_path)
