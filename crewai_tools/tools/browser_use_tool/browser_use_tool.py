@@ -235,17 +235,13 @@ class BrowserUseTool(BaseTool):
         # Otherwise, handle different event loop scenarios
         try:
             # Check if there's an event loop running
-            loop = asyncio.get_running_loop()
-            if loop.is_running():
-                # We're in an existing event loop context, run in thread
-                import concurrent.futures
+            _ = asyncio.get_running_loop()
+            # If we reach here, a loop is running - run in thread to avoid blocking
+            import concurrent.futures
 
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                    future = executor.submit(asyncio.run, self._async_run(**kwargs))
-                    return future.result()
-            else:
-                # We have a loop but it's not running
-                return loop.run_until_complete(self._async_run(**kwargs))
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, self._async_run(**kwargs))
+                return future.result()
         except RuntimeError:
             # No event loop exists, create one
             return asyncio.run(self._async_run(**kwargs))
