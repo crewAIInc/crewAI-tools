@@ -1,33 +1,41 @@
 import asyncio
+import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from browser_use import Agent as BrowserUseAgent
-from browser_use.agent.views import AgentHistoryList as BrowserUseAgentHistoryList
-from browser_use.llm import BaseChatModel as BrowserUseBaseChatModel
 from pydantic import ValidationError
 
-from crewai_tools.tools.browser_use_tool import BrowserUseTool, BrowserUseToolSchema
+# Skip entire module if Python version is < 3.11
+pytestmark = pytest.mark.skipif(
+    sys.version_info < (3, 11), reason="BrowserUseTool requires Python >= 3.11"
+)
 
+# Only import browser_use modules if Python >= 3.11
+if sys.version_info >= (3, 11):
+    from browser_use import Agent as BrowserUseAgent
+    from browser_use.agent.views import AgentHistoryList as BrowserUseAgentHistoryList
+    from browser_use.llm import BaseChatModel as BrowserUseBaseChatModel
 
-class MockLLM(BrowserUseBaseChatModel):  # type: ignore[misc]
-    """Mock LLM for testing."""
+    from crewai_tools.tools.browser_use_tool import BrowserUseTool, BrowserUseToolSchema
 
-    model: str = "mock-model"
+    class MockLLM(BrowserUseBaseChatModel):  # type: ignore[misc]
+        """Mock LLM for testing."""
 
-    @property
-    def name(self):
-        """Return mock LLM name."""
-        return "Mock LLM"
+        model: str = "mock-model"
 
-    @property
-    def provider(self):
-        """Return mock provider name."""
-        return "mock-provider"
+        @property
+        def name(self):
+            """Return mock LLM name."""
+            return "Mock LLM"
 
-    async def ainvoke(self, messages, output_format=None):  # type: ignore[override]
-        """Mock async invoke method required by BaseChatModel."""
-        return "Mock response"
+        @property
+        def provider(self):
+            """Return mock provider name."""
+            return "mock-provider"
+
+        async def ainvoke(self, messages, output_format=None):  # type: ignore[override]
+            """Mock async invoke method required by BaseChatModel."""
+            return "Mock response"
 
 
 class TestBrowserUseToolSchema:
