@@ -1,5 +1,3 @@
-import sys
-
 from .adapters.enterprise_adapter import EnterpriseActionTool
 from .adapters.mcp_adapter import MCPServerAdapter
 from .adapters.zapier_adapter import ZapierActionTool
@@ -18,7 +16,6 @@ from .tools import (
     BrightDataSearchTool,
     BrightDataWebUnlockerTool,
     BrowserbaseLoadTool,
-    BrowserUseTool,
     CodeDocsSearchTool,
     CodeInterpreterTool,
     ComposioTool,
@@ -60,6 +57,7 @@ from .tools import (
     OxylabsAmazonSearchScraperTool,
     OxylabsGoogleSearchScraperTool,
     OxylabsUniversalScraperTool,
+    ParallelSearchTool,
     PatronusEvalTool,
     PatronusLocalEvaluatorTool,
     PatronusPredefinedCriteriaEvalTool,
@@ -97,9 +95,20 @@ from .tools import (
     YoutubeChannelSearchTool,
     YoutubeVideoSearchTool,
     ZapierActionTools,
-    ParallelSearchTool,
 )
 
-# Proper error handling for the 'browser-use' extra when using Python < 3.11
-if sys.version_info < (3, 11):
-    raise RuntimeError("The 'browser-use' extra requires Python >= 3.11")
+
+# Lazy import for BrowserUseTool with Python version check
+def __getattr__(name):
+    if name == "BrowserUseTool":
+        from sys import version_info
+
+        if version_info < (3, 11):
+            raise RuntimeError(
+                "BrowserUseTool requires Python >= 3.11. "
+                "Please upgrade your Python version or avoid using BrowserUseTool."
+            )
+        from .tools.browser_use_tool.browser_use_tool import BrowserUseTool
+
+        return BrowserUseTool
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

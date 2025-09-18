@@ -178,28 +178,33 @@ The BrowserUseTool accepts the following parameters:
 The tool supports a wide range of browser actions:
 
 ### Basic Navigation
+
 - Navigate to URLs
 - Go back/forward in history
 - Refresh pages
 
 ### Element Interaction
+
 - Click on elements (buttons, links, etc.)
 - Type text into input fields
 - Select from dropdowns
 - Submit forms
 
 ### Tab Management
+
 - Open new tabs
 - Switch between tabs
 - Close tabs
 
 ### Content Actions
+
 - Scroll (up, down, to element)
 - Take screenshots
 - Extract text content
 - Wait for elements
 
 ### Advanced Features
+
 - Handle popups and alerts
 - Execute JavaScript
 - Interact with Google Sheets
@@ -216,6 +221,7 @@ The tool supports a wide range of browser actions:
 ## Testing
 
 The tool includes comprehensive tests covering:
+
 - Schema validation
 - Browser task execution
 - Error handling
@@ -223,6 +229,7 @@ The tool includes comprehensive tests covering:
 - Multiple action support
 
 Run tests with:
+
 ```bash
 pytest tests/tools/browser_use_tool_test.py
 ```
