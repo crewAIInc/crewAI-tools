@@ -965,7 +965,7 @@ wheels = [
 [[package]]
 name = "crewai"
 version = "0.186.1"
-source = { git = "https://github.com/crewAIInc/crewAI.git?rev=main#8ee3cf4874bf91e3ce54e72737a30bb0126659e6" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
     { name = "blinker" },
@@ -993,6 +993,10 @@ dependencies = [
     { name = "tomli" },
     { name = "tomli-w" },
     { name = "uv" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8f/59/2fb28345ce686b749e712efb505797d8d6073b7ebc9a5dcdf93c136d783f/crewai-0.186.1.tar.gz", hash = "sha256:3fd12954082c301434a7d8a2b20ddaf610eb6da1bba3a76aa38402e5c6462fbf", size = 6556945, upload-time = "2025-09-11T00:01:39.758Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ec/cf/e9f6bc5448ab83509f29006ea1df17073d03b06be2000e8f0b330230e14b/crewai-0.186.1-py3-none-any.whl", hash = "sha256:92acde629f079d2c701ff8f5d648a270e64274d80c7f3cf0131c420a890d84d1", size = 423346, upload-time = "2025-09-11T00:01:37.673Z" },
 ]
 
 [[package]]
@@ -1156,7 +1160,7 @@ requires-dist = [
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "contextual-client", marker = "extra == 'contextual'", specifier = ">=0.1.0" },
     { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
-    { name = "crewai", git = "https://github.com/crewAIInc/crewAI.git?rev=main" },
+    { name = "crewai", specifier = ">=0.186.1" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },

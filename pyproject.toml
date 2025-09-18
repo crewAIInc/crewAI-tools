@@ -16,7 +16,7 @@ dependencies = [
     "pytube>=15.0.0",
     "requests>=2.31.0",
     "docker>=7.1.0",
-    "crewai @ git+https://github.com/crewAIInc/crewAI.git@main",
+    "crewai>=0.186.1",
     "click>=8.1.8",
     "lancedb>=0.5.4",
     "tiktoken>=0.8.0",
