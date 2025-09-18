@@ -42,7 +42,9 @@ class PDFSearchTool(RagTool):
         self,
         query: str,
         pdf: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if pdf is not None:
             self.add(pdf)
-        return super()._run(query=query)
+        return super()._run(query=query, similarity_threshold=similarity_threshold, limit=limit)

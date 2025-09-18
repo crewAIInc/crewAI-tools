@@ -69,10 +69,12 @@ class GithubSearchTool(RagTool):
         search_query: str,
         github_repo: Optional[str] = None,
         content_types: Optional[List[str]] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if github_repo:
             self.add(
                 repo=github_repo,
                 content_types=content_types,
             )
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)

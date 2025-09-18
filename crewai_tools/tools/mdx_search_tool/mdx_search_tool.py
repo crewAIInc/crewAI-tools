@@ -44,7 +44,9 @@ class MDXSearchTool(RagTool):
         self,
         search_query: str,
         mdx: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if mdx is not None:
             self.add(mdx)
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)

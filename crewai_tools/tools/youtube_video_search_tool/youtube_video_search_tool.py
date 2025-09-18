@@ -46,7 +46,9 @@ class YoutubeVideoSearchTool(RagTool):
         self,
         search_query: str,
         youtube_video_url: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if youtube_video_url is not None:
             self.add(youtube_video_url)
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)

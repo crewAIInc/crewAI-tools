@@ -39,6 +39,8 @@ class CrewAIRagAdapter(Adapter):
     
     collection_name: str = "default"
     summarize: bool = False
+    similarity_threshold: float = 0.6
+    limit: int = 5
     config: RagConfigType | None = None
     _client: BaseClient | None = PrivateAttr(default=None)
     
@@ -50,20 +52,25 @@ class CrewAIRagAdapter(Adapter):
             self._client = get_rag_client()
         self._client.get_or_create_collection(collection_name=self.collection_name)
     
-    def query(self, question: str) -> str:
+    def query(self, question: str, similarity_threshold: float | None = None, limit: int | None = None) -> str:
         """Query the knowledge base with a question.
-        
+
         Args:
             question: The question to ask
-            
+            similarity_threshold: Minimum similarity score for results (default: 0.6)
+            limit: Maximum number of results to return (default: 5)
+
         Returns:
             Relevant content from the knowledge base
         """
+        search_limit = limit if limit is not None else self.limit
+        search_threshold = similarity_threshold if similarity_threshold is not None else self.similarity_threshold
+
         results: list[SearchResult] = self._client.search(
             collection_name=self.collection_name,
             query=question,
-            limit=5,
-            score_threshold=0.6
+            limit=search_limit,
+            score_threshold=search_threshold
         )
         
         if not results:

@@ -12,7 +12,7 @@ class Adapter(BaseModel, ABC):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @abstractmethod
-    def query(self, question: str) -> str:
+    def query(self, question: str, similarity_threshold: float | None = None, limit: int | None = None) -> str:
         """Query the knowledge base with a question and return the answer."""
 
     @abstractmethod
@@ -26,7 +26,7 @@ class Adapter(BaseModel, ABC):
 
 class RagTool(BaseTool):
     class _AdapterPlaceholder(Adapter):
-        def query(self, question: str) -> str:
+        def query(self, question: str, similarity_threshold: float | None = None, limit: int | None = None) -> str:
             raise NotImplementedError
 
         def add(self, *args: Any, **kwargs: Any) -> None:
@@ -35,6 +35,8 @@ class RagTool(BaseTool):
     name: str = "Knowledge base"
     description: str = "A knowledge base that can be used to answer questions."
     summarize: bool = False
+    similarity_threshold: float = 0.6
+    limit: int = 5
     adapter: Adapter = Field(default_factory=_AdapterPlaceholder)
     config: Any | None = None
 
@@ -46,6 +48,8 @@ class RagTool(BaseTool):
             self.adapter = CrewAIRagAdapter(
                 collection_name="rag_tool_collection",
                 summarize=self.summarize,
+                similarity_threshold=self.similarity_threshold,
+                limit=self.limit,
                 config=self.config
             )
 
@@ -61,5 +65,9 @@ class RagTool(BaseTool):
     def _run(
         self,
         query: str,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
-        return f"Relevant Content:\n{self.adapter.query(query)}"
+        threshold = similarity_threshold if similarity_threshold is not None else self.similarity_threshold
+        result_limit = limit if limit is not None else self.limit
+        return f"Relevant Content:\n{self.adapter.query(query, similarity_threshold=threshold, limit=result_limit)}"

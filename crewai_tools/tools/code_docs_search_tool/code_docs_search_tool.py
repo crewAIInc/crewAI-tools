@@ -44,7 +44,9 @@ class CodeDocsSearchTool(RagTool):
         self,
         search_query: str,
         docs_url: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if docs_url is not None:
             self.add(docs_url)
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)

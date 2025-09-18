@@ -965,7 +965,7 @@ wheels = [
 [[package]]
 name = "crewai"
 version = "0.186.1"
-source = { git = "https://github.com/crewAIInc/crewAI.git?rev=main#f28e78c5baed2c7fa67abc23f9797559a619dc71" }
+source = { git = "https://github.com/crewAIInc/crewAI.git?rev=main#8ee3cf4874bf91e3ce54e72737a30bb0126659e6" }
 dependencies = [
     { name = "appdirs" },
     { name = "blinker" },

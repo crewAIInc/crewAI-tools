@@ -50,7 +50,9 @@ class DOCXSearchTool(RagTool):
         self,
         search_query: str,
         docx: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> Any:
         if docx is not None:
             self.add(docx)
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)
