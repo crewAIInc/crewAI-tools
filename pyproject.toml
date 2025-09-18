@@ -89,6 +89,9 @@ snowflake = [
     "snowflake-connector-python>=3.12.4",
     "snowflake-sqlalchemy>=1.7.3",
 ]
+browser-use = [
+    'browser-use==0.5.6; python_version >= "3.11"',
+]
 singlestore = [
     "singlestoredb>=1.12.4",
     "SQLAlchemy>=2.0.40",
@@ -163,4 +166,5 @@ dev = [
     "pytest-asyncio>=0.25.2",
     "pytest>=8.0.0",
     "pytest-recording>=0.13.3",
+    "pre-commit>=4.3.0",
 ]

@@ -70,6 +70,7 @@ from .oxylabs_google_search_scraper_tool.oxylabs_google_search_scraper_tool impo
 from .oxylabs_universal_scraper_tool.oxylabs_universal_scraper_tool import (
     OxylabsUniversalScraperTool,
 )
+from .parallel_tools import ParallelSearchTool
 from .patronus_eval_tool import (
     PatronusEvalTool,
     PatronusLocalEvaluatorTool,
@@ -122,6 +123,19 @@ from .youtube_channel_search_tool.youtube_channel_search_tool import (
 )
 from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSearchTool
 from .zapier_action_tool.zapier_action_tool import ZapierActionTools
-from .parallel_tools import (
-    ParallelSearchTool,
-)
+
+
+def __getattr__(name):
+    """Lazy import for BrowserUseTool with Python version check."""
+    if name == "BrowserUseTool":
+        from sys import version_info
+
+        if version_info < (3, 11):
+            raise RuntimeError(
+                "BrowserUseTool requires Python >= 3.11. "
+                "Please upgrade your Python version or avoid using BrowserUseTool."
+            )
+        from .browser_use_tool.browser_use_tool import BrowserUseTool
+
+        return BrowserUseTool
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
