@@ -109,10 +109,14 @@ class YoutubeVideoLoader(BaseLoader):
         
         try:
             parsed = urlparse(url)
-            if 'youtube.com' in parsed.netloc:
-                query_params = parse_qs(parsed.query)
-                if 'v' in query_params:
-                    return query_params['v'][0]
+            hostname = parsed.hostname
+            if hostname:
+                hostname_lower = hostname.lower()
+                # Allow youtube.com and any subdomain of youtube.com, plus youtu.be shortener
+                if hostname_lower == 'youtube.com' or hostname_lower.endswith('.youtube.com') or hostname_lower == 'youtu.be':
+                    query_params = parse_qs(parsed.query)
+                    if 'v' in query_params:
+                        return query_params['v'][0]
         except:
             pass
         
