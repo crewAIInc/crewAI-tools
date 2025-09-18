@@ -3,7 +3,11 @@ import re
 from typing import Any, Optional, Type
 
 import requests
-from bs4 import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+    BEAUTIFULSOUP_AVAILABLE = True
+except ImportError:
+    BEAUTIFULSOUP_AVAILABLE = False
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
@@ -40,6 +44,9 @@ class ScrapeWebsiteTool(BaseTool):
         **kwargs,
     ):
         super().__init__(**kwargs)
+        if not BEAUTIFULSOUP_AVAILABLE:
+            raise ImportError("beautifulsoup4 is not installed. Please install it with `pip install crewai-tools[beautifulsoup4]`")
+
         if website_url is not None:
             self.website_url = website_url
             self.description = (
@@ -65,7 +72,8 @@ class ScrapeWebsiteTool(BaseTool):
         page.encoding = page.apparent_encoding
         parsed = BeautifulSoup(page.text, "html.parser")
 
-        text = parsed.get_text(" ")
+        text = "The following text is scraped website content:\n\n"
+        text += parsed.get_text(" ")
         text = re.sub("[ \t]+", " ", text)
         text = re.sub("\\s+\n\\s+", "\n", text)
         return text
