@@ -134,6 +134,12 @@ oxylabs = [
 mongodb = [
     "pymongo>=4.13"
 ]
+mysql = [
+    "pymysql>=1.1.1"
+]
+postgresql = [
+    "psycopg2-binary>=2.9.10"
+]
 bedrock = [
     "beautifulsoup4>=4.13.4",
     "bedrock-agentcore>=0.1.0",

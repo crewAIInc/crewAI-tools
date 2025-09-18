@@ -51,6 +51,10 @@ class DataType(str, Enum):
             DataType.DIRECTORY: ("text_chunker", "TextChunker"),
             DataType.YOUTUBE_VIDEO: ("text_chunker", "TextChunker"),
             DataType.YOUTUBE_CHANNEL: ("text_chunker", "TextChunker"),
+            DataType.GITHUB: ("text_chunker", "TextChunker"),
+            DataType.DOCS_SITE: ("text_chunker", "TextChunker"),
+            DataType.MYSQL: ("text_chunker", "TextChunker"),
+            DataType.POSTGRES: ("text_chunker", "TextChunker"),
         }
 
         if self not in chunkers:
@@ -80,6 +84,10 @@ class DataType(str, Enum):
             DataType.DIRECTORY: ("directory_loader", "DirectoryLoader"),
             DataType.YOUTUBE_VIDEO: ("youtube_video_loader", "YoutubeVideoLoader"),
             DataType.YOUTUBE_CHANNEL: ("youtube_channel_loader", "YoutubeChannelLoader"),
+            DataType.GITHUB: ("github_loader", "GithubLoader"),
+            DataType.DOCS_SITE: ("docs_site_loader", "DocsSiteLoader"),
+            DataType.MYSQL: ("mysql_loader", "MySQLLoader"),
+            DataType.POSTGRES: ("postgres_loader", "PostgresLoader"),
         }
 
         if self not in loaders:

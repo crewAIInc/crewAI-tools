@@ -50,3 +50,4 @@ class CSVSearchTool(RagTool):
         if csv is not None:
             self.add(csv)
         return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)
+

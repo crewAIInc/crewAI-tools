@@ -37,6 +37,8 @@ class MySQLSearchTool(RagTool):
     def _run(
         self,
         search_query: str,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
         **kwargs: Any,
     ) -> Any:
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)
