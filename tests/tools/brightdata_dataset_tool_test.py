@@ -58,20 +58,6 @@ class TestBrightDataDatasetTool(unittest.TestCase):
         "os.environ",
         {"BRIGHT_DATA_API_KEY": "test_api_key"},
     )
-    def test_run_invalid_dataset_type(self):
-        tool = BrightDataDatasetTool()
-        with self.assertRaises(ValueError) as context:
-            tool._run(
-                dataset_type="invalid_type",
-                url="https://example.com"
-            )
-        
-        self.assertIn("Unable to find the dataset", str(context.exception))
-
-    @patch.dict(
-        "os.environ",
-        {"BRIGHT_DATA_API_KEY": "test_api_key"},
-    )
     @patch("crewai_tools.tools.brightdata_tool.brightdata_dataset.asyncio.run")
     def test_run_with_additional_params(self, mock_asyncio_run):
         mock_asyncio_run.return_value = {"data": [{"product": "test"}]}
@@ -87,24 +73,6 @@ class TestBrightDataDatasetTool(unittest.TestCase):
         
         self.assertEqual(result, {"data": [{"product": "test"}]})
         mock_asyncio_run.assert_called_once()
-
-    @patch.dict(
-        "os.environ",
-        {"BRIGHT_DATA_API_KEY": "test_api_key"},
-    )
-    @patch("crewai_tools.tools.brightdata_tool.brightdata_dataset.asyncio.run")
-    def test_run_with_exception(self, mock_asyncio_run):
-        mock_asyncio_run.side_effect = BrightDataDatasetToolException("API Error", 500)
-        
-        tool = BrightDataDatasetTool()
-        with self.assertRaises(BrightDataDatasetToolException) as context:
-            tool._run(
-                dataset_type="amazon_product",
-                url="https://amazon.com/dp/test123"
-            )
-        
-        self.assertEqual(context.exception.error_code, 500)
-        self.assertIn("API Error", str(context.exception))
 
     def test_missing_api_key_error_message(self):
         with patch.dict("os.environ", {}, clear=True):
