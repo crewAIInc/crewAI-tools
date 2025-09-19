@@ -78,9 +78,17 @@ class BrightDataWebUnlockerTool(BaseTool):
         self.api_key = os.getenv("BRIGHT_DATA_API_KEY")
         self.zone = os.getenv("BRIGHT_DATA_ZONE")
         if not self.api_key:
-            raise ValueError("BRIGHT_DATA_API_KEY environment variable is required.")
+            raise ValueError(
+                "BRIGHT_DATA_API_KEY environment variable is required. "
+                "Please set it with your Bright Data API key. "
+                "Get your API key from https://brightdata.com/"
+            )
         if not self.zone:
-            raise ValueError("BRIGHT_DATA_ZONE environment variable is required.")
+            raise ValueError(
+                "BRIGHT_DATA_ZONE environment variable is required. "
+                "Please set it with your Bright Data zone identifier. "
+                "Create a zone at https://brightdata.com/"
+            )
 
     def _run(self, url: str = None, format: str = None, data_format: str = None, **kwargs: Any) -> Any:
         url = url or self.url
