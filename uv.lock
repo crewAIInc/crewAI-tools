@@ -1216,12 +1216,11 @@ provides-extras = ["scrapfly-sdk", "sqlalchemy", "multion", "firecrawl-py", "com
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "mypy", specifier = ">=1.18.1" },
+    { name = "mypy", specifier = ">=1.17.1" },
     { name = "pytest", specifier = ">=8.0.0" },
-    { name = "pytest", specifier = ">=8.3.4" },
-    { name = "pytest-asyncio", specifier = ">=0.25.2" },
-    { name = "pytest-recording", specifier = ">=0.13.3" },
-    { name = "ruff", specifier = ">=0.13.0" },
+    { name = "pytest-asyncio", specifier = ">=0.23.7" },
+    { name = "pytest-recording", specifier = ">=0.13.2" },
+    { name = "ruff", specifier = ">=0.12.11" },
 ]
 
 [[package]]
