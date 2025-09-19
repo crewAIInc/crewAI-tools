@@ -1120,7 +1120,7 @@ requires-dist = [
     { name = "beautifulsoup4", marker = "extra == 'bedrock'", specifier = ">=4.13.4" },
     { name = "bedrock-agentcore", marker = "extra == 'bedrock'", specifier = ">=0.1.0" },
     { name = "browserbase", marker = "extra == 'browserbase'", specifier = ">=1.0.5" },
-    { name = "chromadb", specifier = ">=1.0.0" },
+    { name = "chromadb", specifier = "==1.1.0" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "contextual-client", marker = "extra == 'contextual'", specifier = ">=0.1.0" },
