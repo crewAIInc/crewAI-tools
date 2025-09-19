@@ -457,6 +457,12 @@ class BrightDataDatasetTool(BaseTool):
             request_data.update(additional_params)
 
         api_key = os.getenv("BRIGHT_DATA_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "BRIGHT_DATA_API_KEY environment variable is required. "
+                "Please set it with your Bright Data API key. "
+                "Get your API key from https://brightdata.com/"
+            )
 
         headers = {
             "Authorization": f"Bearer {api_key}",
@@ -550,7 +556,11 @@ class BrightDataDatasetTool(BaseTool):
 
         api_key = os.getenv("BRIGHT_DATA_API_KEY")
         if not api_key:
-            raise ValueError("BRIGHT_DATA_API_KEY environment variable is required.")
+            raise ValueError(
+                "BRIGHT_DATA_API_KEY environment variable is required. "
+                "Please set it with your Bright Data API key. "
+                "Get your API key from https://brightdata.com/"
+            )
 
         try:
             return asyncio.run(
