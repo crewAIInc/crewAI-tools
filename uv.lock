@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.10, <3.14"
 resolution-markers = [
     "python_full_version >= '3.13' and platform_python_implementation == 'PyPy' and sys_platform == 'darwin'",
@@ -964,7 +964,7 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.186.1"
+version = "0.193.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
@@ -994,14 +994,14 @@ dependencies = [
     { name = "tomli-w" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8f/59/2fb28345ce686b749e712efb505797d8d6073b7ebc9a5dcdf93c136d783f/crewai-0.186.1.tar.gz", hash = "sha256:3fd12954082c301434a7d8a2b20ddaf610eb6da1bba3a76aa38402e5c6462fbf", size = 6556945, upload-time = "2025-09-11T00:01:39.758Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/39/ac/329d62f5abfb24ffb096c041469ba24190feca1d5651084d5c332939b33f/crewai-0.193.2.tar.gz", hash = "sha256:239f1d299bbf493e76778434f6476604b585e1f228e2c75d39983a39a1522275", size = 6563484, upload-time = "2025-09-20T21:09:16.553Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/cf/e9f6bc5448ab83509f29006ea1df17073d03b06be2000e8f0b330230e14b/crewai-0.186.1-py3-none-any.whl", hash = "sha256:92acde629f079d2c701ff8f5d648a270e64274d80c7f3cf0131c420a890d84d1", size = 423346, upload-time = "2025-09-11T00:01:37.673Z" },
+    { url = "https://files.pythonhosted.org/packages/9b/81/699782ddfe3c18f6954355f4ec53d73d9c88a88bc5433f590163549a0fbf/crewai-0.193.2-py3-none-any.whl", hash = "sha256:cad4d6a5f32e902a390ca3fc84698839e7720c1ae7acdba002da9a18405a01c8", size = 431559, upload-time = "2025-09-20T21:09:08.676Z" },
 ]
 
 [[package]]
 name = "crewai-tools"
-version = "0.73.0"
+version = "0.73.1"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -1159,7 +1159,7 @@ requires-dist = [
     { name = "composio-core", marker = "extra == 'composio-core'", specifier = ">=0.6.11.post1" },
     { name = "contextual-client", marker = "extra == 'contextual'", specifier = ">=0.1.0" },
     { name = "couchbase", marker = "extra == 'couchbase'", specifier = ">=4.3.5" },
-    { name = "crewai", specifier = ">=0.186.1" },
+    { name = "crewai", specifier = ">=0.193.2" },
     { name = "cryptography", marker = "extra == 'snowflake'", specifier = ">=43.0.3" },
     { name = "databricks-sdk", marker = "extra == 'databricks-sdk'", specifier = ">=0.46.0" },
     { name = "docker", specifier = ">=7.1.0" },
