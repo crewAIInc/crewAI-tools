@@ -41,6 +41,55 @@ def test_directory_search_tool():
         result = tool._run(search_query="test file")
         assert "test file" in result.lower()
 
+        tool = DirectorySearchTool()
+        result = tool._run(search_query="test file", directory=temp_dir)
+        assert "test file" in result.lower()
+
+
+def test_directory_search_tool_parameter_compatibility(mock_adapter):
+    mock_adapter.query.return_value = "this is a test file"
+    
+    with tempfile.TemporaryDirectory() as temp_dir:
+        test_file = Path(temp_dir) / "test.txt"
+        test_file.write_text("This is a test file for directory search")
+
+        tool = DirectorySearchTool(directory=temp_dir, adapter=mock_adapter)
+        result = tool._run(search_query="test file")
+        assert "this is a test file" in result.lower()
+        mock_adapter.query.assert_called_with("test file", similarity_threshold=0.6, limit=5)
+
+        mock_adapter.query.reset_mock()
+        result = tool._run(query="test file")
+        assert "this is a test file" in result.lower()
+        mock_adapter.query.assert_called_with("test file", similarity_threshold=0.6, limit=5)
+
+        mock_adapter.query.reset_mock()
+        tool = DirectorySearchTool(adapter=mock_adapter)
+        result = tool._run(search_query="test file", directory=temp_dir)
+        assert "this is a test file" in result.lower()
+        mock_adapter.query.assert_called_with("test file", similarity_threshold=0.6, limit=5)
+
+        mock_adapter.query.reset_mock()
+        result = tool._run(query="test file", directory=temp_dir)
+        assert "this is a test file" in result.lower()
+        mock_adapter.query.assert_called_with("test file", similarity_threshold=0.6, limit=5)
+
+        with pytest.raises(ValueError, match="Either 'search_query' or 'query' parameter must be provided"):
+            tool._run(directory=temp_dir)
+
+
+def test_directory_search_tool_parameter_priority(mock_adapter):
+    mock_adapter.query.return_value = "this is a test file"
+    
+    with tempfile.TemporaryDirectory() as temp_dir:
+        test_file = Path(temp_dir) / "test.txt"
+        test_file.write_text("This is a test file for directory search")
+
+        tool = DirectorySearchTool(directory=temp_dir, adapter=mock_adapter)
+        result = tool._run(search_query="test file", query="ignored query")
+        assert "this is a test file" in result.lower()
+        mock_adapter.query.assert_called_with("test file", similarity_threshold=0.6, limit=5)
+
 
 def test_pdf_search_tool(mock_adapter):
     mock_adapter.query.return_value = "this is a test"
