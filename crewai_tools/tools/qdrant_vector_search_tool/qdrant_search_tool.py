@@ -83,7 +83,7 @@ class QdrantVectorSearchTool(BaseTool):
         super().__init__(**kwargs)
         if QDRANT_AVAILABLE:
             self.client = QdrantClient(
-                url=self.qdrant_url,
+                location=self.qdrant_url,
                 api_key=self.qdrant_api_key if self.qdrant_api_key else None,
             )
         else:
