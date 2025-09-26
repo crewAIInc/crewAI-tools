@@ -41,11 +41,17 @@ class DirectorySearchTool(RagTool):
 
     def _run(
         self,
-        search_query: str,
+        search_query: str = None,
+        query: str = None,
         directory: Optional[str] = None,
         similarity_threshold: float | None = None,
         limit: int | None = None,
     ) -> str:
+        if search_query is None and query is None:
+            raise ValueError("Either 'search_query' or 'query' parameter must be provided")
+        
+        actual_query = search_query if search_query is not None else query
+        
         if directory is not None:
             self.add(directory)
-        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)
+        return super()._run(query=actual_query, similarity_threshold=similarity_threshold, limit=limit)
