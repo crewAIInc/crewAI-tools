@@ -183,10 +183,10 @@ class VectorXVectorSearchTool(BaseTool):
                 return self.embedding_dim
             try:
                 test_vec = self.embed_fn("test")
-                self.embedding_dim = len(test_vec)
+                object.__setattr__(self, "embedding_dim", len(test_vec))
             except Exception:
                 _logger.warning("Failed to determine embedding dimension. Defaulting to 768")
-                self.embedding_dim = 768
+                object.__setattr__(self, "embedding_dim", 768)
             return self.embedding_dim
         object.__setattr__(self, "_get_embedding_dim", _get_embedding_dim)
 
@@ -289,7 +289,7 @@ class VectorXVectorSearchTool(BaseTool):
 
             event = {
                 "id": str(uuid.uuid4()),
-                "meta": meta,
+                "meta": meta_copy,
             }
 
             if self.use_sparse:
