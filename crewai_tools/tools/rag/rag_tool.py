@@ -79,6 +79,14 @@ class RagTool(BaseTool):
             return config
 
         if isinstance(config, dict):
+            if "llm" in config and "embedder" in config:
+                embedder_config = config["embedder"]
+                if isinstance(embedder_config, dict) and "provider" in embedder_config:
+                    embedding_function = self._create_embedding_function(
+                        embedder_config, "chromadb"
+                    )
+                    return self._create_provider_config("chromadb", {}, embedding_function)
+            
             if "vectordb" in config:
                 vectordb_config = config["vectordb"]
                 if isinstance(vectordb_config, dict) and "provider" in vectordb_config:
@@ -121,18 +129,38 @@ class RagTool(BaseTool):
         embedding_provider = embedding_config.get("provider")
         embedding_model_config = embedding_config.get("config", {}).copy()
 
-        if "model" in embedding_model_config:
-            embedding_model_config["model_name"] = embedding_model_config.pop("model")
-
-        factory_config = {"provider": embedding_provider, **embedding_model_config}
+        if embedding_provider == "ollama":
+            factory_config = {"provider": embedding_provider}
+            if "model" in embedding_model_config:
+                factory_config["EMBEDDINGS_OLLAMA_MODEL_NAME"] = embedding_model_config["model"]
+            if "url" in embedding_model_config:
+                factory_config["EMBEDDINGS_OLLAMA_URL"] = embedding_model_config["url"]
+        else:
+            if "model" in embedding_model_config:
+                embedding_model_config["model_name"] = embedding_model_config.pop("model")
+            factory_config = {"provider": embedding_provider, **embedding_model_config}
 
         if embedding_provider == "openai" and "api_key" not in factory_config:
             api_key = os.getenv("OPENAI_API_KEY")
             if api_key:
                 factory_config["api_key"] = api_key
 
-
         if provider == "chromadb":
+            if embedding_provider == "ollama":
+                try:
+                    from chromadb.utils.embedding_functions.ollama_embedding_function import OllamaEmbeddingFunction
+                    
+                    model_name = factory_config.get("EMBEDDINGS_OLLAMA_MODEL_NAME")
+                    url = factory_config.get("EMBEDDINGS_OLLAMA_URL", "http://localhost:11434/api/embeddings")
+                    
+                    embedding_func = OllamaEmbeddingFunction(
+                        model_name=model_name,
+                        url=url
+                    )
+                    return embedding_func
+                except Exception:
+                    pass
+            
             embedding_func = get_embedding_function(factory_config)
             return embedding_func
 
