@@ -229,9 +229,9 @@ class VectorXVectorSearchTool(BaseTool):
                 )
                 for r in search_results:
                     results.append({
-                        "text": r["meta"].get("value", ""),
+                        "text": r.get("meta", {}).get("value", ""),
                         "score": r.get("rrf_score", 0),
-                        "metadata": r["meta"],
+                        "metadata": r.get("meta", {}),
                     })
             else:
                 search_results = self.index.query(
@@ -241,9 +241,9 @@ class VectorXVectorSearchTool(BaseTool):
                 )
                 for r in search_results:
                     results.append({
-                        "text": r["meta"].get("value", ""),
+                        "text": r.get("meta", {}).get("value", ""),
                         "score": r.get("similarity", 0),
-                        "metadata": r["meta"],
+                        "metadata": r.get("meta", {}),
                     })
         except Exception as e:
             _logger.error(f"VectorX Search Error: {e}")
