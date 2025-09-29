@@ -385,8 +385,8 @@ class CodeInterpreterTool(BaseTool):
             exec_locals: dict[str, Any] = {}
             exec(code, {}, exec_locals)  # noqa: S102
             return exec_locals.get("result", "No result variable found.")
-        except Exception:
-            return "An error occurred while executing code in unsafe mode."
+        except Exception as e:
+            return f"An error occurred while executing code in unsafe mode: {type(e).__name__}: {e!s}"
 
     @staticmethod
     def _sanitize_library_requirement(library: str) -> str:
