@@ -68,7 +68,11 @@ spider-client = [
     "spider-client>=0.1.25",
 ]
 scrapegraph-py = [
+<<<<<<< Updated upstream
     "scrapegraph-py>=1.11.0",
+=======
+    "scrapegraph-py>=1.31.0",
+>>>>>>> Stashed changes
 ]
 linkup-sdk = [
     "linkup-sdk>=0.2.2",
