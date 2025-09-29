@@ -69,7 +69,11 @@ spider-client = [
 ]
 scrapegraph-py = [
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "scrapegraph-py>=1.11.0",
+=======
+    "scrapegraph-py>=1.31.0",
+>>>>>>> Stashed changes
 =======
     "scrapegraph-py>=1.31.0",
 >>>>>>> Stashed changes
