@@ -17,7 +17,7 @@ class FixedTXTSearchToolSchema(BaseModel):
 class TXTSearchToolSchema(FixedTXTSearchToolSchema):
     """Input for TXTSearchTool."""
 
-    txt: str = Field(..., description="Mandatory txt path you want to search")
+    txt: str = Field(..., description="File path or URL of a TXT file to be searched")
 
 
 class TXTSearchTool(RagTool):
@@ -39,7 +39,9 @@ class TXTSearchTool(RagTool):
         self,
         search_query: str,
         txt: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if txt is not None:
             self.add(txt)
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)

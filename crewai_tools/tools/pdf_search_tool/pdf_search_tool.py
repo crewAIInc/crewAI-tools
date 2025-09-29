@@ -1,9 +1,9 @@
-from typing import Any, Optional, Type
+from typing import Optional, Type
 
-from embedchain.models.data_type import DataType
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+from crewai_tools.rag.data_types import DataType
 
 
 class FixedPDFSearchToolSchema(BaseModel):
@@ -17,7 +17,7 @@ class FixedPDFSearchToolSchema(BaseModel):
 class PDFSearchToolSchema(FixedPDFSearchToolSchema):
     """Input for PDFSearchTool."""
 
-    pdf: str = Field(..., description="Mandatory pdf path you want to search")
+    pdf: str = Field(..., description="File path or URL of a PDF file to be searched")
 
 
 class PDFSearchTool(RagTool):
@@ -42,7 +42,9 @@ class PDFSearchTool(RagTool):
         self,
         query: str,
         pdf: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if pdf is not None:
             self.add(pdf)
-        return super()._run(query=query)
+        return super()._run(query=query, similarity_threshold=similarity_threshold, limit=limit)

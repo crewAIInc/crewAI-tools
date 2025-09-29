@@ -1,9 +1,9 @@
 from typing import List, Optional, Type
 
-from embedchain.loaders.github import GithubLoader
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+from crewai_tools.rag.data_types import DataType
 
 
 class FixedGithubSearchToolSchema(BaseModel):
@@ -37,7 +37,6 @@ class GithubSearchTool(RagTool):
         default_factory=lambda: ["code", "repo", "pr", "issue"],
         description="Content types you want to be included search, options: [code, repo, pr, issue]",
     )
-    _loader: GithubLoader | None = PrivateAttr(default=None)
 
     def __init__(
         self,
@@ -46,7 +45,6 @@ class GithubSearchTool(RagTool):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self._loader = GithubLoader(config={"token": self.gh_token})
 
         if github_repo and content_types:
             self.add(repo=github_repo, content_types=content_types)
@@ -60,11 +58,10 @@ class GithubSearchTool(RagTool):
         content_types: Optional[List[str]] = None,
     ) -> None:
         content_types = content_types or self.content_types
-
         super().add(
-            f"repo:{repo} type:{','.join(content_types)}",
-            data_type="github",
-            loader=self._loader,
+            f"https://github.com/{repo}",
+            data_type=DataType.GITHUB,
+            metadata={"content_types": content_types, "gh_token": self.gh_token}
         )
 
     def _run(
@@ -72,10 +69,12 @@ class GithubSearchTool(RagTool):
         search_query: str,
         github_repo: Optional[str] = None,
         content_types: Optional[List[str]] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if github_repo:
             self.add(
                 repo=github_repo,
                 content_types=content_types,
             )
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)

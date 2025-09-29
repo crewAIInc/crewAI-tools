@@ -1,9 +1,10 @@
-from typing import Any, Optional, Type
+from typing import Optional, Type
 
-from embedchain.models.data_type import DataType
 from pydantic import BaseModel, Field
 
+
 from ..rag.rag_tool import RagTool
+from crewai_tools.rag.data_types import DataType
 
 
 class FixedMDXSearchToolSchema(BaseModel):
@@ -18,7 +19,7 @@ class FixedMDXSearchToolSchema(BaseModel):
 class MDXSearchToolSchema(FixedMDXSearchToolSchema):
     """Input for MDXSearchTool."""
 
-    mdx: str = Field(..., description="Mandatory mdx path you want to search")
+    mdx: str = Field(..., description="File path or URL of a MDX file to be searched")
 
 
 class MDXSearchTool(RagTool):
@@ -43,7 +44,9 @@ class MDXSearchTool(RagTool):
         self,
         search_query: str,
         mdx: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if mdx is not None:
             self.add(mdx)
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)

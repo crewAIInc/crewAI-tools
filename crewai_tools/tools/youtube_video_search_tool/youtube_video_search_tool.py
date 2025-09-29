@@ -1,9 +1,10 @@
 from typing import Any, Optional, Type
 
-from embedchain.models.data_type import DataType
+
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+from crewai_tools.rag.data_types import DataType
 
 
 class FixedYoutubeVideoSearchToolSchema(BaseModel):
@@ -45,7 +46,9 @@ class YoutubeVideoSearchTool(RagTool):
         self,
         search_query: str,
         youtube_video_url: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> str:
         if youtube_video_url is not None:
             self.add(youtube_video_url)
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)

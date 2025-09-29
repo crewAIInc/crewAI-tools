@@ -1,16 +1,17 @@
 from typing import Any, Optional, Type
 
-from embedchain.models.data_type import DataType
+
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+from crewai_tools.rag.data_types import DataType
 
 
 class FixedDOCXSearchToolSchema(BaseModel):
     """Input for DOCXSearchTool."""
 
     docx: Optional[str] = Field(
-        ..., description="Mandatory docx path you want to search"
+        ..., description="File path or URL of a DOCX file to be searched"
     )
     search_query: str = Field(
         ...,
@@ -49,7 +50,9 @@ class DOCXSearchTool(RagTool):
         self,
         search_query: str,
         docx: Optional[str] = None,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
     ) -> Any:
         if docx is not None:
             self.add(docx)
-        return super()._run(query=search_query)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit)

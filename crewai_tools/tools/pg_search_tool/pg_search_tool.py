@@ -1,9 +1,9 @@
 from typing import Any, Type
 
-from embedchain.loaders.postgres import PostgresLoader
 from pydantic import BaseModel, Field
 
 from ..rag.rag_tool import RagTool
+from crewai_tools.rag.data_types import DataType
 
 
 class PGSearchToolSchema(BaseModel):
@@ -23,9 +23,7 @@ class PGSearchTool(RagTool):
 
     def __init__(self, table_name: str, **kwargs):
         super().__init__(**kwargs)
-        kwargs["data_type"] = "postgres"
-        kwargs["loader"] = PostgresLoader(config=dict(url=self.db_uri))
-        self.add(table_name)
+        self.add(table_name, data_type=DataType.POSTGRES, metadata={"db_uri": self.db_uri})
         self.description = f"A tool that can be used to semantic search a query the {table_name} database table's content."
         self._generate_description()
 
@@ -39,6 +37,8 @@ class PGSearchTool(RagTool):
     def _run(
         self,
         search_query: str,
+        similarity_threshold: float | None = None,
+        limit: int | None = None,
         **kwargs: Any,
     ) -> Any:
-        return super()._run(query=search_query, **kwargs)
+        return super()._run(query=search_query, similarity_threshold=similarity_threshold, limit=limit, **kwargs)
