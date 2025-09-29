@@ -155,7 +155,7 @@ class CodeInterpreterTool(BaseTool):
         """
         spec = importlib.util.find_spec("crewai_tools")
         if spec is None or spec.origin is None:
-            raise FileNotFoundError("Unable to locate crewai_tools package installation path.")
+            raise FileNotFoundError("Unable to locate crewai_tools package installation path.") from None
         return os.path.dirname(spec.origin)
 
     def _verify_docker_image(self) -> None:
