@@ -6,6 +6,9 @@ from typing import List, Dict, Callable, Optional, Any, Type
 from pydantic import BaseModel
 from crewai.tools import BaseTool
 
+from copy import deepcopy
+from itertools import zip_longest
+
 # Try importing dependencies with optional installation notes
 try:
     from vecx.vectorx import VectorX
@@ -119,6 +122,7 @@ class VectorXVectorSearchTool(BaseTool):
         sparse_vocab_size: Optional[int] = None,
         top_k: int = 3,
         gemini_model: Optional[str] = None,
+        embedding_dim: Optional[int] = None, 
     ):
         """Initializes the VectorX search tool, sets up index and embedding model."""
         super().__init__()
@@ -128,6 +132,7 @@ class VectorXVectorSearchTool(BaseTool):
         object.__setattr__(self, "space_type", space_type)
         object.__setattr__(self, "use_sparse", use_sparse)
         object.__setattr__(self, "top_k", top_k)
+        object.__setattr__(self, "embedding_dim", embedding_dim) 
 
         gemini_model = gemini_model or os.environ.get("GEMINI_MODEL", "models/embedding-001")
         _logger.info(f"Using Gemini embedding model: {gemini_model}")
@@ -170,7 +175,21 @@ class VectorXVectorSearchTool(BaseTool):
         object.__setattr__(self, "client", client)
 
         # Determine embedding dimension
-        dim = len(self.embed_fn("test"))
+        # dim = len(self.embed_fn("test"))
+
+        # --- CHANGED: Deferring embedding dimension API call
+        def _get_embedding_dim():
+            if self.embedding_dim is not None:
+                return self.embedding_dim
+            try:
+                test_vec = self.embed_fn("test")
+                self.embedding_dim = len(test_vec)
+            except Exception:
+                _logger.warning("Failed to determine embedding dimension. Defaulting to 768")
+                self.embedding_dim = 768
+            return self.embedding_dim
+        object.__setattr__(self, "_get_embedding_dim", _get_embedding_dim)
+
         try:
             if use_sparse:
                 index = client.get_hybrid_index(name=collection_name, key=encryption_key)
@@ -181,7 +200,8 @@ class VectorXVectorSearchTool(BaseTool):
             if use_sparse:
                 client.create_hybrid_index(
                     name=collection_name,
-                    dimension=dim,
+                    # dimension=dim,
+                    dimension=self._get_embedding_dim(),
                     space_type=space_type,
                     vocab_size=sparse_vocab_size,
                     key=encryption_key,
@@ -190,7 +210,8 @@ class VectorXVectorSearchTool(BaseTool):
             else:
                 client.create_index(
                     name=collection_name,
-                    dimension=dim,
+                    # dimension=dim,
+                    dimension=self._get_embedding_dim(),
                     space_type=space_type,
                     key=encryption_key,
                 )
@@ -261,8 +282,9 @@ class VectorXVectorSearchTool(BaseTool):
         metadatas = metadatas or [{} for _ in texts]
         events = []
 
-        for text, meta in zip(texts, metadatas):
-            meta["value"] = text
+        for text, meta in zip_longest(texts, metadatas, fillvalue={}):
+            meta_copy = deepcopy(meta)
+            meta_copy["value"] = text
             embedding = self.embed_fn(text)
 
             event = {
