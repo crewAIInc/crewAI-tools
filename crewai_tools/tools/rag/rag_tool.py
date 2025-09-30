@@ -79,6 +79,14 @@ class RagTool(BaseTool):
             return config
 
         if isinstance(config, dict):
+            if "llm" in config and "embedder" in config and "vectordb" not in config:
+                embedder_config = config["embedder"]
+                if isinstance(embedder_config, dict) and "provider" in embedder_config:
+                    embedding_function = self._create_embedding_function(
+                        embedder_config, "chromadb"
+                    )
+                    return self._create_provider_config("chromadb", {}, embedding_function)
+            
             if "vectordb" in config:
                 vectordb_config = config["vectordb"]
                 if isinstance(vectordb_config, dict) and "provider" in vectordb_config:
@@ -131,8 +139,25 @@ class RagTool(BaseTool):
             if api_key:
                 factory_config["api_key"] = api_key
 
-
         if provider == "chromadb":
+            if embedding_provider == "ollama":
+                try:
+                    from chromadb.utils.embedding_functions.ollama_embedding_function import OllamaEmbeddingFunction
+                    
+                    model_name = factory_config.get("model_name")
+                    if not model_name:
+                        raise ValueError("Ollama embedding function requires a model_name to be specified")
+                    
+                    url = factory_config.get("url", "http://localhost:11434/api/embeddings")
+                    
+                    embedding_func = OllamaEmbeddingFunction(
+                        model_name=model_name,
+                        url=url
+                    )
+                    return embedding_func
+                except ImportError:
+                    pass
+            
             embedding_func = get_embedding_function(factory_config)
             return embedding_func
 
