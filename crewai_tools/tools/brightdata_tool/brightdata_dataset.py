@@ -1,19 +1,22 @@
 import asyncio
 import os
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 import aiohttp
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
+
 
 class BrightDataConfig(BaseSettings):
     API_URL: str = "https://api.brightdata.com"
     DEFAULT_TIMEOUT: int = 600
     DEFAULT_POLLING_INTERVAL: int = 1
-    
+
     class Config:
         env_prefix = "BRIGHTDATA_"
+
+
 class BrightDataDatasetToolException(Exception):
     """Exception raised for custom error in the application."""
 
@@ -48,10 +51,11 @@ class BrightDataDatasetToolSchema(BaseModel):
         default=None, description="Additional params if any"
     )
 
+
 config = BrightDataConfig()
 
-BRIGHTDATA_API_URL = config.API_URL  
-timeout = config.DEFAULT_TIMEOUT    
+BRIGHTDATA_API_URL = config.API_URL
+timeout = config.DEFAULT_TIMEOUT
 
 datasets = [
     {
@@ -406,8 +410,22 @@ class BrightDataDatasetTool(BaseTool):
     format: str = "json"
     zipcode: Optional[str] = None
     additional_params: Optional[Dict[str, Any]] = None
+    env_vars: List[EnvVar] = [
+        EnvVar(
+            name="BRIGHTDATA_API_KEY",
+            description="API key for Bright Data",
+            required=True,
+        ),
+    ]
 
-    def __init__(self, dataset_type: str = None, url: str = None, format: str = "json", zipcode: str = None, additional_params: Dict[str, Any] = None):
+    def __init__(
+        self,
+        dataset_type: str = None,
+        url: str = None,
+        format: str = "json",
+        zipcode: str = None,
+        additional_params: Dict[str, Any] = None,
+    ):
         super().__init__()
         self.dataset_type = dataset_type
         self.url = url
@@ -526,15 +544,25 @@ class BrightDataDatasetTool(BaseTool):
 
                 return await snapshot_response.text()
 
-    def _run(self, url: str = None, dataset_type: str = None, format: str = None, zipcode: str = None, additional_params: Dict[str, Any] = None, **kwargs: Any) -> Any:
+    def _run(
+        self,
+        url: str = None,
+        dataset_type: str = None,
+        format: str = None,
+        zipcode: str = None,
+        additional_params: Dict[str, Any] = None,
+        **kwargs: Any,
+    ) -> Any:
         dataset_type = dataset_type or self.dataset_type
         output_format = format or self.format
         url = url or self.url
         zipcode = zipcode or self.zipcode
         additional_params = additional_params or self.additional_params
-        
+
         if not dataset_type:
-            raise ValueError("dataset_type is required either in constructor or method call")
+            raise ValueError(
+                "dataset_type is required either in constructor or method call"
+            )
         if not url:
             raise ValueError("url is required either in constructor or method call")
 
