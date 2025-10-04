@@ -152,11 +152,11 @@ class QdrantVectorSearchTool(BaseTool):
         # Format results similar to storage implementation
         results = []
         # Extract the list of ScoredPoint objects from the tuple
-        for point in search_results:
+        for point in search_results.points:
             result = {
-                "metadata": point[1][0].payload.get("metadata", {}),
-                "context": point[1][0].payload.get("text", ""),
-                "distance": point[1][0].score,
+                "metadata": point.payload.get("metadata", {}),
+                "context": point.payload.get("text", ""),
+                "distance": point.score,
             }
             results.append(result)
 
