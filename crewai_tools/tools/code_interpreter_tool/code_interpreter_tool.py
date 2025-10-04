@@ -7,6 +7,8 @@ potentially unsafe operations and importing restricted modules.
 
 import importlib.util
 import os
+import io
+import contextlib
 from types import ModuleType
 from typing import Any, Dict, List, Optional, Type
 
@@ -116,14 +118,13 @@ class SandboxPython:
         return safe_builtins
 
     @staticmethod
-    def exec(code: str, locals: Dict[str, Any]) -> None:
+    def exec(code: str) -> None:
         """Executes Python code in a restricted environment.
 
         Args:
             code: The Python code to execute as a string.
-            locals: A dictionary that will be used for local variable storage.
         """
-        exec(code, {"__builtins__": SandboxPython.safe_builtins()}, locals)
+        exec(code, {"__builtins__": SandboxPython.safe_builtins()})
 
 
 class CodeInterpreterTool(BaseTool):
@@ -333,14 +334,14 @@ class CodeInterpreterTool(BaseTool):
             code: The Python code to execute as a string.
 
         Returns:
-            The value of the 'result' variable from the executed code,
-            or an error message if execution failed.
+            The output of the executed code as a string, or an error message if execution failed.
         """
         Printer.print("Running code in restricted sandbox", color="yellow")
-        exec_locals = {}
         try:
-            SandboxPython.exec(code=code, locals=exec_locals)
-            return exec_locals.get("result", "No result variable found.")
+            f = StringIO()
+            with redirect_stdout(f)
+                SandboxPython.exec(code=code)
+            return f.getvalue()
         except Exception as e:
             return f"An error occurred: {str(e)}"
 
@@ -355,8 +356,7 @@ class CodeInterpreterTool(BaseTool):
             libraries_used: A list of Python library names to install before execution.
 
         Returns:
-            The value of the 'result' variable from the executed code,
-            or an error message if execution failed.
+            The output of the executed code as a string, or an error message if execution failed.
         """
 
         Printer.print("WARNING: Running code in unsafe mode", color="bold_magenta")
@@ -366,8 +366,9 @@ class CodeInterpreterTool(BaseTool):
 
         # Execute the code
         try:
-            exec_locals = {}
-            exec(code, {}, exec_locals)
-            return exec_locals.get("result", "No result variable found.")
+            f = StringIO()
+            with redirect_stdout(f)
+                exec(code)
+            return f.getvalue()
         except Exception as e:
             return f"An error occurred: {str(e)}"
