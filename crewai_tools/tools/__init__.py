@@ -26,6 +26,7 @@ from .databricks_query_tool.databricks_query_tool import DatabricksQueryTool
 from .directory_read_tool.directory_read_tool import DirectoryReadTool
 from .directory_search_tool.directory_search_tool import DirectorySearchTool
 from .docx_search_tool.docx_search_tool import DOCXSearchTool
+from .e2b_code_interpreter_tool.code_interpreter_tool import E2BCodeInterpreterTool
 from .exa_tools.exa_search_tool import EXASearchTool
 from .file_read_tool.file_read_tool import FileReadTool
 from .file_writer_tool.file_writer_tool import FileWriterTool
