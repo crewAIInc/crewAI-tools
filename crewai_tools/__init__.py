@@ -97,7 +97,7 @@ from .tools import (
     ParallelSearchTool,
 )
 
-from crewai_tools.tools.llmlayer_tools import (
+from .tools.llmlayer_tools import (
     LLMLayerSearchTool,
     LLMLayerWebSearchTool,
     LLMLayerScraperTool,
