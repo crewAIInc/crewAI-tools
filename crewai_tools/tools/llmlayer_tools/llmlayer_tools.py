@@ -148,11 +148,10 @@ class LLMLayerSearchTool(BaseTool):
         if system_prompt:
             payload["system_prompt"] = system_prompt
         if json_schema:
-            payload["json_schema"] = (
-                json.dumps(json_schema)
-                if isinstance(json_schema, dict)
-                else json_schema
-            )
+            try:
+                payload["json_schema"] = json.dumps(json_schema) if isinstance(json_schema, dict) else json_schema
+            except (TypeError, ValueError) as e:
+                return f"Error: Invalid JSON schema - {str(e)}. Ensure all values are JSON-serializable."
         if domain_filter:
             payload["domain_filter"] = domain_filter
 
