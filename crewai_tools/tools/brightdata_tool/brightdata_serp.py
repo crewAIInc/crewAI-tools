@@ -1,10 +1,11 @@
 import os
 import urllib.parse
-from typing import Any, Optional, Type
+from typing import Any, List, Optional, Type
 
 import requests
-from crewai.tools import BaseTool
+from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, Field
+
 
 class BrightDataConfig(BaseModel):
     API_URL: str = "https://api.brightdata.com/request"
@@ -12,8 +13,11 @@ class BrightDataConfig(BaseModel):
     @classmethod
     def from_env(cls):
         return cls(
-            API_URL=os.environ.get("BRIGHTDATA_API_URL", "https://api.brightdata.com/request")
+            API_URL=os.environ.get(
+                "BRIGHTDATA_API_URL", "https://api.brightdata.com/request"
+            )
         )
+
 
 class BrightDataSearchToolSchema(BaseModel):
     """
@@ -87,8 +91,24 @@ class BrightDataSearchTool(BaseTool):
     search_type: Optional[str] = None
     device_type: str = "desktop"
     parse_results: bool = True
+    env_vars: List[EnvVar] = [
+        EnvVar(
+            name="BRIGHT_DATA_API_KEY",
+            description="API key for Bright Data",
+            required=True,
+        ),
+    ]
 
-    def __init__(self, query: str = None, search_engine: str = "google", country: str = "us", language: str = "en", search_type: str = None, device_type: str = "desktop", parse_results: bool = True):
+    def __init__(
+        self,
+        query: str = None,
+        search_engine: str = "google",
+        country: str = "us",
+        language: str = "en",
+        search_type: str = None,
+        device_type: str = "desktop",
+        parse_results: bool = True,
+    ):
         super().__init__()
         self.base_url = self._config.API_URL
         self.query = query
@@ -113,7 +133,17 @@ class BrightDataSearchTool(BaseTool):
             return f"https://www.bing.com/search?q=${query}"
         return f"https://www.google.com/search?q=${query}"
 
-    def _run(self, query: str = None, search_engine: str = None, country: str = None, language: str = None, search_type: str = None, device_type: str = None, parse_results: bool = None, **kwargs) -> Any:
+    def _run(
+        self,
+        query: str = None,
+        search_engine: str = None,
+        country: str = None,
+        language: str = None,
+        search_type: str = None,
+        device_type: str = None,
+        parse_results: bool = None,
+        **kwargs,
+    ) -> Any:
         """
         Executes a search query using Bright Data SERP API and returns results.
 
@@ -137,7 +167,9 @@ class BrightDataSearchTool(BaseTool):
         language = language or self.language
         search_type = search_type or self.search_type
         device_type = device_type or self.device_type
-        parse_results = parse_results if parse_results is not None else self.parse_results
+        parse_results = (
+            parse_results if parse_results is not None else self.parse_results
+        )
         results_count = kwargs.get("results_count", "10")
 
         # Validate required parameters
