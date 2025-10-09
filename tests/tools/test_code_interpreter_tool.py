@@ -1,3 +1,4 @@
+import subprocess
 from unittest.mock import patch
 
 import pytest
@@ -161,7 +162,7 @@ x = 10
 
 
 def test_unsafe_mode_running_unsafe_code(printer_mock, docker_unavailable_mock):
-    """Test behavior when no result variable is set."""
+    """Test unsafe code execution returns expected result."""
     tool = CodeInterpreterTool(unsafe_mode=True)
     code = """
 import os
@@ -173,3 +174,55 @@ result = eval("5/1")
         "WARNING: Running code in unsafe mode", color="bold_magenta"
     )
     assert 5.0 == result
+
+
+def test_sanitize_library_requirement_valid():
+    sanitized = CodeInterpreterTool._sanitize_library_requirement("requests>=2.0")
+    assert sanitized == "requests>=2.0"
+
+
+@pytest.mark.parametrize(
+    "library",
+    ["", "   ", "--help", "-r requirements.txt", "git+https://example.com/repo.git"],
+)
+def test_sanitize_library_requirement_invalid(library):
+    with pytest.raises(ValueError):
+        CodeInterpreterTool._sanitize_library_requirement(library)
+
+
+@patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.subprocess.run")
+def test_install_libraries_on_host_invokes_pip(mock_run):
+    mock_run.return_value = subprocess.CompletedProcess(
+        args=["pip", "install", "requests"], returncode=0, stdout="", stderr=""
+    )
+    with patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.shutil.which") as which_mock:
+        which_mock.return_value = "/usr/bin/pip"
+        tool = CodeInterpreterTool()
+        tool._install_libraries_on_host(["requests"])
+
+    which_mock.assert_called_once_with("pip")
+    mock_run.assert_called_once_with(
+        ["/usr/bin/pip", "install", "requests"],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+
+@patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.subprocess.run")
+def test_install_libraries_on_host_invalid_requirement(mock_run):
+    mock_run.side_effect = subprocess.CalledProcessError(
+        1,
+        ["pip", "install", "requests"],
+        stderr="error",
+    )
+    with patch("crewai_tools.tools.code_interpreter_tool.code_interpreter_tool.shutil.which") as which_mock:
+        which_mock.return_value = "/usr/bin/pip"
+        tool = CodeInterpreterTool()
+
+        with pytest.raises(RuntimeError) as exc:
+            tool._install_libraries_on_host(["requests"])
+
+    which_mock.assert_called_once_with("pip")
+    assert "Failed to install dependency" in str(exc.value)
