@@ -91,9 +91,9 @@ class BraveSearchTool(BaseTool):
             response.raise_for_status()  # Handle non-200 responses
             results = response.json()
 
+            string = []
             if "web" in results:
                 results = results["web"]["results"]
-                string = []
                 for result in results:
                     try:
                         string.append(
