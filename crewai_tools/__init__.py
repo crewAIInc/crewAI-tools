@@ -96,3 +96,11 @@ from .tools import (
     ZapierActionTools,
     ParallelSearchTool,
 )
+
+from .tools.llmlayer_tools import (
+    LLMLayerSearchTool,
+    LLMLayerWebSearchTool,
+    LLMLayerScraperTool,
+    LLMLayerPDFTool,
+    LLMLayerYouTubeTool,
+)
