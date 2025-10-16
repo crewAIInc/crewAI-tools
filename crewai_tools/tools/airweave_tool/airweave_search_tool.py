@@ -150,9 +150,9 @@ class AirweaveSearchTool(BaseTool):
                 readable_id=self.collection_id,
                 query=query,
                 limit=limit,
-                offset=offset if offset > 0 else None,
+                offset=offset,
                 response_type=response_type,
-                recency_bias=recency_bias if recency_bias > 0 else None
+                recency_bias=recency_bias
             )
 
             # Handle completion response
@@ -217,9 +217,9 @@ class AirweaveSearchTool(BaseTool):
                 readable_id=self.collection_id,
                 query=query,
                 limit=limit,
-                offset=offset if offset > 0 else None,
+                offset=offset,
                 response_type=response_type,
-                recency_bias=recency_bias if recency_bias > 0 else None
+                recency_bias=recency_bias
             )
 
             # Handle completion response
