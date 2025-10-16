@@ -9,6 +9,8 @@ from .aws import (
 )
 from .tools import (
     AIMindTool,
+    AirweaveAdvancedSearchTool,
+    AirweaveSearchTool,
     ApifyActorsTool,
     ArxivPaperTool,
     BraveSearchTool,
