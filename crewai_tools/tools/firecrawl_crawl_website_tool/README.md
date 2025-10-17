@@ -27,8 +27,7 @@ from firecrawl import ScrapeOptions
 tool = FirecrawlCrawlWebsiteTool(
     config={
         "limit": 100,
-        "scrape_options": ScrapeOptions(formats=["markdown", "html"]),
-        "poll_interval": 30
+        "scrape_options": ScrapeOptions(formats=["markdown"]),
     }
 )
 tool.run(url="firecrawl.dev")

@@ -1,5 +1,4 @@
 from typing import Any, Optional, Type, Dict, List, TYPE_CHECKING
-from typing import Any, Optional, Type, List, Dict
 
 from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -115,22 +114,22 @@ class FirecrawlScrapeWebsiteTool(BaseTool):
     config: Optional[dict[str, Any]] = Field(
         default_factory=lambda: {
             "formats": ["markdown"],
-            "onlyMainContent": True,
-            "includeTags": [],
-            "excludeTags": [],
+            "only_main_content": True,
+            "include_tags": [],
+            "exclude_tags": [],
             "headers": {},
-            "waitFor": 0,
+            "wait_for": 0,
             "mobile": False,
-            "skipTlsVerification": True,
+            "skip_tls_verification": True,
             "timeout": 30000,
             "parsers": ["pdf"],
             "actions": None,
             "location": None,
-            "removeBase64Images": True,
-            "blockAds": True,
+            "remove_base64_images": False,
+            "block_ads": True,
             "proxy": None,
-            "storeInCache": True,
-            "zeroDataRetention": False
+            "store_in_cache": True,
+            "zero_data_retention": False,
             "integration": "crewai",
         }
     )

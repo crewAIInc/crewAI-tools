@@ -42,14 +42,14 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
     api_key: Optional[str] = None
     config: Optional[dict[str, Any]] = Field(
         default_factory=lambda: {
-            "maxDepth": 2,
-            "ignoreSitemap": True,
+            "max_depth": 2,
+            "ignore_sitemap": True,
             "limit": 10,
-            "allowBackwardLinks": False,
-            "allowExternalLinks": False,
-            "scrapeOptions": {
-                "formats": ["markdown", "screenshot", "links"],
-                "onlyMainContent": True,
+            "allow_backward_links": False,
+            "allow_external_links": False,
+            "scrape_options": {
+                "formats": ["markdown", "links"],
+                "only_main_content": True,
                 "timeout": 10000,
             },
         }

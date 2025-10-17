@@ -46,11 +46,11 @@ class FirecrawlExtractTool(BaseTool):
         default_factory=lambda: {
             "prompt": None,
             "schema": None,
-            "enableWebSearch": False,
-            "ignoreSiteMap": False,
-            "includeSubdomains": True,
-            "showSources": False,
-            "scrapeOptions": {},
+            "enable_web_search": False,
+            "allow_external_links": None,
+            "show_sources": False,
+            "scrape_options": {},
+            "ignore_invalid_urls": False,
             "integration": "crewai",
         }
     )
