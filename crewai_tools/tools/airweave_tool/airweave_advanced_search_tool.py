@@ -129,8 +129,19 @@ class AirweaveAdvancedSearchTool(BaseTool):
                 "AIRWEAVE_API_KEY environment variable is required."
             )
 
+        # Get version safely
+        try:
+            from importlib.metadata import version
+            package_version = version("crewai-tools")
+        except Exception:
+            package_version = "unknown"
+
         # Initialize client
-        client_kwargs = {"api_key": api_key}
+        client_kwargs = {
+            "api_key": api_key,
+            "framework_name": "crewai",
+            "framework_version": package_version,
+        }
         if self.base_url:
             client_kwargs["base_url"] = self.base_url
 
@@ -225,7 +236,19 @@ class AirweaveAdvancedSearchTool(BaseTool):
             from airweave import AsyncAirweaveSDK
 
             api_key = os.getenv("AIRWEAVE_API_KEY")
-            client_kwargs = {"api_key": api_key}
+            
+            # Get version safely
+            try:
+                from importlib.metadata import version
+                package_version = version("crewai-tools")
+            except Exception:
+                package_version = "unknown"
+            
+            client_kwargs = {
+                "api_key": api_key,
+                "framework_name": "crewai",
+                "framework_version": package_version,
+            }
             if self.base_url:
                 client_kwargs["base_url"] = self.base_url
 
