@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Type, List
+from typing import TYPE_CHECKING, Any, Optional, Type, List
 
 from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
@@ -39,9 +39,6 @@ class FirecrawlSearchTool(BaseTool):
     model_config = ConfigDict(
         arbitrary_types_allowed=True, validate_assignment=True, frozen=False
     )
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True, validate_assignment=True, frozen=False
-    )
     name: str = "Firecrawl web search tool"
     description: str = "Search webpages using Firecrawl and return the results"
     args_schema: Type[BaseModel] = FirecrawlSearchToolSchema
@@ -54,6 +51,7 @@ class FirecrawlSearchTool(BaseTool):
             "country": "us",
             "location": None,
             "timeout": 60000,
+            "integration": "crewai",
         }
     )
     _firecrawl: Optional["FirecrawlApp"] = PrivateAttr(None)
@@ -62,9 +60,32 @@ class FirecrawlSearchTool(BaseTool):
         EnvVar(name="FIRECRAWL_API_KEY", description="API key for Firecrawl services", required=True),
     ]
 
-    def __init__(self, api_key: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        limit: Optional[int] = None,
+        tbs: Optional[str] = None,
+        lang: Optional[str] = None,
+        country: Optional[str] = None,
+        location: Optional[str] = None,
+        timeout: Optional[int] = None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.api_key = api_key
+        if limit is not None:
+            self.config["limit"] = limit
+        if tbs is not None:
+            self.config["tbs"] = tbs
+        if lang is not None:
+            self.config["lang"] = lang
+        if country is not None:
+            self.config["country"] = country
+        if location is not None:
+            self.config["location"] = location
+        if timeout is not None:
+            self.config["timeout"] = timeout
+        self.config["integration"] = "crewai"  # Ensure integration is always set
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
@@ -92,17 +113,9 @@ class FirecrawlSearchTool(BaseTool):
                     "`firecrawl-py` package not found, please run `uv add firecrawl-py`"
                 )
 
-    def _run(
-        self,
-        query: str,
-    ) -> Any:
-        if not self._firecrawl:
-            raise RuntimeError("FirecrawlApp not properly initialized")
-
-        return self._firecrawl.search(
-            query=query,
-            params=self.config,
-        )
+    def _run(self, query: str) -> Any:
+        self.config["integration"] = "crewai"
+        return self._firecrawl.search(query=query, **self.config)
 
 
 try:
