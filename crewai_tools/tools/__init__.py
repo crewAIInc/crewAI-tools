@@ -1,4 +1,5 @@
 from .ai_mind_tool.ai_mind_tool import AIMindTool
+from .airweave_tool import AirweaveAdvancedSearchTool, AirweaveSearchTool
 from .apify_actors_tool.apify_actors_tool import ApifyActorsTool
 from .arxiv_paper_tool.arxiv_paper_tool import ArxivPaperTool
 from .brave_search_tool.brave_search_tool import BraveSearchTool
