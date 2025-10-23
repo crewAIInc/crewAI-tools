@@ -4,6 +4,8 @@
 
 <div align="left">
 
+> **⚠️ WARNING: This repository is deprecated. The updated and actively maintained version of CrewAI Tools can be found here:** > [https://github.com/crewAIInc/crewAI/tree/main/lib/crewai-tools](https://github.com/crewAIInc/crewAI/tree/main/lib/crewai-tools)
+
 # CrewAI Tools
 
 Empower your CrewAI agents with powerful, customizable tools to elevate their capabilities and tackle sophisticated, real-world tasks.
@@ -105,6 +107,7 @@ with MCPServerAdapter(serverparams) as tools:
     crew = Crew(..., agents=[agent], tasks=[task])
     crew.kickoff(...)
 ```
+
 For an SSE based MCP server:
 
 ```python
@@ -145,7 +148,7 @@ try:
     crew.kickoff(...)
 
 # ** important ** don't forget to stop the connection
-finally: 
+finally:
     mcp_server_adapter.stop()
 ```
 
@@ -167,7 +170,7 @@ try:
     crew.kickoff(...)
 
 # ** important ** don't forget to stop the connection
-finally: 
+finally:
     mcp_server_adapter.stop()
 ```
 
@@ -179,8 +182,8 @@ Always make sure that you trust the MCP Server before using it. Using an STDIO s
 
 #### Limitations
 
-* At this time we only support tools from MCP Server not other type of primitives like prompts, resources...
-* We only return the first text output returned by the MCP Server tool using `.content[0].text`
+- At this time we only support tools from MCP Server not other type of primitives like prompts, resources...
+- We only return the first text output returned by the MCP Server tool using `.content[0].text`
 
 ---
 
