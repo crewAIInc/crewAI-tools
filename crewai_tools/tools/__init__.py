@@ -86,6 +86,10 @@ from .scrape_website_tool.scrape_website_tool import ScrapeWebsiteTool
 from .scrapegraph_scrape_tool.scrapegraph_scrape_tool import (
     ScrapegraphScrapeTool,
     ScrapegraphScrapeToolSchema,
+    FixedScrapegraphScrapeToolSchema,
+    ScrapeMethod,
+    ScrapegraphError,
+    RateLimitError,
 )
 from .scrapfly_scrape_website_tool.scrapfly_scrape_website_tool import (
     ScrapflyScrapeWebsiteTool,
