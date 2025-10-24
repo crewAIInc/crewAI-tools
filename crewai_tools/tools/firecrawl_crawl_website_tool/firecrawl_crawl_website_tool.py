@@ -3,20 +3,15 @@ from typing import Any, Optional, Type, List, TYPE_CHECKING
 from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
-if TYPE_CHECKING:
-    from firecrawl import FirecrawlApp
-
 try:
     from firecrawl import FirecrawlApp
-
-    FIRECRAWL_AVAILABLE = True
 except ImportError:
-    FIRECRAWL_AVAILABLE = False
+    FirecrawlApp = Any
+    ScrapeOptions = Any  # Fallback to Any if ScrapeOptions is not available
 
 
 class FirecrawlCrawlWebsiteToolSchema(BaseModel):
     url: str = Field(description="Website URL")
-
 
 class FirecrawlCrawlWebsiteTool(BaseTool):
     """
@@ -47,14 +42,14 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
     api_key: Optional[str] = None
     config: Optional[dict[str, Any]] = Field(
         default_factory=lambda: {
-            "maxDepth": 2,
-            "ignoreSitemap": True,
+            "max_depth": 2,
+            "ignore_sitemap": True,
             "limit": 10,
-            "allowBackwardLinks": False,
-            "allowExternalLinks": False,
-            "scrapeOptions": {
-                "formats": ["markdown", "screenshot", "links"],
-                "onlyMainContent": True,
+            "allow_backward_links": False,
+            "allow_external_links": False,
+            "scrape_options": {
+                "formats": ["markdown", "links"],
+                "only_main_content": True,
                 "timeout": 10000,
             },
         }
@@ -65,14 +60,36 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
         EnvVar(name="FIRECRAWL_API_KEY", description="API key for Firecrawl services", required=True),
     ]
 
-    def __init__(self, api_key: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        max_depth: Optional[int] = None,
+        ignore_sitemap: Optional[bool] = None,
+        limit: Optional[int] = None,
+        allow_backward_links: Optional[bool] = None,
+        allow_external_links: Optional[bool] = None,
+        scrape_options: Optional[ScrapeOptions] = None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.api_key = api_key
+        if max_depth is not None:
+            self.config["max_depth"] = max_depth
+        if ignore_sitemap is not None:
+            self.config["ignore_sitemap"] = ignore_sitemap
+        if limit is not None:
+            self.config["limit"] = limit
+        if allow_backward_links is not None:
+            self.config["allow_backward_links"] = allow_backward_links
+        if allow_external_links is not None:
+            self.config["allow_external_links"] = allow_external_links
+        if scrape_options is not None:
+            self.config["scrape_options"] = scrape_options
         self._initialize_firecrawl()
 
     def _initialize_firecrawl(self) -> None:
         try:
-            from firecrawl import FirecrawlApp  # type: ignore
+            from firecrawl import FirecrawlApp, ScrapeOptions
 
             self._firecrawl = FirecrawlApp(api_key=self.api_key)
         except ImportError:
@@ -85,7 +102,7 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
 
                 try:
                     subprocess.run(["uv", "add", "firecrawl-py"], check=True)
-                    from firecrawl import FirecrawlApp
+                    from firecrawl import FirecrawlApp, ScrapeOptions
 
                     self._firecrawl = FirecrawlApp(api_key=self.api_key)
                 except subprocess.CalledProcessError:
@@ -95,15 +112,11 @@ class FirecrawlCrawlWebsiteTool(BaseTool):
                     "`firecrawl-py` package not found, please run `uv add firecrawl-py`"
                 )
 
-    def _run(self, url: str):
-        if not self._firecrawl:
-            raise RuntimeError("FirecrawlApp not properly initialized")
-
-        return self._firecrawl.crawl_url(url, poll_interval=2, params=self.config)
-
+    def _run(self, url: str) -> Any:
+        return self._firecrawl.crawl_url(url, **self.config)
 
 try:
-    from firecrawl import FirecrawlApp
+    from firecrawl import FirecrawlApp, ScrapeOptions
 
     # Only rebuild if the class hasn't been initialized yet
     if not hasattr(FirecrawlCrawlWebsiteTool, "_model_rebuilt"):
