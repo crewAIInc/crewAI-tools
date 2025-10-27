@@ -122,6 +122,11 @@ from .youtube_channel_search_tool.youtube_channel_search_tool import (
 )
 from .youtube_video_search_tool.youtube_video_search_tool import YoutubeVideoSearchTool
 from .zapier_action_tool.zapier_action_tool import ZapierActionTools
+from .vectorx_vector_search_tool.vectorx_search_tool import (
+    VectorXVectorSearchTool,
+    VectorXSearchArgs,
+    SpladeSparseEmbedder,
+)
 from .parallel_tools import (
     ParallelSearchTool,
 )
