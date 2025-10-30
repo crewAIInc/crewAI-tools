@@ -51,6 +51,7 @@ from .tools import (
     MongoDBVectorSearchTool,
     MultiOnTool,
     MySQLSearchTool,
+    Neo4jSearchTool,
     NL2SQLTool,
     OCRTool,
     OxylabsAmazonProductScraperTool,
