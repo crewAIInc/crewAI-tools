@@ -17,6 +17,7 @@ class DataType(str, Enum):
     # Database types
     MYSQL = "mysql"
     POSTGRES = "postgres"
+    NEO4J = "neo4j"
 
     # Repository types
     GITHUB = "github"
@@ -55,6 +56,7 @@ class DataType(str, Enum):
             DataType.DOCS_SITE: ("text_chunker", "TextChunker"),
             DataType.MYSQL: ("text_chunker", "TextChunker"),
             DataType.POSTGRES: ("text_chunker", "TextChunker"),
+            DataType.NEO4J: ("text_chunker", "TextChunker"),
         }
 
         if self not in chunkers:
@@ -88,6 +90,7 @@ class DataType(str, Enum):
             DataType.DOCS_SITE: ("docs_site_loader", "DocsSiteLoader"),
             DataType.MYSQL: ("mysql_loader", "MySQLLoader"),
             DataType.POSTGRES: ("postgres_loader", "PostgresLoader"),
+            DataType.NEO4J: ("neo4j_loader", "Neo4jLoader"),
         }
 
         if self not in loaders:

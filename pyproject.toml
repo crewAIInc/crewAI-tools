@@ -134,6 +134,9 @@ mysql = [
 postgresql = [
     "psycopg2-binary>=2.9.10"
 ]
+neo4j = [
+    "neo4j>=5.0.0"
+]
 bedrock = [
     "beautifulsoup4>=4.13.4",
     "bedrock-agentcore>=0.1.0",
