@@ -29,11 +29,18 @@ class ArxivPaperTool(BaseTool):
     package_dependencies: List[str] = ["pydantic"]
     env_vars: List[EnvVar] = []
     
-    def __init__(self, download_pdfs=False, save_dir="./arxiv_pdfs", use_title_as_filename=False):
+    def __init__(
+        self,
+        download_pdfs=False,
+        save_dir="./arxiv_pdfs",
+        use_title_as_filename=False,
+        extra_params=None,
+    ):
         super().__init__()
         self.download_pdfs = download_pdfs
         self.save_dir = save_dir
         self.use_title_as_filename = use_title_as_filename
+        self.extra_params = extra_params
 
     def _run(self, search_query: str, max_results: int = 5) -> str:
         try:
@@ -68,7 +75,16 @@ class ArxivPaperTool(BaseTool):
     
 
     def fetch_arxiv_data(self, search_query: str, max_results: int) -> List[dict]:
-        api_url = f"{self.BASE_API_URL}?search_query={urllib.parse.quote(search_query)}&start=0&max_results={max_results}"
+        params = {
+            'search_query': search_query,
+            'start': 0,
+            'max_results': max_results,
+        }
+        if self.extra_params:
+            params = {**params, **self.extra_params}
+        
+        query = urllib.parse.urlencode(params)
+        api_url = f"{self.BASE_API_URL}?{query}"
         logger.info(f"Fetching data from Arxiv API: {api_url}")
 
         try:

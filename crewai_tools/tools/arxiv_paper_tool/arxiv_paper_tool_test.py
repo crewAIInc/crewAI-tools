@@ -111,3 +111,35 @@ def test_run_with_max_results(mock_fetch, tool):
 
     result = tool._run(search_query="test", max_results=100)
     assert result.count("Title:") == 100
+
+
+@patch("urllib.request.urlopen")
+def test_fetch_arxiv_data_with_extra_params(mock_urlopen):
+    mock_response = MagicMock()
+    mock_response.status = 200
+    mock_response.read.return_value = mock_arxiv_response().encode("utf-8")
+    mock_urlopen.return_value.__enter__.return_value = mock_response
+    
+    tool = ArxivPaperTool(
+        extra_params = {
+            "sortBy": "lastUpdatedDate",
+            "sortOrder": "descending",
+            "start": 10,
+            }
+    )
+    tool.fetch_arxiv_data("transformer", 1)
+    
+    expected_url = "".join(
+        [
+            "http://export.arxiv.org/api/query",
+            "?search_query=transformer",
+            "&start=10",
+            "&max_results=1",
+            "&sortBy=lastUpdatedDate",
+            "&sortOrder=descending",
+        ]
+    )
+    mock_urlopen.assert_called_once_with(
+        expected_url,
+        timeout=10,
+    )
