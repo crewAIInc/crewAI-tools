@@ -44,6 +44,7 @@ from .tools import (
     HyperbrowserLoadTool,
     InvokeCrewAIAutomationTool,
     JSONSearchTool,
+    KeboolaTableExtractTool,
     LinkupSearchTool,
     LlamaIndexTool,
     MDXSearchTool,

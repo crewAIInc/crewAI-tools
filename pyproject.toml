@@ -15,6 +15,7 @@ dependencies = [
     "crewai",
     "lancedb>=0.5.4",
     "tiktoken>=0.8.0",
+    "boto3>=1.38.36"
     "stagehand>=0.4.1",
     "beautifulsoup4>=4.13.4",
     "pypdf>=5.9.0",
