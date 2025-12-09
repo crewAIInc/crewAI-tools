@@ -7,6 +7,7 @@ potentially unsafe operations and importing restricted modules.
 
 import importlib.util
 import os
+from pathlib import Path
 from types import ModuleType
 from typing import Any, Dict, List, Optional, Type
 
@@ -142,6 +143,7 @@ class CodeInterpreterTool(BaseTool):
     user_dockerfile_path: Optional[str] = None
     user_docker_base_url: Optional[str] = None
     unsafe_mode: bool = False
+    mount_path: Optional[str] = None
 
     @staticmethod
     def _get_installed_package_path() -> str:
@@ -222,14 +224,45 @@ class CodeInterpreterTool(BaseTool):
         """Initializes and returns a Docker container for code execution.
 
         Stops and removes any existing container with the same name before creating
-        a new one. Maps the current working directory to /workspace in the container.
+        a new one. Mounts the specified mount_path (relative to cwd) if provided,
+        otherwise defaults to the current working directory
 
         Returns:
             A Docker container object ready for code execution.
         """
         container_name = "code-interpreter"
         client = docker_from_env()
-        current_path = os.getcwd()
+        current_path = Path.cwd()
+
+        # if mount_path is provided, mount that, else mount the current working directory
+        mount_dir = current_path  # Default to current directory
+
+        if self.mount_path and self.mount_path.strip():
+            try:
+                proposed_mount_dir = (current_path / self.mount_path).resolve()
+
+                # check if the mount_dir is valid
+                if not proposed_mount_dir.exists() or not proposed_mount_dir.is_dir():
+                    Printer.print(
+                        f"Warning: Invalid mount directory: {proposed_mount_dir}. Using current directory instead.",
+                        color="yellow",
+                    )
+                # check if the mount_dir is within the current working directory to prevent escapes
+                elif (
+                    current_path not in proposed_mount_dir.parents
+                    and proposed_mount_dir != current_path
+                ):
+                    Printer.print(
+                        f"Warning: {proposed_mount_dir} is outside the project root. Using current directory instead.",
+                        color="yellow",
+                    )
+                else:
+                    mount_dir = proposed_mount_dir
+            except Exception as e:
+                Printer.print(
+                    f"Warning: Error resolving mount path '{self.mount_path}': {e}. Using current directory instead.",
+                    color="yellow",
+                )
 
         # Check if the container is already running
         try:
@@ -245,7 +278,7 @@ class CodeInterpreterTool(BaseTool):
             tty=True,
             working_dir="/workspace",
             name=container_name,
-            volumes={current_path: {"bind": "/workspace", "mode": "rw"}},  # type: ignore
+            volumes={mount_dir: {"bind": "/workspace", "mode": "rw"}},  # type: ignore
         )
 
     def _check_docker_available(self) -> bool:
